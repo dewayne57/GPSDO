@@ -21,14 +21,25 @@ Typical performance: while exact specs vary, a well-built GPSDO will provide par
 ## Hardware
 
 This project contains the hardware (KiCad) and documentation for building a GPSDO. The GPSDO design uses a
-Microchip PIC 18F27Q43 microcontroller running at 64mHz. Several different OCXO (Oven-controlled crystal
-oscillators) can be used. The design allows for the use of the following OCXO units:
+Microchip PIC 18F27Q43 microcontroller running at 64mHz. 
+
+### OCXO Selections
+Several different OCXO (Oven-controlled crystal oscillators) can be used. The design was based on specific commonly available units, but others could be used as well with the appropriate pin connections.  The 
+ability of the GPSDO to adjust the OCXO output using a VCO control voltage is absolutely required.  An OCXO 
+must supply a VCO control input.  
+
+Many OCXO units provide an on-board voltage reference output.  If the OCXO has its own voltage reference, 
+that reference is used as the reference for the VCO DAC.  If a OCXO is used that does NOT have a voltage 
+reference, an on-board 4.096V reference can be used instead.  Use of the OCXO voltage reference or 4.096
+volt reference is set by jumper on the board. 
+
+The design was based on the following OCXO units:
 
 - Isotemp 131 series
 - Isotemp 143 (Package A) Series
 - Isotemp 143 (Package N) Series
 - Vectron C4550 Series
-- MTronPTI )XO512x series
+- MTronPTI XO512x series
 
 ### Voltage Selection
 
@@ -80,4 +91,29 @@ This GPSDO implements the disciplining loop in the digital domain using the PIC1
 When 1PPS is lost, the firmware enters holdover: the last good control value is held in a non-volatile 
 static ram module.  This also allows the GPSDO to continue in holdover mode across a power cycle. The quality of holdover depends entirely on the OCXO stability and any implemented drift compensation.
 
+# Front Panel
+The front panel of the GPSDO unit contains three BNC connectors that output TTL level signals for either 
+3.3V or 5V logic (switch selectable). 
 
+## Outputs 
+- A 10mHz square wave signal that is obtained from the OCXO, locked to GPS, and buffered at the selected TTL levels (not 50 ohm).  This signal will be driven by a high speed TTL gate and level translator.  The output is standard TTL. 
+- A 10mHz square wave signal also obtained from the OCXO and buffered.  This output will be a standard 50 ohm instrument output signal. 
+- A 1 pulse-per-second (1 Hz) square wave with approximately 50% duty cycle.  The signal rising edge represents the start of the 1PPS signal.
+
+## LED Indicators
+Several LEDs will be placed across the front panel.  These are:
+
+- GPS: turned on when the GPS receiver is tracking 3 or more satellites. 
+- HOLDOVER: Turned on when the GPS receiver is either not receiving any signal, or the receiver is tracking less than 3 satellites. 
+- LOCK: turned on whenever the error count in the digital control loop is less than 100 counts.  This represents an accuracy of .001%.  The error count threshold can be adjusted using DIP switches on the board. 
+- POWER: Turned on whenever the GPSDO is running. 
+
+## LCD Display 
+The GPSDO will also use a 24X2 backlit LCD display that will show the current GMT and local date and time, plus any error or diagnostic messages. 
+
+The lines will be formatted as:
+GMT: YYYY/MM/DD HH:MM:SS
+LCL: YYYY/MM/DD HH:MM:SS 
+
+# Rear Panel 
+The rear panel will consist of the IEC power connector with the fuse for protection, as well as the GPS antenna connector. 
