@@ -640,11 +640,23 @@
     ],
     [
       "70264ec9-8b7e-411e-a954-df007a1e262c",
-      "Loop Controller"
+      "GPS Receiver"
     ],
     [
       "765056ca-ccb8-4166-a6f0-580539299dbf",
       "Processor"
+    ],
+    [
+      "7e8a3b34-7710-43ec-8fca-c0257e5506ba",
+      "ocxo"
+    ],
+    [
+      "95c3eeae-2831-4512-87d0-f900496093ca",
+      "DAC"
+    ],
+    [
+      "3b6a593c-0e84-4317-b112-492653c9b6f6",
+      "Front Panel"
     ]
   ],
   "text_variables": {}
