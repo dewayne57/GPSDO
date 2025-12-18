@@ -12,6 +12,7 @@
 #include "smt.h"
 #include "control.h"
 #include "dac.h"
+#include "gps.h"
 
 /*
  * Function prototypes
@@ -19,7 +20,7 @@
 void selfCheck(void);
 void startUp(void);
 
-uint8_t buffer[16]; 
+uint8_t buffer[16];
 
 /************************************************************************
  * Main program loop
@@ -27,75 +28,96 @@ uint8_t buffer[16];
  * This is the main program code for the GPSDO (GPS Disciplined Oscillator)
  * project. It initializes the system, performs a self-check by cycling the
  * LEDs connected to the I/O expander, and then enters an infinite loop
- * where it continually processes inputs from either the rotary encoder 
+ * where it continually processes inputs from either the rotary encoder
  * (to set or view system configuration or properties), or from the GPS module
  * (to discipline the local oscillator). The program uses I2C communication
  * to interface with the I/O expander for front panel controls and indicators.
  *
  ************************************************************************/
-void main(int argc, char** argv) {
+void main(int argc, char **argv)
+{
 
     // Initialize the system
     initialize();
+    gps_init();
     selfCheck();
     startUp();
-    
+
     // Main program loop: poll housekeeping (debounce) at ~10ms
-    while (1) {
+    while (1)
+    {
         encoder_poll();
         menu_process();
-        // Update SMT display once per second
+        // Update GPS data processing
+        gps_update();
+
+        // Update LCD display once per second
         static uint16_t tick = 0;
-        if (++tick >= 100) {
+        if (++tick >= 100)
+        {
             tick = 0;
             uint32_t c = smt_get_last_count();
             int32_t err = smt_get_last_error();
             control_update(err);
-            // Format as: CNT:12345678
-            char line[21];
+
+            // Get GPS data
+            gps_data_t gps_data;
+            gps_get_data(&gps_data);
+
+            // Line 1: "GPS Disciplined Oscillator V1"
+            lcdWriteBuffer(LINE_0, "GPS Disciplined Osc V1");
+
+            // Line 2: Current date
+            char date_line[21];
+            gps_format_date(date_line, &gps_data.datetime);
+            lcdWriteBuffer(LINE_1, date_line);
+
+            // Line 3: Lat, Long, Altitude
+            char pos_line[21];
+            gps_format_position(pos_line, &gps_data.position);
+            lcdWriteBuffer(LINE_2, pos_line);
+
+            // Line 4: Current frequency count
+            char freq_line[21];
             // simple unsigned to decimal conversion
             char tmp[12];
             int ti = 0;
-            if (c == 0) tmp[ti++] = '0';
-            while (c > 0 && ti < (int)sizeof(tmp)) {
-                tmp[ti++] = '0' + (c % 10);
-                c /= 10;
+            uint32_t temp_c = c;
+            if (temp_c == 0)
+                tmp[ti++] = '0';
+            while (temp_c > 0 && ti < (int)sizeof(tmp))
+            {
+                tmp[ti++] = '0' + (temp_c % 10);
+                temp_c /= 10;
             }
             int pos = 0;
-            line[pos++] = 'C'; line[pos++] = 'N'; line[pos++] = 'T'; line[pos++] = ':';
+            freq_line[pos++] = 'F';
+            freq_line[pos++] = 'r';
+            freq_line[pos++] = 'e';
+            freq_line[pos++] = 'q';
+            freq_line[pos++] = ':';
             // reverse digits into line
-            for (int i = ti - 1; i >= 0; --i) {
-                line[pos++] = tmp[i];
+            for (int i = ti - 1; i >= 0; --i)
+            {
+                freq_line[pos++] = tmp[i];
             }
-            line[pos] = '\0';
-            lcdWriteBuffer(LINE_1, line);
-            // Also show current DAC setting on line 0 as: DAC:2048
-            uint16_t d = dac_get_raw();
-            char line0[21];
-            int dpi = 0;
-            uint16_t dv = d;
-            char dt[6];
-            int dti = 0;
-            if (dv == 0) dt[dti++] = '0';
-            while (dv > 0 && dti < (int)sizeof(dt)) {
-                dt[dti++] = '0' + (dv % 10);
-                dv /= 10;
-            }
-            int p0 = 0;
-            line0[p0++] = 'D'; line0[p0++] = 'A'; line0[p0++] = 'C'; line0[p0++] = ':';
-            for (int i = dti - 1; i >= 0; --i) line0[p0++] = dt[i];
-            line0[p0] = '\0';
-            lcdWriteBuffer(LINE_0, line0);
+            freq_line[pos] = '\0';
+            lcdWriteBuffer(LINE_3, freq_line);
             // Update LOCK LED if error is within +/-1 (active low)
             static int prev_locked = -1;
             int locked = (err >= -1 && err <= 1) ? 1 : 0;
-            if (locked != prev_locked) {
+            if (locked != prev_locked)
+            {
                 prev_locked = locked;
                 uint8_t gpioa = 0xFF;
-                if (i2cReadRegister(MCP23017_ADDRESS, GPIOA, &gpioa) == I2C_SUCCESS) {
-                    if (locked) {
+                if (i2cReadRegister(MCP23017_ADDRESS, GPIOA, &gpioa) == I2C_SUCCESS)
+                {
+                    if (locked)
+                    {
                         gpioa &= (uint8_t)(~LOCK_LED_N); // active low -> clear bit to turn on
-                    } else {
+                    }
+                    else
+                    {
                         gpioa |= LOCK_LED_N; // turn off
                     }
                     (void)i2cWriteRegister(MCP23017_ADDRESS, GPIOA, gpioa);
@@ -104,12 +126,14 @@ void main(int argc, char** argv) {
             /* If locked, persist the current DAC setting to EEPROM (only if it differs)
              * We avoid repeated writes by checking the stored config value first.
              */
-            if (locked) {
+            if (locked)
+            {
                 extern volatile system_config_t system_config;
                 uint16_t cur = dac_get_raw();
-                if (system_config.vco_dac != cur) {
+                if (system_config.vco_dac != cur)
+                {
                     system_config.vco_dac = cur;
-                    config_save((const system_config_t*)&system_config);
+                    config_save((const system_config_t *)&system_config);
                 }
             }
         }
@@ -119,13 +143,13 @@ void main(int argc, char** argv) {
     return;
 }
 
-
 /*
  * Perform a self-check by cycling the LEDs on the I/O expander and by initializing
- * and displaying a test pattern on the front panel display LCD. 
+ * and displaying a test pattern on the front panel display LCD.
  */
 
-void selfCheck(void) {
+void selfCheck(void)
+{
     // Initialize and display self-test message on LCD
     lcdInitialize();
     lcdClearDisplay();
@@ -149,7 +173,12 @@ void selfCheck(void) {
 }
 
 /* startUp: display the standard startup header on the LCD */
-void startUp(void) {
+void startUp(void)
+{
     lcdClearDisplay();
-    lcdWriteBuffer(LINE_0, "GPSDO V1.0");
+    lcdWriteBuffer(LINE_0, "GPS Disciplined Osc V1");
+    lcdWriteBuffer(LINE_1, "Initializing...");
+    lcdWriteBuffer(LINE_2, "Waiting for GPS...");
+    lcdWriteBuffer(LINE_3, "Please wait...");
+    __delay_ms(2000); // Show startup message for 2 seconds
 }

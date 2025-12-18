@@ -27,6 +27,7 @@
 #include "smt.h"
 #include "dac.h"
 #include "control.h"
+#include "gps.h"
 
 extern uint8_t buffer[16];
 
@@ -100,6 +101,8 @@ void initialize(void)
     PMD1bits.TMR4MD = 0; // Timer4 module enabled
     PMD1bits.TMR5MD = 1; // Timer5 module disabled
     PMD1bits.TMR6MD = 1; // Timer6 module disabled
+
+    // Note: UART1 module is enabled by default on PIC18F27Q43
 
     // Set up port A
     //
@@ -254,7 +257,7 @@ void initialize(void)
     // Initialize menu state
     // menu_init();
 
-    // Initialize SMT1 counting and DAC-based control loop 
+    // Initialize SMT1 counting and DAC-based control loop
     // smt_init();
     // dac_init();
     // control_init();
@@ -270,20 +273,21 @@ void initialize(void)
 
 volatile system_config_t system_config;
 
-/* 
- * Compute simple 8-bit checksum 
+/*
+ * Compute simple 8-bit checksum
  */
 static uint8_t checksum(const uint8_t *data, uint8_t len)
 {
     uint8_t s = 0;
-    for (uint8_t i = 0; i < len; ++i) {
+    for (uint8_t i = 0; i < len; ++i)
+    {
         s += data[i];
     }
     return s;
 }
 
-/* 
- * Read config blob from EEPROM into buffer 
+/*
+ * Read config blob from EEPROM into buffer
  */
 static uint8_t readEEProm(uint8_t addr, uint8_t *buf, uint8_t len)
 {
@@ -295,8 +299,8 @@ static uint8_t readEEProm(uint8_t addr, uint8_t *buf, uint8_t len)
     return I2C_SUCCESS;
 }
 
-/* 
- * Write config blob to EEPROM (single page assumed small) 
+/*
+ * Write config blob to EEPROM (single page assumed small)
  */
 static uint8_t writeEEProm(uint8_t addr, const uint8_t *buf, uint8_t len)
 {
@@ -327,7 +331,7 @@ static uint8_t writeEEProm(uint8_t addr, const uint8_t *buf, uint8_t len)
     return I2C_SUCCESS;
 }
 
-/* 
+/*
  * Initialize default configuration values
  */
 void config_defaults(system_config_t *cfg)
@@ -338,13 +342,14 @@ void config_defaults(system_config_t *cfg)
     cfg->gps_baud_index = 1; /* default 9600 */
     cfg->gps_stop_bits = 1;  /* 1 stop bit */
     cfg->gps_parity = PARITY_N;
+    cfg->gps_protocol = GPS_PROTOCOL_NMEA; /* default NMEA */
     cfg->vco_dac = (uint16_t)DAC_MIDPOINT;
     memset(cfg->reserved, 0, sizeof(cfg->reserved));
     cfg->crc = 0;
     cfg->crc = (uint8_t)(~checksum((uint8_t *)cfg, sizeof(system_config_t) - 1));
 }
 
-/* 
+/*
  * Load persistent system configuration from EEPROM (falls back to defaults)
  */
 void config_load(system_config_t *cfg)
@@ -367,8 +372,8 @@ void config_load(system_config_t *cfg)
     memcpy((void *)&system_config, cfg, sizeof(system_config_t));
 }
 
-/* 
- * Save system configuration to EEPROM 
+/*
+ * Save system configuration to EEPROM
  */
 void config_save(const system_config_t *cfg)
 {
