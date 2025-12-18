@@ -1,0 +1,535 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "292023ce-4ed6-44df-ba85-3d4f8e09a45b")
+	(paper "B")
+	(title_block
+		(title "GPS Disciplined Oscillator")
+		(date "2025-11-18")
+		(rev "1")
+		(company "Dewayne L. Hafenstein")
+	)
+	(lib_symbols)
+	(text "Power Supplies for GPSDO\n\n+3.3 @ 500mA\n+5 @ 1.5A\n+12 @ 1.5A \n-12 @ 500mA\n"
+		(exclude_from_sim no)
+		(at 56.388 71.628 0)
+		(effects
+			(font
+				(size 2.54 2.54)
+			)
+			(justify left)
+		)
+		(uuid "e2e1ae94-8c30-4d21-a29c-3aa06a0c164d")
+	)
+	(junction
+		(at 170.18 57.15)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "6b71c1ba-d03a-45f7-9875-32e735733261")
+	)
+	(junction
+		(at 162.56 68.58)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "9d2c6d9b-1fe0-4078-9168-89d4860f6d2d")
+	)
+	(junction
+		(at 166.37 60.96)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "d8b28565-f715-4ed2-9e17-e0a54c500af0")
+	)
+	(wire
+		(pts
+			(xy 252.73 121.92) (xy 252.73 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "05350bf8-c0d5-492c-a0e8-7a3ac0b9ab60")
+	)
+	(wire
+		(pts
+			(xy 162.56 68.58) (xy 203.2 68.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0c017598-2186-440a-b65d-8e2db7c7fbe2")
+	)
+	(wire
+		(pts
+			(xy 260.35 121.92) (xy 260.35 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0c104916-730a-491d-9bba-0849509239c9")
+	)
+	(wire
+		(pts
+			(xy 134.62 53.34) (xy 203.2 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2fa40865-2c7b-4d1f-bbcc-824e440c4109")
+	)
+	(wire
+		(pts
+			(xy 256.54 121.92) (xy 256.54 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3525f4b0-68a4-4e64-962a-9411fd991635")
+	)
+	(wire
+		(pts
+			(xy 203.2 173.99) (xy 162.56 173.99)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "476850f3-e7c3-4105-a7c6-79fcb3d97e62")
+	)
+	(wire
+		(pts
+			(xy 134.62 64.77) (xy 203.2 64.77)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6586a8f4-9c59-496c-a254-b8ef024fbbfe")
+	)
+	(wire
+		(pts
+			(xy 162.56 68.58) (xy 134.62 68.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "66875ad7-79f3-406e-8330-74da9f1d1bc2")
+	)
+	(wire
+		(pts
+			(xy 166.37 60.96) (xy 203.2 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "86508b2a-f1a2-45b3-a025-0c29ffaa75e4")
+	)
+	(wire
+		(pts
+			(xy 166.37 60.96) (xy 166.37 170.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "89dd0b1c-90cf-47f3-bc5e-e244b1e1552d")
+	)
+	(wire
+		(pts
+			(xy 170.18 57.15) (xy 203.2 57.15)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a589ea09-d3bb-4976-9c15-30fa309e581d")
+	)
+	(wire
+		(pts
+			(xy 170.18 166.37) (xy 170.18 57.15)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bbed9879-73c3-4226-a275-41cba8da7095")
+	)
+	(wire
+		(pts
+			(xy 162.56 173.99) (xy 162.56 68.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cdc40e8a-cd96-4bc7-8368-cb4145b77b99")
+	)
+	(wire
+		(pts
+			(xy 166.37 170.18) (xy 203.2 170.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "da8ed880-c9e9-42b2-8474-e89a9b62f7ed")
+	)
+	(wire
+		(pts
+			(xy 134.62 60.96) (xy 166.37 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "daab1954-c840-4a78-8297-ca874b30c885")
+	)
+	(wire
+		(pts
+			(xy 203.2 166.37) (xy 170.18 166.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "de32adf0-9f7b-4d18-a66a-57bff20c6d3e")
+	)
+	(wire
+		(pts
+			(xy 170.18 57.15) (xy 134.62 57.15)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ed8e0534-be1b-4f86-a14e-9b61d99bc925")
+	)
+	(sheet
+		(at 203.2 25.4)
+		(size 139.7 96.52)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "c5b2c78c-ba4c-4310-8edb-d45d907ed5c8")
+		(property "Sheetname" "Logic"
+			(at 203.2 24.6884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "logic.kicad_sch"
+			(at 203.2 122.5046 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "+3.3V" input
+			(at 203.2 53.34 180)
+			(uuid "16bb2ceb-d196-424b-89ac-80d9596864fe")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "+5V" input
+			(at 203.2 57.15 180)
+			(uuid "2955397f-98fe-4321-ae3d-78692e2f045b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "Gnd" input
+			(at 203.2 68.58 180)
+			(uuid "322f3f3e-8582-46af-836b-d2bf09cd26fc")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "+12V" input
+			(at 203.2 60.96 180)
+			(uuid "27dda589-8f1e-4168-b025-c41820604fa6")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "-12V" input
+			(at 203.2 64.77 180)
+			(uuid "670d4bd3-353f-4caf-9cdb-c98f19b05d34")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "RF" input
+			(at 252.73 121.92 270)
+			(uuid "5b471eb1-4b80-4eda-9b1b-d1d3aeaa7701")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "VCO" input
+			(at 256.54 121.92 270)
+			(uuid "76baef38-2896-4a85-8ce0-36a6d3989e36")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "VRef" input
+			(at 260.35 121.92 270)
+			(uuid "caa347b3-4429-4994-bc7f-1d5ea693c397")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "GPSDO"
+				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 27.94 25.4)
+		(size 106.68 96.52)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "c5fb2ef1-a1e8-45b3-8883-b14c9804ee25")
+		(property "Sheetname" "Power Supply"
+			(at 27.94 24.6884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "power.kicad_sch"
+			(at 27.94 122.5046 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "+3.3" input
+			(at 134.62 53.34 0)
+			(uuid "a2f028b3-95b8-44fb-a728-aef01c11a747")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "+5" input
+			(at 134.62 57.15 0)
+			(uuid "49eccac2-8bfa-4090-b081-a33d3af67a8a")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "+12" input
+			(at 134.62 60.96 0)
+			(uuid "f489f09d-bf27-4a01-b547-eb898257e7e9")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "-12" input
+			(at 134.62 64.77 0)
+			(uuid "637aee70-ba5e-4383-99cc-2c0a703d3139")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "Gnd" input
+			(at 134.62 68.58 0)
+			(uuid "128e22e5-1897-4826-8de1-8187edc36bb8")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "GPSDO"
+				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 203.2 142.24)
+		(size 139.7 85.09)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "ca8012b4-4a67-4365-9009-f05903516eeb")
+		(property "Sheetname" "OCXO"
+			(at 203.2 141.5284 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "ocxo.kicad_sch"
+			(at 203.2 227.9146 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "+5V" input
+			(at 203.2 166.37 180)
+			(uuid "5b747feb-380e-4147-bdb4-9d64d0fbbb84")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "+12V" input
+			(at 203.2 170.18 180)
+			(uuid "b595a66c-c25a-49dc-bb40-4cc75aabf6c7")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "Gnd" input
+			(at 203.2 173.99 180)
+			(uuid "717a620f-511c-4dcf-bc82-656dcd471601")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "RF" input
+			(at 252.73 142.24 90)
+			(uuid "ae2f2ef5-85c8-4e0f-8294-b623b8115496")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "VCO" input
+			(at 256.54 142.24 90)
+			(uuid "a84e0845-9476-4ed7-9666-926c871b9832")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "VRef" input
+			(at 260.35 142.24 90)
+			(uuid "11c82316-6ffb-4437-85fc-bfd77bcde00a")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "GPSDO"
+				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)
