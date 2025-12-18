@@ -43,7 +43,7 @@ void encoder_init(void)
 {
     // Ensure pins are inputs
     TRISC |= PHASE_A + PHASE_B + ENTER_N; // RC5, RC6, RC7
-    
+
     // Enable weak pull-ups for RC5..RC7 (bits 5,6,7)
     WPUC |= PHASE_A + PHASE_B + ENTER_N;
 
@@ -61,7 +61,7 @@ void encoder_init(void)
     // Read initial quadrature state
     uint8_t a = PORTC & PHASE_A ? 1 : 0;
     uint8_t b = PORTC & PHASE_B ? 1 : 0;
-    encoder_state.last_state = (a << 1) | b;
+    encoder_state.last_state = (uint8_t)((a << 1) | b);
 
     encoder_state.button_raw = PORTC & ENTER_N ? 1 : 0; // idle high
     encoder_state.button_stable = (encoder_state.button_raw == 0) ? 1 : 0;
@@ -69,11 +69,11 @@ void encoder_init(void)
 }
 /*
  * Optional periodic poll to handle button debouncing.
- */  
+ */
 void encoder_poll(void)
 {
-    /* 
-     * We will effectively debounce the button press by sampling the current button some number of times 
+    /*
+     * We will effectively debounce the button press by sampling the current button some number of times
      */
     if (encoder_state.debounce_cnt > 0)
     {
@@ -117,7 +117,7 @@ void encoder_handle_ioc(void)
 {
     uint8_t a = PORTC & PHASE_A ? 1 : 0;
     uint8_t b = PORTC & PHASE_B ? 1 : 0;
-    uint8_t cur = (a << 1) | b;
+    uint8_t cur = (uint8_t)((a << 1) | b);
 
     uint8_t last = encoder_state.last_state;
     if (cur != last)

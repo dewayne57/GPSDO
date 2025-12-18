@@ -15,10 +15,10 @@
  * 
  */
  #ifndef LCD_H
-#define	LCD_H
+#define    LCD_H
 #include <xc.h> // include processor files - each processor file is guarded.  
 
-#ifdef	__cplusplus
+#ifdef    __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
@@ -88,9 +88,9 @@ unsigned char isLcdBusy(void);
 void lcdInitialize(void);
 void lcdSelfTest(void); 
 
-#ifdef	__cplusplus
+#ifdef    __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif	/* LCD_H */
+#endif    /* LCD_H */
 
