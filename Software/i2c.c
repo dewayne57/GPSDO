@@ -64,7 +64,7 @@ uint8_t i2cWriteBuffer(uint8_t address, uint8_t *data, uint8_t length)
     _i2cStart();
 
     // Send address with write bit (0)
-    result = _i2cWriteByte((address << 1) | 0x00);
+    result = _i2cWriteByte((uint8_t)((address << 1) | 0x00));
     if (result != I2C_SUCCESS)
     {
         _i2cStop();
@@ -123,7 +123,7 @@ uint8_t i2cReadBuffer(uint8_t address, uint8_t *data, uint8_t length)
     _i2cStart();
 
     // Send address with read bit (1)
-    result = _i2cWriteByte((address << 1) | 0x01);
+    result = _i2cWriteByte((uint8_t)((address << 1) | 0x01));
     if (result != I2C_SUCCESS)
     {
         _i2cStop();
@@ -159,7 +159,7 @@ uint8_t i2cReadRegister(uint8_t address, uint8_t reg, uint8_t *data)
     _i2cStart();
 
     // Send address with write bit to write register address
-    result = _i2cWriteByte((address << 1) | 0x00);
+    result = _i2cWriteByte((uint8_t)((address << 1) | 0x00));
     if (result != I2C_SUCCESS)
     {
         _i2cStop();
@@ -178,7 +178,7 @@ uint8_t i2cReadRegister(uint8_t address, uint8_t reg, uint8_t *data)
     _i2cRestart();
 
     // Send address with read bit
-    result = _i2cWriteByte((address << 1) | 0x01);
+    result = _i2cWriteByte((uint8_t)((address << 1) | 0x01));
     if (result != I2C_SUCCESS)
     {
         _i2cStop();

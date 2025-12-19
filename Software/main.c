@@ -1,6 +1,42 @@
-/* SPDX-License-Identifier: Apache-2.0 */
 /*
  * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ *
+ * Main program loop for the GPSDO (GPS Disciplined Oscillator) project.
+ * The program initializes the system, performs a self-check by cycling the
+ * LEDs connected to the I/O expander, and then enters an infinite loop
+ * where it continually processes inputs from either the rotary encoder 
+ * (to set or view system configuration or properties), or from the GPS module
+ * (to discipline the local oscillator). The program uses I2C communication
+ * to interface with the I/O expander for front panel controls and indicators.
+ * The program uses the LCD display to show system status and configuration,
+ * the DAC to control the VCO (Voltage Controlled Oscillator) to control the 
+ * frequency of the local oscillator, the SMT (Synchronous Modulation Tracking) 
+ * algorithm to discipline the local oscillator to the GPS signal.
+ * 
+ * System configuration and properties are managed through the LCD display
+ * and the rotary encoder, and persisted in the EEPROM.
+ * 
+ * The system uses several LED indicators on the front panel.  These include:
+ * - POWER_LED_N: Power on LED (active low)
+ * - GPS_N: Indicates GPS signal lock (active low)
+ * - HOLDOVER_N: Indicates holdover status (active low) (meaning the GPS signal is not available    
+ * - HIGH_N: Indicates that the OCXO output frequency is above the target frequency (active low)
+ * - LOW_N: Indicates that the OCXO output frequency is below the target frequency (active low)
+ * - LOCK_LED_N: Lock status LED (active low).  Indicates that the OCXO is locked to the GPS signal.
+ * - FAULT_N: Indicates a fault condition (active low) * 
+ * 
+ * licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at
+ * 
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
  */
 #include <xc.h>
 #include "config.h"

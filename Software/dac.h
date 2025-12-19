@@ -1,5 +1,5 @@
 /* 
- *Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
  *
  * Simple driver for a 12-bit I2C DAC (DAC8571 like device)
  * - Writes 12-bit values to the DAC via I2C

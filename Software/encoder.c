@@ -1,4 +1,5 @@
-/* Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+/* 
+ * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
  *
  * Simple rotary encoder handler.
  * - RC5 = Phase A
@@ -61,7 +62,7 @@ void encoder_init(void)
     // Read initial quadrature state
     uint8_t a = PORTC & PHASE_A ? 1 : 0;
     uint8_t b = PORTC & PHASE_B ? 1 : 0;
-    encoder_state.last_state = (a << 1) | b;
+    encoder_state.last_state = (uint8_t)((a << 1) | b);
 
     encoder_state.button_raw = PORTC & ENTER_N ? 1 : 0; // idle high
     encoder_state.button_stable = (encoder_state.button_raw == 0) ? 1 : 0;
@@ -117,7 +118,7 @@ void encoder_handle_ioc(void)
 {
     uint8_t a = PORTC & PHASE_A ? 1 : 0;
     uint8_t b = PORTC & PHASE_B ? 1 : 0;
-    uint8_t cur = (a << 1) | b;
+    uint8_t cur = (uint8_t)((a << 1) | b);
 
     uint8_t last = encoder_state.last_state;
     if (cur != last)
