@@ -1,4 +1,5 @@
-/* Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+/* 
+ * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
  *
  * Simple rotary encoder handler.
  * - RC5 = Phase A
