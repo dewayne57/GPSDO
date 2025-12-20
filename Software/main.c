@@ -38,7 +38,9 @@
  * limitations under the License.
  * 
  */
+
 #include <xc.h>
+#include "types.h"
 #include "config.h"
 #include "i2c.h"
 #include "mcp23x17.h"
@@ -75,7 +77,8 @@ void main(int argc, char **argv)
 
     // Initialize the system
     initialize();
-    gps_init();
+    lcdSetBacklight(TRUE);
+//    gps_init();
     selfCheck();
     startUp();
 

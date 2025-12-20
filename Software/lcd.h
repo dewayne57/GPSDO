@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * 
+ * This code provides a simple interface to the LCD display using a
+ * Hitachi HD44780 compatible controller via the MCP23017 I2C I/O expander.
+ * It supports both 4-bit and 8-bit modes.  To enable 4-bit mode, define
+ * the LCD_4BIT_MODE macro before including this file.  Otherwise, it defaults
+ * to 8-bit mode.
  */
  #ifndef LCD_H
 #define    LCD_H
@@ -21,26 +26,6 @@
 #ifdef    __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-/* LCD pin mapping on MCP23017 Port B
- * PB0 = RS
- * PB1 = RW
- * PB2 = E
- * PB3 = Backlight (1 = on)
- * PB4..PB7 = D4..D7 (4-bit data)
- */
-typedef struct {
-        unsigned char rs : 1;   // register select
-        unsigned char rw : 1;   // read/*write 
-        unsigned char e : 1;    // Enable
-        unsigned char bl : 1;   // backlight 
-        unsigned char data: 4;  // data bits D4-D7
-    } CONTROL_BYTE; 
-
-union {
-    CONTROL_BYTE control;
-    uint8_t byte;
-} lcd;
 
 /**
  * HD44780 Command Codes 
@@ -62,6 +47,7 @@ union {
 #define DISPLAY_SHIFT_RIGHT     0b00011100
 #define DISPLAY_SHIFT_LEFT      0b00011000
 #define FUNCTION_SET_8_2_5X8    0b00111000
+#define FUNCTION_SET_4_2_5X8    0b00101000
 #define SET_CGRAM_ADDRESS       0b01000000
 #define SET_DDRAM_ADDRESS       0b10000000
 
@@ -76,15 +62,15 @@ union {
 /*
  * Function Prototypes
  */
+void lcdSetBacklight(boolean state);
 void lcdReturnHome(void); 
 void lcdClearDisplay(void); 
 void lcdWriteBuffer(uint8_t address, char* data);
 void lcdWriteString(char * data);
-void lcdWriteByte(uint8_t data);
+void lcdWriteChar(uint8_t data);
 void lcdWriteInstruction(uint8_t data);
-uint8_t lcdReadInstruction(void);
 uint8_t lcdReadData(void);
-unsigned char isLcdBusy(void);
+boolean isLcdBusy(void);
 void lcdInitialize(void);
 void lcdSelfTest(void); 
 

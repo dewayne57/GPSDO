@@ -155,14 +155,14 @@ extern volatile system_config_t system_config;
 /* The values of the pins are the decimal equivalents of the bit positions  */
 /* in the MCP23017 I/O Expander Port B                                      */
 /****************************************************************************/
-#define LCD_RS 1      // B0: LCD Register Select pin
-#define LCD_RW 2      // B1: LCD Read/Write pin
-#define LCD_E 4          // B2: LCD Enable pin
-#define BACKLIGHT_N 8     // B3: LCD Backlight control pin
-#define LCD_D4 16      // B4: LCD Data pin 4
-#define LCD_D5 32      // B5: LCD Data pin 5
-#define LCD_D6 64      // B6: LCD Data pin 6
-#define LCD_D7 128      // B7: LCD Data pin 7
+#define LCD_RS 1            // B0: LCD Register Select pin
+#define LCD_RW 2            // B1: LCD Read/Write pin
+#define LCD_E 4             // B2: LCD Enable pin
+#define LCD_BL 8            // B3: LCD Backlight control pin
+#define LCD_D4 16           // B4: LCD Data pin 4
+#define LCD_D5 32           // B5: LCD Data pin 5
+#define LCD_D6 64           // B6: LCD Data pin 6
+#define LCD_D7 128          // B7: LCD Data pin 7
 
 /* Self-test timing (milliseconds) */
 #ifndef SELFTEST_ON_MS

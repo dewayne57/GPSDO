@@ -286,9 +286,10 @@ void initialize(void)
 
     // Clear any pending MCP23017 interrupt from initialization (read INTFA then GPIOA)
     i2cReadRegister(MCP23017_ADDRESS, INTFA, buffer);
+    i2cReadRegister(MCP23017_ADDRESS, GPIOA, buffer); 
 
     // Load persistent system configuration from EEPROM (falls back to defaults)
-    config_load((system_config_t *)buffer); // buffer used as temp storage
+    //config_load((system_config_t *)buffer); // buffer used as temp storage
 
     // Initialize encoder GPIOs and state
     // encoder_init();

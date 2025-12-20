@@ -31,16 +31,16 @@
 /****************************************************************************
  * forward define internal functions not exposed via i2c.h header file
  ****************************************************************************/
-void _i2cStart(void);
-void _i2cRestart(void);
-void _i2cStop(void);
-void _i2cSclHigh(void);
-void _i2cSclLow(void);
-void _i2cSdaHigh(void);
-void _i2cSdaLow(void);
-uint8_t _i2cSdaRead(void);
-uint8_t _i2cWriteByte(uint8_t data);
-uint8_t _i2cReadByte(uint8_t ack);
+static void _i2cStart(void);
+static void _i2cRestart(void);
+static void _i2cStop(void);
+static void _i2cSclHigh(void);
+static void _i2cSclLow(void);
+static void _i2cSdaHigh(void);
+static void _i2cSdaLow(void);
+static uint8_t _i2cSdaRead(void);
+static uint8_t _i2cWriteByte(uint8_t data);
+static uint8_t _i2cReadByte(uint8_t ack);
 
 /****************************************************************************
  * PUBLIC API FUNCTIONS

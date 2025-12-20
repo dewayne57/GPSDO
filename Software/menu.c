@@ -7,15 +7,16 @@
  * the menu and restores the normal display.
  */
 
-#include <xc.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdio.h>
-#include "lcd.h"
-#include "encoder.h"
 #include "menu.h"
+#include "types.h"
 #include "config.h"
+#include "encoder.h"
 #include "gps.h"
+#include "lcd.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <xc.h>
 
 /* Forward declaration of system startup display (present in main.c) */
 extern void startUp(void);
