@@ -27,6 +27,7 @@
 #include "smt.h"
 #include "dac.h"
 #include "control.h"
+#include "gps.h"
 
 extern uint8_t buffer[16];
 
@@ -77,30 +78,71 @@ void initialize(void)
     PIR15 = 0x00;
 
     // Set up external interrupt 0 (active-high from GPS module)
-    INTCON0bits.IPEN = 1;    // Use priority interrupts
-    INTCON0bits.INT0EDG = 1; // Rising edge triggers INT0
-    PIR1bits.INT0IF = 0;     // Clear any pending INT0 flag
-    IPR1bits.INT0IP = 1;     // Make INT0 high priority (vectored)
-    PIE1bits.INT0IE = 1;     // Enable External Interrupt 0
+    INTCON0bits.IPEN = 1;       // Use priority interrupts
+    INTCON0bits.INT0EDG = 1;    // Rising edge triggers INT0
+    PIR1bits.INT0IF = 0;        // Clear any pending INT0 flag
+    IPR1bits.INT0IP = 1;        // Make INT0 high priority (vectored)
+    PIE1bits.INT0IE = 1;        // Enable External Interrupt 0
 
-    /* Disable peripheral modules not needed */
-    PMD0bits.SYSCMD = 1; // System clock network disabled
-    PMD0bits.FVRMD = 1;  // Fixed voltage reference disabled
-    PMD0bits.HLVDMD = 1; // High/low voltage detect disabled
-    PMD0bits.CRCMD = 1;  // CRC module disabled
-    PMD0bits.SCANMD = 1; // SCAN module disabled
-    PMD0bits.CLKRMD = 0; // Clock reference module disabled
-    PMD0bits.IOCMD = 0;  // Interrupt on change module enabled
-
-    PMD1bits.SMT1MD = 0; // SMT1 module enabled (for RF counting)
-    PMD1bits.TMR0MD = 1; // Timer0 module disabled
-    PMD1bits.TMR1MD = 1; // Timer1 module disabled
-    PMD1bits.TMR2MD = 1; // Timer2 module disabled
-    PMD1bits.TMR3MD = 1; // Timer3 module disabled
-    PMD1bits.TMR4MD = 0; // Timer4 module enabled
-    PMD1bits.TMR5MD = 1; // Timer5 module disabled
-    PMD1bits.TMR6MD = 1; // Timer6 module disabled
-
+    // Enable all peripheral modules that are required and disable
+    // all others to save power
+    PMD0bits.SYSCMD = 0;        // System clock network enabled
+    PMD0bits.FVRMD = 1;         // Fixed voltage reference disabled
+    PMD0bits.HLVDMD = 1;        // High/low voltage detect disabled
+    PMD0bits.CRCMD = 1;         // CRC module disabled
+    PMD0bits.SCANMD = 1;        // SCAN module disabled
+    PMD0bits.CLKRMD = 0;        // Clock reference module disabled
+    PMD0bits.IOCMD = 0;         // Interrupt on change module enabled
+    PMD1bits.SMT1MD = 0;        // SMT1 module enabled (for RF counting)
+    PMD1bits.TMR0MD = 1;        // Timer0 module disabled
+    PMD1bits.TMR1MD = 1;        // Timer1 module disabled
+    PMD1bits.TMR2MD = 1;        // Timer2 module disabled
+    PMD1bits.TMR3MD = 1;        // Timer3 module disabled
+    PMD1bits.TMR4MD = 0;        // Timer4 module enabled
+    PMD1bits.TMR5MD = 1;        // Timer5 module disabled
+    PMD1bits.TMR6MD = 1;        // Timer6 module disabled
+    PMD3bits.ACTMD = 1;         // No active clock tuning needed
+    PMD3bits.DAC1MD = 0;        // DAC1 module enabled
+    PMD3bits.ADCMD = 0;         // ADC module enabled
+    PMD3bits.CM2MD = 1;         // Comparator 2 module disabled
+    PMD3bits.CM1MD = 1;         // Comparator 1 module disabled
+    PMD3bits.ZCDMD = 1;         // Zero-Cross detector disabled
+    PMD4bits.CWG1MD = 1;        // CWG1 module disabled
+    PMD4bits.CWG2MD = 1;        // CWG2 module disabled
+    PMD4bits.CWG3MD = 1;        // CWG3 module disabled
+    PMD4bits.DSM1MD = 1;        // DSM1 module disabled
+    PMD4bits.NCO1MD = 1;        // NCO1 module disabled
+    PMD4bits.NCO2MD = 1;        // NCO2 module disabled
+    PMD4bits.NCO3MD = 1;        // NCO3 module disabled
+    PMD5bits.PWM1MD = 1;        // Pulse-Width Modulator 1 disabled
+    PMD5bits.PWM2MD = 1;        // Pulse-Width Modulator 2 disabled
+    PMD5bits.PWM3MD = 1;        // Pulse-Width Modulator 3 disabled
+    PMD5bits.CCP1MD = 1;        // Capture-Compare 1 disabled
+    PMD5bits.CCP2MD = 1;        // Capture-Compare 2 disabled
+    PMD5bits.CCP3MD = 1;        // Capture-Compare 3 disabled
+    PMD6bits.I2C1MD = 0;        // I2C1 module enabled
+    PMD6bits.SPI1MD = 1;        // SPI1 module disabled
+    PMD6bits.SPI2MD = 1;        // SPI2 module disabled
+    PMD6bits.U1MD = 0;          // UART 1 enabled
+    PMD6bits.U2MD = 1;          // UART 2 disabled
+    PMD6bits.U3MD = 1;          // UART 3 disabled
+    PMD6bits.U4MD = 1;          // UART 4 disabled
+    PMD6bits.U5MD = 1;          // UART 5 disabled
+    PMD7bits.CLC1MD = 1;        // Configurable Logic Cell 1 disabled
+    PMD7bits.CLC2MD = 1;        // Configurable Logic Cell 2 disabled
+    PMD7bits.CLC3MD = 1;        // Configurable Logic Cell 3 disabled
+    PMD7bits.CLC4MD = 1;        // Configurable Logic Cell 4 disabled
+    PMD7bits.CLC5MD = 1;        // Configurable Logic Cell 5 disabled
+    PMD7bits.CLC6MD = 1;        // Configurable Logic Cell 6 disabled
+    PMD7bits.CLC7MD = 1;        // Configurable Logic Cell 7 disabled
+    PMD7bits.CLC8MD = 1;        // Configurable Logic Cell 8 disabled
+    PMD8bits.DMA1MD = 1;        // DMA1 module disabled
+    PMD8bits.DMA2MD = 1;        // DMA2 module disabled
+    PMD8bits.DMA3MD = 1;        // DMA3 module disabled
+    PMD8bits.DMA4MD = 1;        // DMA4 module disabled
+    PMD8bits.DMA5MD = 1;        // DMA5 module disabled
+    PMD8bits.DMA6MD = 1;        // DMA6 module disabled
+    
     // Set up port A
     //
     // All port A pins (except RA6) are used as analog inputs and outputs and
@@ -244,9 +286,10 @@ void initialize(void)
 
     // Clear any pending MCP23017 interrupt from initialization (read INTFA then GPIOA)
     i2cReadRegister(MCP23017_ADDRESS, INTFA, buffer);
+    i2cReadRegister(MCP23017_ADDRESS, GPIOA, buffer); 
 
     // Load persistent system configuration from EEPROM (falls back to defaults)
-    config_load((system_config_t *)buffer); // buffer used as temp storage
+    //config_load((system_config_t *)buffer); // buffer used as temp storage
 
     // Initialize encoder GPIOs and state
     // encoder_init();
@@ -254,7 +297,7 @@ void initialize(void)
     // Initialize menu state
     // menu_init();
 
-    // Initialize SMT1 counting and DAC-based control loop 
+    // Initialize SMT1 counting and DAC-based control loop
     // smt_init();
     // dac_init();
     // control_init();
@@ -270,20 +313,21 @@ void initialize(void)
 
 volatile system_config_t system_config;
 
-/* 
- * Compute simple 8-bit checksum 
+/*
+ * Compute simple 8-bit checksum
  */
 static uint8_t checksum(const uint8_t *data, uint8_t len)
 {
     uint8_t s = 0;
-    for (uint8_t i = 0; i < len; ++i) {
+    for (uint8_t i = 0; i < len; ++i)
+    {
         s += data[i];
     }
     return s;
 }
 
-/* 
- * Read config blob from EEPROM into buffer 
+/*
+ * Read config blob from EEPROM into buffer
  */
 static uint8_t readEEProm(uint8_t addr, uint8_t *buf, uint8_t len)
 {
@@ -295,8 +339,8 @@ static uint8_t readEEProm(uint8_t addr, uint8_t *buf, uint8_t len)
     return I2C_SUCCESS;
 }
 
-/* 
- * Write config blob to EEPROM (single page assumed small) 
+/*
+ * Write config blob to EEPROM (single page assumed small)
  */
 static uint8_t writeEEProm(uint8_t addr, const uint8_t *buf, uint8_t len)
 {
@@ -327,7 +371,7 @@ static uint8_t writeEEProm(uint8_t addr, const uint8_t *buf, uint8_t len)
     return I2C_SUCCESS;
 }
 
-/* 
+/*
  * Initialize default configuration values
  */
 void config_defaults(system_config_t *cfg)
@@ -338,13 +382,14 @@ void config_defaults(system_config_t *cfg)
     cfg->gps_baud_index = 1; /* default 9600 */
     cfg->gps_stop_bits = 1;  /* 1 stop bit */
     cfg->gps_parity = PARITY_N;
+    cfg->gps_protocol = GPS_PROTOCOL_NMEA; /* default NMEA */
     cfg->vco_dac = (uint16_t)DAC_MIDPOINT;
     memset(cfg->reserved, 0, sizeof(cfg->reserved));
     cfg->crc = 0;
     cfg->crc = (uint8_t)(~checksum((uint8_t *)cfg, sizeof(system_config_t) - 1));
 }
 
-/* 
+/*
  * Load persistent system configuration from EEPROM (falls back to defaults)
  */
 void config_load(system_config_t *cfg)
@@ -367,8 +412,8 @@ void config_load(system_config_t *cfg)
     memcpy((void *)&system_config, cfg, sizeof(system_config_t));
 }
 
-/* 
- * Save system configuration to EEPROM 
+/*
+ * Save system configuration to EEPROM
  */
 void config_save(const system_config_t *cfg)
 {

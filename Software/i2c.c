@@ -2,8 +2,8 @@
  * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
  *
  * Bit-banging I2C implementation for PIC18F27Q43
- * Uses RC3 (SCL) and RC4 (SDA) with open drain configuration   
- * 
+ * Uses RC3 (SCL) and RC4 (SDA) with open drain configuration
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 #include <xc.h>
 #include "i2c.h"
@@ -31,16 +31,16 @@
 /****************************************************************************
  * forward define internal functions not exposed via i2c.h header file
  ****************************************************************************/
-void _i2cStart(void);
-void _i2cRestart(void);
-void _i2cStop(void);
-void _i2cSclHigh(void);
-void _i2cSclLow(void);
-void _i2cSdaHigh(void);
-void _i2cSdaLow(void);
-uint8_t _i2cSdaRead(void);
-uint8_t _i2cWriteByte(uint8_t data);
-uint8_t _i2cReadByte(uint8_t ack);
+static void _i2cStart(void);
+static void _i2cRestart(void);
+static void _i2cStop(void);
+static void _i2cSclHigh(void);
+static void _i2cSclLow(void);
+static void _i2cSdaHigh(void);
+static void _i2cSdaLow(void);
+static uint8_t _i2cSdaRead(void);
+static uint8_t _i2cWriteByte(uint8_t data);
+static uint8_t _i2cReadByte(uint8_t ack);
 
 /****************************************************************************
  * PUBLIC API FUNCTIONS
@@ -89,7 +89,7 @@ uint8_t i2cWriteBuffer(uint8_t address, uint8_t *data, uint8_t length)
 
 /****************************************************************************
  * Function: i2cWriteRegister
- * Description: Write a single register on an I2C device.  
+ * Description: Write a single register on an I2C device.
  * Parameters:
  *   address - The I2C device address
  *   reg - The register address to write to
@@ -215,33 +215,33 @@ void i2cResetBus(void)
 
 void _i2cSclHigh(void)
 {
-    TRISC |= SCL;       // Ensure SCL is input
+    TRISC |= SCL; // Ensure SCL is input
     I2C_HALF_DELAY();
 }
 
 void _i2cSclLow(void)
 {
-    LATC &= ~SCL;       // Output low
-    TRISC &= ~SCL;      // Set as output
+    LATC &= ~SCL;  // Output low
+    TRISC &= ~SCL; // Set as output
     I2C_HALF_DELAY();
 }
 
 void _i2cSdaHigh(void)
 {
-    TRISC |= SDA;       // Ensure SDA is input
+    TRISC |= SDA; // Ensure SDA is input
     I2C_HALF_DELAY();
 }
 
 void _i2cSdaLow(void)
 {
-    LATC &= ~SDA;        // Output low
-    TRISC &= ~SDA;       // Set as output
+    LATC &= ~SDA;  // Output low
+    TRISC &= ~SDA; // Set as output
     I2C_HALF_DELAY();
 }
 
 uint8_t _i2cSdaRead(void)
 {
-    TRISC |= SDA;       // Ensure SDA is input
+    TRISC |= SDA; // Ensure SDA is input
     I2C_HALF_DELAY();
     return PORTC & SDA; // Read SDA state
 }
