@@ -58,7 +58,13 @@
 void selfCheck(void);
 void startUp(void);
 
-uint8_t buffer[16];
+/*
+ * Global variables and data areas.
+ */
+volatile uint8_t buffer[16];
+volatile IOPortA_t ioportA;
+volatile system_config_t system_config;
+
 
 /************************************************************************
  * Main program loop
@@ -78,7 +84,7 @@ void main(int argc, char **argv)
     // Initialize the system
     initialize();
     lcdSetBacklight(TRUE);
-//    gps_init();
+    gps_init();
     selfCheck();
     startUp();
 
@@ -142,6 +148,7 @@ void main(int argc, char **argv)
             }
             freq_line[pos] = '\0';
             lcdWriteBuffer(LINE_3, freq_line);
+
             // Update LOCK LED if error is within +/-1 (active low)
             static int prev_locked = -1;
             int locked = (err >= -1 && err <= 1) ? 1 : 0;
@@ -153,21 +160,21 @@ void main(int argc, char **argv)
                 {
                     if (locked)
                     {
-                        gpioa &= (uint8_t)(~LOCK_LED_N); // active low -> clear bit to turn on
+                        ioporta.LOCK_LED_N = 0; // active low -> clear bit to turn on
                     }
                     else
                     {
-                        gpioa |= LOCK_LED_N; // turn off
+                        ioporta.LOCK_LED_N = 1; // turn off
                     }
-                    (void)i2cWriteRegister(MCP23017_ADDRESS, GPIOA, gpioa);
+                    (void)i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
                 }
             }
+
             /* If locked, persist the current DAC setting to EEPROM (only if it differs)
              * We avoid repeated writes by checking the stored config value first.
              */
             if (locked)
             {
-                extern volatile system_config_t system_config;
                 uint16_t cur = dac_get_raw();
                 if (system_config.vco_dac != cur)
                 {
@@ -192,28 +199,37 @@ void selfCheck(void)
     // Initialize and display self-test message on LCD
     lcdInitialize();
     lcdClearDisplay();
-    lcdWriteBuffer(LINE_0, "Self-test...");
-    lcdWriteBuffer(LINE_1, "LED test");
+    lcdSelfTest();
 
-    // Turn ON all LEDs (active low): drive Port A low
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, 0x00);
-    __delay_ms(SELFTEST_ON_MS);
+    /*
+     * Turn ON all LEDs (active low): drive Port A low
+     */
+    ioporta.POWER_LED_N = 0;
+    ioporta.GPS_N = 0;  
+    ioporta.HOLDOVER_N = 0;
+    ioporta.LOCK_LED_N = 0;
+    
+    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    __delay_ms(500);
 
-    // Turn OFF all LEDs (active low): drive Port A high
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, 0xFF);
-    __delay_ms(SELFTEST_OFF_MS);
+    /*
+     * Turn OFF all LEDs (active low): drive Port A high
+     */
+    ioporta.POWER_LED_N = 1;
+    ioporta.GPS_N = 1;  
+    ioporta.HOLDOVER_N = 1;
+    ioporta.LOCK_LED_N = 1;
+    
+    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    __delay_ms(500);
 
-    // Turn ON only the power LED (active low): clear POWER_LED_N bit
-    uint8_t val = 0xFF & (uint8_t)(~POWER_LED_N);
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, val);
+    /*
+     * Turn ON only the power LED (active low)
+     */
+    ioporta.POWER_LED_N = 0;
+    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    __delay_ms(500);
 
-    // Finish LCD self-test and show startup header
-    startUp();
-}
-
-/* startUp: display the standard startup header on the LCD */
-void startUp(void)
-{
     lcdClearDisplay();
     lcdWriteBuffer(LINE_0, "GPS Disciplined Osc V1");
     lcdWriteBuffer(LINE_1, "Initializing...");

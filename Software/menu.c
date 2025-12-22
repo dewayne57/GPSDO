@@ -21,24 +21,79 @@
 /* Forward declaration of system startup display (present in main.c) */
 extern void startUp(void);
 
-/* Menu item definition */
+/* 
+ * Menu item definition 
+ */
 typedef struct menu_item
 {
     const char *text;
     const struct menu_item *submenu; /* NULL if leaf item */
 } menu_item_t;
 
-static const menu_item_t settings_menu[] = {
-    {"VRef", NULL},
-    {"GPS Baud", NULL},
-    {"Stop bits", NULL},
-    {"Parity", NULL},
-    {"Back", NULL},
-    {NULL, NULL}};
-
 static const menu_item_t calibrate_menu[] = {
     {"VCO", NULL},
     {"DAC", NULL},
+    {"Back", NULL},
+    {NULL, NULL}};
+
+static const menu_item_t gps_protocol_menu[] = {
+    {"NMEA", NULL},
+    {"UBX", NULL},
+    {"RTCM", NULL},
+    {"Back", NULL},
+    {NULL, NULL}};
+    
+static const menu_item_t stopbits_menu[] = {
+    {"0", NULL},
+    {"1", NULL},
+    {"2", NULL},
+    {"Back", NULL},
+
+static const menu_item_t parity_menu[] = {
+    {"N", NULL},
+    {"E", NULL},
+    {"O", NULL},
+    {"Back", NULL},
+    {NULL, NULL}};   
+
+static const menu_item_t baud_menu[] = {
+    {"4800", NULL},
+    {"9600", NULL},
+    {"19200", NULL},
+    {"38400", NULL},
+    {"57600", NULL},
+    {"115200", NULL},
+    {"230400", NULL},
+    {"460800", NULL},
+    {"Back", NULL},
+    {NULL, NULL}};
+
+static const menu_item_t serial_menu[] = {
+    {"Baud Rate", baud_menu},
+    {"Stop bits", stopbits_menu},
+    {"Parity", parity_menu},
+    {"Back", NULL},
+    {NULL, NULL}};
+
+static const menu_item_t gps_menu[] = {
+    {"GPS Baud Rate", baud_menu},
+    {"GPS Stop bits", stopbits_menu},
+    {"GPS Parity", parity_menu},
+    {"GPS Protocol", gps_protocol_menu},
+    {"Back", NULL},
+    {NULL, NULL}};    
+
+static const menu_item_t vref_menu[] = {
+    {"DAC", NULL},
+    {"Internal", NULL},
+    {"Back", NULL},
+    {NULL, NULL}};
+    
+static const menu_item_t settings_menu[] = {
+    {"VRef", vref_menu},
+    {"GPS", NULL},
+    {"Serial", NULL},
+    {"Parity", NULL},
     {"Back", NULL},
     {NULL, NULL}};
 
@@ -49,7 +104,9 @@ static const menu_item_t main_menu[] = {
     {"Close", NULL},
     {NULL, NULL}};
 
-/* Menu runtime state */
+/* 
+ * Menu runtime state 
+ */
 #define MENU_MAX_DEPTH 4
 typedef struct
 {
@@ -66,7 +123,10 @@ typedef struct
 } menu_t;
 
 static menu_t menu;
-/* Edit field identifiers */
+
+/*
+ * Edit field identifiers 
+ */
 #define EDIT_NONE 0
 #define EDIT_VREF 1
 #define EDIT_GPS_BAUD 2
@@ -80,7 +140,9 @@ static const char *stop_options[] = {"0", "1", "2"};
 static const char *parity_options[] = {"N", "E", "O"};
 static const char *protocol_options[] = {"NMEA", "UBX", "RTCM"};
 
-/* Helpers */
+/*
+ * Helpers 
+ */
 static uint8_t menu_count(const menu_item_t *m)
 {
     uint8_t c = 0;
@@ -173,7 +235,9 @@ void menu_close(void)
     startUp();
 }
 
-/* Display a temporary message for `duration_ms` milliseconds */
+/*
+ * Display a temporary message for `duration_ms` milliseconds 
+ */
 static void menu_show_message(const char *msg, uint16_t duration_ms)
 {
     if (!msg)
