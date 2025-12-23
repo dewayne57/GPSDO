@@ -22,6 +22,7 @@
  #ifndef LCD_H
 #define    LCD_H
 #include <xc.h> // include processor files - each processor file is guarded.  
+#include "mytypes.h" // for boolean type  
 
 #ifdef    __cplusplus
 extern "C" {
@@ -59,6 +60,12 @@ extern "C" {
 #define LINE_2                  0x14 
 #define LINE_3                  0x54
 
+/**
+ * LCD Buffer System Constants
+ */
+#define LCD_LINES 4
+#define LCD_CHARS_PER_LINE 20
+
 /*
  * Function Prototypes
  */
@@ -72,7 +79,16 @@ void lcdWriteInstruction(uint8_t data);
 uint8_t lcdReadData(void);
 boolean isLcdBusy(void);
 void lcdInitialize(void);
-void lcdSelfTest(void); 
+void lcdSelfTest(void);
+
+/* LCD Buffer System Functions */
+void lcdBufferInit(void);
+void lcdBufferClear(void);
+void lcdBufferSetLine(uint8_t line, const char* text);
+void lcdBufferSetChar(uint8_t line, uint8_t col, char c);
+void lcdBufferPrintf(uint8_t line, const char* format, ...);
+void lcdBufferUpdate(void);
+char* lcdBufferGetLine(uint8_t line); 
 
 #ifdef    __cplusplus
 }

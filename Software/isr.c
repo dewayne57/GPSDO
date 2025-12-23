@@ -3,7 +3,7 @@
  *
  * This module contains the interrupt service routines (ISRs) for the
  * various interrupt sources used in the project.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,24 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <xc.h>
+#include "isr.h"
 #include "config.h"
+#include "encoder.h"
+#include "gps.h"
 #include "i2c.h"
 #include "mcp23x17.h"
-#include "encoder.h"
+#include "serial.h"
 #include "smt.h"
-#include "gps.h"
-#include "isr.h"
+#include <xc.h>
 
 /*
  * Dedicated low-priority ISR for pin-change / IOC events.
  * This keeps IOC handling separated from the default ISR and makes the
  * encoder handler appear as its own logical interrupt.
  */
-void __interrupt(irq(0x07), low_priority) ioChangeIsr(void)
-{
-    if (IOCIF)
-    {
+void __interrupt(irq(0x07), low_priority) ioChangeIsr(void) {
+    if (IOCIF) {
         encoder_handle_ioc();
         IOCIF = 0;
         return;
@@ -44,10 +43,8 @@ void __interrupt(irq(0x07), low_priority) ioChangeIsr(void)
 /*
  * UART1 Receive ISR
  */
-void __interrupt(irq(U1RX), high_priority) uart1_rx_isr(void)
-{
-    if (PIR4bits.U1RXIF)
-    {
+void __interrupt(irq(U1RX), high_priority) uart1_rx_isr(void) {
+    if (PIR4bits.U1RXIF) {
         // Read character from UART
         char c = U1RXB;
 
@@ -58,15 +55,28 @@ void __interrupt(irq(U1RX), high_priority) uart1_rx_isr(void)
     }
 }
 
+/*
+ * UART2 Receive ISR (for external serial/bootloader)
+ */
+void __interrupt(irq(U2RX), high_priority) uart2_rx_isr(void) {
+    if (PIR8bits.U2RXIF) {
+        // Read character from UART2
+        char c = U2RXB;
+
+        // Store in circular buffer
+        serial_buffer_put_char(c);
+
+        PIR8bits.U2RXIF = 0; // Clear interrupt flag
+    }
+}
+
 /**
  * The default ISR simply clears all other interrupts and ignores them.
  */
-void __interrupt(irq(default)) defaultIsr(void)
-{
+void __interrupt(irq(default)) defaultIsr(void) {
     // Keep this minimal to avoid masking other unexpected interrupt sources
     // SMT1 period result (capture on 1PPS)
-    if (SMT1PRAIF)
-    {
+    if (SMT1PRAIF) {
         smt_handle_capture();
         return;
     }

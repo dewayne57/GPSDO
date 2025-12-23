@@ -29,9 +29,20 @@
 #include <string.h>
 #include <xc.h>
 
-extern volatile uint8_t buffer[16];
-extern volatile IOPortA_t ioportA;
-extern volatile system_config_t system_config;
+/*
+ * Consolidated constant definitions for serial communication
+ * These are used across multiple modules (menu.c, serial.c, gps.c)
+ */
+const uint32_t baud_rates[] = {4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800};
+const char* stop_options[] = {"0", "1", "2"};
+const char* parity_options[] = {"N", "E", "O"};
+const char* baud_options[] = {"4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800"};
+const char* vref_options[] = {"DAC", "External"};
+const char* protocol_options[] = {"NMEA", "UBX", "RTCM"};
+
+extern uint8_t buffer[16];
+extern IOPortA_t ioportA;
+extern system_config_t system_config;
 
 /****************************************************************************/
 /*                                                                          */
@@ -41,7 +52,7 @@ extern volatile system_config_t system_config;
 void initialize(void) {
     /*
      * Disable interrupts
-    */
+     */
     INTCON0bits.GIEH = 0; // Turn off high priority interrupts
     INTCON0bits.GIEL = 0; // And low priority interrupts too
 
@@ -348,7 +359,7 @@ static uint8_t writeEEProm(uint8_t addr, const uint8_t* buf, uint8_t len) {
 
         if (i2cWriteBuffer(EEPROM_ADDRESS, tmp, (uint8_t)(write_len + 1)) != I2C_SUCCESS)
             return I2C_ERROR;
-            
+
         /* Wait for internal write cycle (typical <=5ms, be conservative) */
         __delay_ms(10);
 
@@ -366,10 +377,13 @@ void config_defaults(system_config_t* cfg) {
     cfg->magic = CONFIG_MAGIC;
     cfg->version = CONFIG_VERSION;
     cfg->vref_source = VREF_INTERNAL;
-    cfg->baud_index = 1; /* default 9600 */
+    cfg->gps_baud_index = 1; /* default 9600 */
     cfg->gps_stop_bits = 1;  /* 1 stop bit */
     cfg->gps_parity = PARITY_N;
     cfg->gps_protocol = GPS_PROTOCOL_NMEA; /* default NMEA */
+    cfg->ext_baud_index = 1;               /* default 9600 for external port */
+    cfg->ext_stop_bits = 1;                /* 1 stop bit for external port */
+    cfg->ext_parity = PARITY_N;            /* no parity for external port */
     cfg->vco_dac = (uint16_t)DAC_MIDPOINT;
     memset(cfg->reserved, 0, sizeof(cfg->reserved));
     cfg->crc = 0;

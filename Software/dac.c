@@ -23,6 +23,7 @@
 #include "dac.h"
 
 static uint16_t dac_current = 0;
+extern system_config_t system_config;
 
 /*
  * Initialize the DAC module.  Sets the DAC to a known state.
@@ -31,7 +32,6 @@ void dac_init(void)
 {
     // If the system config contains a stored DAC value, use it as startup
     // Otherwise fall back to midpoint
-    extern volatile system_config_t system_config;
     uint16_t start = (uint16_t)DAC_MIDPOINT;
     if (system_config.magic == CONFIG_MAGIC && system_config.version == CONFIG_VERSION) {
         start = system_config.vco_dac;

@@ -48,7 +48,8 @@ static volatile uint16_t rx_tail = 0;
 static char sentence_buffer[GPS_MAX_SENTENCE];
 
 /* UART configuration based on system config */
-extern volatile system_config_t system_config;
+extern system_config_t system_config;
+extern IOPortA_t ioporta;
 
 /*
  * Initialize GPS UART communication
@@ -86,7 +87,7 @@ void gps_init(void)
     U1CON2 = 0x00; // Reset UART1
 
     // Set baud rate based on system configuration
-    uint32_t baud_rate = gps_baud_rates[system_config.gps_baud_index];
+    uint32_t baud_rate = baud_rates[system_config.gps_baud_index];
     uint32_t baud_div = (_XTAL_FREQ / (4 * baud_rate)) - 1;
 
     U1BRGL = (uint8_t)(baud_div & 0xFF);
@@ -125,7 +126,7 @@ void gps_init(void)
     uint8_t gpioa = 0xFF;
     if (i2cReadRegister(MCP23017_ADDRESS, GPIOA, &gpioa) == I2C_SUCCESS)
     {
-        gpioa |= GPS_LED_N; // turn off GPS LED (active low)
+        ioporta.GPS_N = 1;  // turn off GPS LED (active low)
         (void)i2cWriteRegister(MCP23017_ADDRESS, GPIOA, gpioa);
     }
 
@@ -422,11 +423,11 @@ static void gps_update_led(void)
         {
             if (gps_data.position.fix_type == GPS_3D_FIX)
             {
-                gpioa &= (uint8_t)(~GPS_LED_N); // active low -> clear bit to turn on
+                ioporta.GPS_N = 0;
             }
             else
             {
-                gpioa |= GPS_LED_N; // turn off
+                ioporta.GPS_N = 1;
             }
             (void)i2cWriteRegister(MCP23017_ADDRESS, GPIOA, gpioa);
         }

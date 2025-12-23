@@ -21,6 +21,14 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <stdbool.h>
+#include <stdint.h>
+
+/* Include mytypes.h for boolean type */
+#ifndef MYTYPES_H
+#include "mytypes.h"
+#endif
+
 #define _XTAL_FREQ 64000000UL // Define the operating frequency of the microcontroller (64 MHz)
 #define MCP23X17_BANKED
 
@@ -67,9 +75,9 @@
 #define DAC_RESOLUTION 4096U // 12-bit
 #define DAC_MIDPOINT (DAC_RESOLUTION / 2)
 
-#define CONFIG_MAGIC 0xA5       // Magic number to identify valid config
-#define CONFIG_VERSION 0x01     // Configuration structure version
-#define EEPROM_PAGE_SIZE 16     // EEPROM page size for writes
+#define CONFIG_MAGIC 0xA5   // Magic number to identify valid config
+#define CONFIG_VERSION 0x01 // Configuration structure version
+#define EEPROM_PAGE_SIZE 16 // EEPROM page size for writes
 
 /*
  * Voltage reference source selection for the Menu.
@@ -80,9 +88,15 @@ typedef enum {
 } vref_source_t;
 
 /*
- * GPS serial port options for the menus.
+ * Serial communication constants (defined in config.c)
  */
-static const uint32_t baud_rates[] = {4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800};
+#define BAUD_RATES_COUNT 8
+extern const uint32_t baud_rates[];
+extern const char* stop_options[];
+extern const char* parity_options[];
+extern const char* baud_options[];
+extern const char* vref_options[];
+extern const char* protocol_options[];
 
 /*
  * GPS serial port options for the menus.
@@ -111,7 +125,7 @@ typedef struct {
 /*
  * Global instance
  */
-extern volatile system_config_t system_config;
+extern system_config_t system_config;
 
 /****************************************************************************/
 /*                                                                          */
@@ -170,14 +184,14 @@ extern volatile system_config_t system_config;
 /****************************************************************************/
 typedef union {
     struct {
-        uint8_t LCD_RS : 1;         // LCD Register Select pin
-        uint8_t LCD_RW : 1;         // LCD Read/Write pin
-        uint8_t LCD_E : 1;          // LCD Enable pin
-        uint8_t LCD_BL : 1;         // LCD Backlight control pin
-        uint8_t POWER_LED_N : 1;    // Power LED (active low)
-        uint8_t LOCK_LED_N : 1;     // Lock status LED (active low)
-        uint8_t HOLDOVER_LED_N : 1; // Holdover status LED (active low)
-        uint8_t GPS_LED_N : 1;      // GPS lock status LED (active low)
+        uint8_t LCD_RS : 1;     // LCD Register Select pin
+        uint8_t LCD_RW : 1;     // LCD Read/Write pin
+        uint8_t LCD_E : 1;      // LCD Enable pin
+        uint8_t LCD_BL : 1;     // LCD Backlight control pin
+        uint8_t POWER_N : 1;    // Power LED (active low)
+        uint8_t LOCK_N : 1;     // Lock status LED (active low)
+        uint8_t HOLDOVER_N : 1; // Holdover status LED (active low)
+        uint8_t GPS_N : 1;      // GPS lock status LED (active low)
     };
     uint8_t all;
 } IOPortA_t;

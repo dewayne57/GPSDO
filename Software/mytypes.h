@@ -15,12 +15,12 @@
  * 
  */
 
-#ifndef TYPES_H
-#define TYPES_H
+#ifndef MYTYPES_H
+#define MYTYPES_H
 
 #ifndef BOOLEAN_TYPE_DEFINED 
 #define BOOLEAN_TYPE_DEFINED
 typedef enum { FALSE = 0, TRUE = !FALSE } boolean;  
 #endif
 
-#endif // TYPES_H
+#endif // MYTYPES_H

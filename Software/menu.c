@@ -8,11 +8,12 @@
  */
 
 #include "menu.h"
-#include "types.h"
 #include "config.h"
 #include "encoder.h"
 #include "gps.h"
 #include "lcd.h"
+#include "mytypes.h"
+#include "serial.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -21,96 +22,50 @@
 /* Forward declaration of system startup display (present in main.c) */
 extern void startUp(void);
 
-/* 
- * Menu item definition 
+/*
+ * Menu item definition
  */
-typedef struct menu_item
-{
-    const char *text;
-    const struct menu_item *submenu; /* NULL if leaf item */
+typedef struct menu_item {
+    const char* text;
+    const struct menu_item* submenu; /* NULL if leaf item */
 } menu_item_t;
 
-static const menu_item_t calibrate_menu[] = {
-    {"VCO", NULL},
-    {"DAC", NULL},
-    {"Back", NULL},
-    {NULL, NULL}};
+static const menu_item_t calibrate_menu[] = {{"VCO", NULL}, {"DAC", NULL}, {"Back", NULL}, {NULL, NULL}};
 
 static const menu_item_t gps_protocol_menu[] = {
-    {"NMEA", NULL},
-    {"UBX", NULL},
-    {"RTCM", NULL},
-    {"Back", NULL},
-    {NULL, NULL}};
-    
-static const menu_item_t stopbits_menu[] = {
-    {"0", NULL},
-    {"1", NULL},
-    {"2", NULL},
-    {"Back", NULL},
+    {"NMEA", NULL}, {"UBX", NULL}, {"RTCM", NULL}, {"Back", NULL}, {NULL, NULL}};
 
-static const menu_item_t parity_menu[] = {
-    {"N", NULL},
-    {"E", NULL},
-    {"O", NULL},
-    {"Back", NULL},
-    {NULL, NULL}};   
+static const menu_item_t stopbits_menu[] = {{"0", NULL}, {"1", NULL}, {"2", NULL}, {"Back", NULL}};
 
-static const menu_item_t baud_menu[] = {
-    {"4800", NULL},
-    {"9600", NULL},
-    {"19200", NULL},
-    {"38400", NULL},
-    {"57600", NULL},
-    {"115200", NULL},
-    {"230400", NULL},
-    {"460800", NULL},
-    {"Back", NULL},
-    {NULL, NULL}};
+static const menu_item_t parity_menu[] = {{"N", NULL}, {"E", NULL}, {"O", NULL}, {"Back", NULL}, {NULL, NULL}};
 
-static const menu_item_t serial_menu[] = {
-    {"Baud Rate", baud_menu},
-    {"Stop bits", stopbits_menu},
-    {"Parity", parity_menu},
-    {"Back", NULL},
-    {NULL, NULL}};
+static const menu_item_t baud_menu[] = {{"4800", NULL},  {"9600", NULL},   {"19200", NULL},  {"38400", NULL},
+                                        {"57600", NULL}, {"115200", NULL}, {"230400", NULL}, {"460800", NULL},
+                                        {"Back", NULL},  {NULL, NULL}};
 
-static const menu_item_t gps_menu[] = {
-    {"GPS Baud Rate", baud_menu},
-    {"GPS Stop bits", stopbits_menu},
-    {"GPS Parity", parity_menu},
-    {"GPS Protocol", gps_protocol_menu},
-    {"Back", NULL},
-    {NULL, NULL}};    
+static const menu_item_t serial_menu[] = {{"Ext Baud", NULL}, {"Ext Parity", NULL}, {"Back", NULL}, {NULL, NULL}};
 
-static const menu_item_t vref_menu[] = {
-    {"DAC", NULL},
-    {"Internal", NULL},
-    {"Back", NULL},
-    {NULL, NULL}};
-    
+static const menu_item_t gps_menu[] = {{"GPS Baud Rate", baud_menu},
+                                       {"GPS Stop bits", stopbits_menu},
+                                       {"GPS Parity", parity_menu},
+                                       {"GPS Protocol", gps_protocol_menu},
+                                       {"Back", NULL},
+                                       {NULL, NULL}};
+
+static const menu_item_t vref_menu[] = {{"DAC", NULL}, {"Internal", NULL}, {"Back", NULL}, {NULL, NULL}};
+
 static const menu_item_t settings_menu[] = {
-    {"VRef", vref_menu},
-    {"GPS", NULL},
-    {"Serial", NULL},
-    {"Parity", NULL},
-    {"Back", NULL},
-    {NULL, NULL}};
+    {"VRef", vref_menu}, {"GPS", gps_menu}, {"Serial", serial_menu}, {"Back", NULL}, {NULL, NULL}};
 
 static const menu_item_t main_menu[] = {
-    {"Status", NULL},
-    {"Settings...", settings_menu},
-    {"Calibrate...", calibrate_menu},
-    {"Close", NULL},
-    {NULL, NULL}};
+    {"Status", NULL}, {"Settings...", settings_menu}, {"Calibrate...", calibrate_menu}, {"Close", NULL}, {NULL, NULL}};
 
-/* 
- * Menu runtime state 
+/*
+ * Menu runtime state
  */
 #define MENU_MAX_DEPTH 4
-typedef struct
-{
-    const menu_item_t *stack[MENU_MAX_DEPTH];
+typedef struct {
+    const menu_item_t* stack[MENU_MAX_DEPTH];
     uint8_t selection[MENU_MAX_DEPTH];
     uint8_t depth;
     uint8_t active; /* 0 = closed, 1 = open */
@@ -125,7 +80,7 @@ typedef struct
 static menu_t menu;
 
 /*
- * Edit field identifiers 
+ * Edit field identifiers
  */
 #define EDIT_NONE 0
 #define EDIT_VREF 1
@@ -133,45 +88,36 @@ static menu_t menu;
 #define EDIT_STOPBITS 3
 #define EDIT_PARITY 4
 #define EDIT_GPS_PROTOCOL 5
-
-static const char *vref_options[] = {"DAC", "External"};
-static const char *baud_options[] = {"4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800"};
-static const char *stop_options[] = {"0", "1", "2"};
-static const char *parity_options[] = {"N", "E", "O"};
-static const char *protocol_options[] = {"NMEA", "UBX", "RTCM"};
+#define EDIT_EXT_BAUD 6
+#define EDIT_EXT_PARITY 7
 
 /*
- * Helpers 
+ * Note: String arrays are now defined in config.c and declared as extern in config.h
  */
-static uint8_t menu_count(const menu_item_t *m)
-{
+
+/*
+ * Helpers
+ */
+static uint8_t menu_count(const menu_item_t* m) {
     uint8_t c = 0;
     while (m && m[c].text)
         c++;
     return c;
 }
 
-static void lcd_print_line(uint8_t line, const char *s)
-{
-    char buf[21];
-    size_t i;
-    for (i = 0; i < 20 && s && s[i]; ++i)
-        buf[i] = s[i];
-    for (; i < 20; ++i)
-        buf[i] = ' ';
-    buf[20] = '\0';
-    lcdWriteBuffer(line, buf);
+static void lcd_print_line(uint8_t line, const char* s) {
+    uint8_t buffer_line = (line == LINE_0) ? 0 : (line == LINE_1) ? 1 : (line == LINE_2) ? 2 : 3;
+    lcdBufferSetLine(buffer_line, s);
 }
 
-static void menu_draw(void)
-{
-    const menu_item_t *cur = menu.stack[menu.depth - 1];
+static void menu_draw(void) {
+    const menu_item_t* cur = menu.stack[menu.depth - 1];
     uint8_t cnt = menu_count(cur);
     if (cnt == 0)
         return;
 
     uint8_t sel = menu.selection[menu.depth - 1] % cnt;
-    const char *s0 = cur[sel].text;
+    const char* s0 = cur[sel].text;
     char line0[21];
     memset(line0, 0, sizeof(line0));
 
@@ -183,15 +129,14 @@ static void menu_draw(void)
     line0[20] = '\0';
 
     /* If cascade (has submenu) append ellipsis at end (overwrite last 3 chars) */
-    if (cur[sel].submenu)
-    {
+    if (cur[sel].submenu) {
         line0[17] = '.';
         line0[18] = '.';
         line0[19] = '.';
     }
 
     /* Prepare second line: show following menu item (cyclic) */
-    const char *s1 = cur[(sel + 1) % cnt].text;
+    const char* s1 = cur[(sel + 1) % cnt].text;
     char line1[21];
     for (size_t i = 0; i < 20; ++i)
         line1[i] = ' ';
@@ -201,12 +146,11 @@ static void menu_draw(void)
         copy = 20;
     memcpy(line1, s1, copy);
 
-    lcdWriteBuffer(LINE_0, line0);
-    lcdWriteBuffer(LINE_1, line1);
+    lcdBufferSetLine(0, line0);
+    lcdBufferSetLine(1, line1);
 }
 
-void menu_init(void)
-{
+void menu_init(void) {
     memset(&menu, 0, sizeof(menu));
     menu.last_encoder_pos = encoder_get_position();
     menu.last_button = encoder_button_state();
@@ -214,8 +158,7 @@ void menu_init(void)
     menu.notify_ticks = 0;
 }
 
-void menu_open(void)
-{
+void menu_open(void) {
     menu.depth = 1;
     menu.stack[0] = main_menu;
     menu.selection[0] = 0;
@@ -224,38 +167,33 @@ void menu_open(void)
     menu.last_button = encoder_button_state();
     menu.editing = EDIT_NONE;
     menu.edit_value = 0;
-    lcdClearDisplay();
+    lcdBufferClear();
     menu_draw();
 }
 
-void menu_close(void)
-{
+void menu_close(void) {
     menu.active = 0;
     /* Restore startup display */
     startUp();
 }
 
 /*
- * Display a temporary message for `duration_ms` milliseconds 
+ * Display a temporary message for `duration_ms` milliseconds
  */
-static void menu_show_message(const char *msg, uint16_t duration_ms)
-{
+static void menu_show_message(const char* msg, uint16_t duration_ms) {
     if (!msg)
         return;
     strncpy(menu.notify_msg, msg, 20);
     menu.notify_msg[20] = '\0';
     menu.notify_ticks = (duration_ms + 9) / 10; /* convert to ticks */
-    lcdClearDisplay();
-    lcdWriteBuffer(LINE_0, menu.notify_msg);
+    lcdBufferClear();
+    lcdBufferSetLine(0, menu.notify_msg);
 }
 
-void menu_process(void)
-{
+void menu_process(void) {
     /* Handle temporary message timeout */
-    if (menu.notify_ticks)
-    {
-        if (--menu.notify_ticks == 0)
-        {
+    if (menu.notify_ticks) {
+        if (--menu.notify_ticks == 0) {
             menu_close();
         }
         return;
@@ -263,32 +201,28 @@ void menu_process(void)
 
     uint8_t cur_pos = encoder_get_position();
     int8_t delta = (int8_t)(cur_pos - menu.last_encoder_pos);
-    if (delta)
-    {
+    if (delta) {
         menu.last_encoder_pos = cur_pos;
-        if (menu.active)
-        {
-            if (menu.editing != EDIT_NONE)
-            {
+        if (menu.active) {
+            if (menu.editing != EDIT_NONE) {
                 /* editing a field: adjust edit_value */
                 uint8_t max = 1;
-                switch (menu.editing)
-                {
-                case EDIT_VREF:
-                    max = 2;
-                    break;
-                case EDIT_GPS_BAUD:
-                    max = 8;
-                    break;
-                case EDIT_STOPBITS:
-                    max = 3;
-                    break;
-                case EDIT_PARITY:
-                    max = 3;
-                    break;
-                case EDIT_GPS_PROTOCOL:
-                    max = 3;
-                    break;
+                switch (menu.editing) {
+                    case EDIT_VREF:
+                        max = 2;
+                        break;
+                    case EDIT_GPS_BAUD:
+                        max = 8;
+                        break;
+                    case EDIT_STOPBITS:
+                        max = 3;
+                        break;
+                    case EDIT_PARITY:
+                        max = 3;
+                        break;
+                    case EDIT_GPS_PROTOCOL:
+                        max = 3;
+                        break;
                 }
                 uint8_t v = (uint8_t)(menu.edit_value + delta);
                 v %= max;
@@ -297,36 +231,32 @@ void menu_process(void)
                 char buf[21];
                 memset(buf, ' ', sizeof(buf));
                 buf[20] = '\0';
-                switch (menu.editing)
-                {
-                case EDIT_VREF:
-                    memcpy(buf, "VRef:", 5);
-                    memcpy(&buf[6], vref_options[menu.edit_value], strlen(vref_options[menu.edit_value]));
-                    break;
-                case EDIT_GPS_BAUD:
-                    memcpy(buf, "GPS Baud:", 9);
-                    memcpy(&buf[10], baud_options[menu.edit_value], strlen(baud_options[menu.edit_value]));
-                    break;
-                case EDIT_STOPBITS:
-                    memcpy(buf, "Stop bits:", 10);
-                    memcpy(&buf[11], stop_options[menu.edit_value], strlen(stop_options[menu.edit_value]));
-                    break;
-                case EDIT_PARITY:
-                    memcpy(buf, "Parity:", 7);
-                    memcpy(&buf[8], parity_options[menu.edit_value], strlen(parity_options[menu.edit_value]));
-                    break;
+                switch (menu.editing) {
+                    case EDIT_VREF:
+                        memcpy(buf, "VRef:", 5);
+                        memcpy(&buf[6], vref_options[menu.edit_value], strlen(vref_options[menu.edit_value]));
+                        break;
+                    case EDIT_GPS_BAUD:
+                        memcpy(buf, "GPS Baud:", 9);
+                        memcpy(&buf[10], baud_options[menu.edit_value], strlen(baud_options[menu.edit_value]));
+                        break;
+                    case EDIT_STOPBITS:
+                        memcpy(buf, "Stop bits:", 10);
+                        memcpy(&buf[11], stop_options[menu.edit_value], strlen(stop_options[menu.edit_value]));
+                        break;
+                    case EDIT_PARITY:
+                        memcpy(buf, "Parity:", 7);
+                        memcpy(&buf[8], parity_options[menu.edit_value], strlen(parity_options[menu.edit_value]));
+                        break;
                 }
                 buf[20] = '\0';
-                lcdClearDisplay();
-                lcdWriteBuffer(LINE_0, buf);
-                lcdWriteBuffer(LINE_1, "Press to save");
-            }
-            else
-            {
-                const menu_item_t *cur = menu.stack[menu.depth - 1];
+                lcdBufferClear();
+                lcdBufferSetLine(0, buf);
+                lcdBufferSetLine(1, "Press to save");
+            } else {
+                const menu_item_t* cur = menu.stack[menu.depth - 1];
                 uint8_t cnt = menu_count(cur);
-                if (cnt > 0)
-                {
+                if (cnt > 0) {
                     uint8_t sel = menu.selection[menu.depth - 1];
                     /* wrap using modulo arithmetic */
                     sel = (uint8_t)(sel + delta);
@@ -340,144 +270,190 @@ void menu_process(void)
     }
 
     uint8_t btn = encoder_button_state();
-    if (btn && !menu.last_button)
-    {
+    if (btn && !menu.last_button) {
         /* Button pressed event */
-        if (!menu.active)
-        {
+        if (!menu.active) {
             menu_open();
-        }
-        else
-        {
+        } else {
             /* Act on selected item */
-            const menu_item_t *cur = menu.stack[menu.depth - 1];
+            const menu_item_t* cur = menu.stack[menu.depth - 1];
             uint8_t sel = menu.selection[menu.depth - 1];
-            const menu_item_t *item = &cur[sel];
+            const menu_item_t* item = &cur[sel];
 
             /* Check for Back/Close by text matching (simple) */
-            if (strcmp(item->text, "Back") == 0 || strcmp(item->text, "Close") == 0)
-            {
-                if (menu.depth > 1)
-                {
+            if (strcmp(item->text, "Back") == 0 || strcmp(item->text, "Close") == 0) {
+                if (menu.depth > 1) {
                     menu.depth--;
-                    lcdClearDisplay();
+                    lcdBufferClear();
                     menu_draw();
-                }
-                else
-                {
+                } else {
                     menu_close();
                 }
-            }
-            else if (item->submenu)
-            {
+            } else if (item->submenu) {
                 /* Enter submenu */
-                if (menu.depth < MENU_MAX_DEPTH)
-                {
+                if (menu.depth < MENU_MAX_DEPTH) {
                     menu.stack[menu.depth] = item->submenu;
                     menu.selection[menu.depth] = 0;
                     menu.depth++;
-                    lcdClearDisplay();
+                    lcdBufferClear();
                     menu_draw();
                 }
-            }
-            else
-            {
+            } else {
                 /* Leaf: if we're in settings menu, switch to edit mode for known items */
-                if (menu.stack[menu.depth - 1] == settings_menu)
-                {
-                    switch (sel)
-                    {
-                    case 0: /* VRef */
-                        menu.editing = EDIT_VREF;
-                        menu.edit_value = (uint8_t)system_config.vref_source;
-                        break;
-                    case 1: /* GPS Baud */
-                        menu.editing = EDIT_GPS_BAUD;
-                        menu.edit_value = system_config.gps_baud_index;
-                        break;
-                    case 2: /* Stop bits */
-                        menu.editing = EDIT_STOPBITS;
-                        menu.edit_value = system_config.gps_stop_bits;
-                        break;
-                    case 3: /* GPS Protocol */
-                        menu.editing = EDIT_GPS_PROTOCOL;
-                        menu.edit_value = system_config.gps_protocol;
-                        break;
-                    default:
-                        /* For other leaves, show selection message */
-                        {
-                            char buf[21];
-                            const char prefix[] = "Selected: ";
-                            size_t p = sizeof(prefix) - 1;
-                            memset(buf, ' ', sizeof(buf));
-                            if (p < 20)
+                if (menu.stack[menu.depth - 1] == settings_menu) {
+                    switch (sel) {
+                        case 0: /* VRef */
+                            menu.editing = EDIT_VREF;
+                            menu.edit_value = (uint8_t)system_config.vref_source;
+                            break;
+                        default:
+                            /* For other leaves, show selection message */
                             {
-                                memcpy(buf, prefix, p);
-                                size_t tlen = strlen(item->text);
-                                size_t copy = (tlen > (20 - p)) ? (20 - p) : tlen;
-                                memcpy(&buf[p], item->text, copy);
+                                char buf[21];
+                                const char prefix[] = "Selected: ";
+                                size_t p = sizeof(prefix) - 1;
+                                memset(buf, ' ', sizeof(buf));
+                                if (p < 20) {
+                                    memcpy(buf, prefix, p);
+                                    size_t tlen = strlen(item->text);
+                                    size_t copy = (tlen > (20 - p)) ? (20 - p) : tlen;
+                                    memcpy(&buf[p], item->text, copy);
+                                } else {
+                                    memcpy(buf, prefix, 20);
+                                }
+                                buf[20] = '\0';
+                                menu_show_message(buf, 1000);
                             }
-                            else
+                            break;
+                    }
+                } else if (menu.stack[menu.depth - 1] == gps_menu) {
+                    switch (sel) {
+                        case 0: /* GPS Baud */
+                            menu.editing = EDIT_GPS_BAUD;
+                            menu.edit_value = system_config.gps_baud_index;
+                            break;
+                        case 1: /* GPS Stop bits */
+                            menu.editing = EDIT_STOPBITS;
+                            menu.edit_value = system_config.gps_stop_bits;
+                            break;
+                        case 2: /* GPS Parity */
+                            menu.editing = EDIT_PARITY;
+                            menu.edit_value = system_config.gps_parity;
+                            break;
+                        case 3: /* GPS Protocol */
+                            menu.editing = EDIT_GPS_PROTOCOL;
+                            menu.edit_value = system_config.gps_protocol;
+                            break;
+                        default:
+                            /* For other leaves, show selection message */
                             {
-                                memcpy(buf, prefix, 20);
+                                char buf[21];
+                                const char prefix[] = "Selected: ";
+                                size_t p = sizeof(prefix) - 1;
+                                memset(buf, ' ', sizeof(buf));
+                                if (p < 20) {
+                                    memcpy(buf, prefix, p);
+                                    size_t tlen = strlen(item->text);
+                                    size_t copy = (tlen > (20 - p)) ? (20 - p) : tlen;
+                                    memcpy(&buf[p], item->text, copy);
+                                } else {
+                                    memcpy(buf, prefix, 20);
+                                }
+                                buf[20] = '\0';
+                                menu_show_message(buf, 1000);
                             }
-                            buf[20] = '\0';
-                            menu_show_message(buf, 1000);
-                        }
-                        break;
+                            break;
+                    }
+                } else if (menu.stack[menu.depth - 1] == serial_menu) {
+                    switch (sel) {
+                        case 0: /* External Baud Rate */
+                            menu.editing = EDIT_EXT_BAUD;
+                            menu.edit_value = system_config.ext_baud_index;
+                            break;
+                        case 1: /* External Parity */
+                            menu.editing = EDIT_EXT_PARITY;
+                            menu.edit_value = system_config.ext_parity;
+                            break;
+                        default:
+                            /* For other leaves, show selection message */
+                            {
+                                char buf[21];
+                                const char prefix[] = "Selected: ";
+                                size_t p = sizeof(prefix) - 1;
+                                memset(buf, ' ', sizeof(buf));
+                                if (p < 20) {
+                                    memcpy(buf, prefix, p);
+                                    size_t tlen = strlen(item->text);
+                                    size_t copy = (tlen > (20 - p)) ? (20 - p) : tlen;
+                                    memcpy(&buf[p], item->text, copy);
+                                } else {
+                                    memcpy(buf, prefix, 20);
+                                }
+                                buf[20] = '\0';
+                                menu_show_message(buf, 1000);
+                            }
+                            break;
                     }
 
                     /* Show edit display */
-                    if (menu.editing != EDIT_NONE)
-                    {
+                    if (menu.editing != EDIT_NONE) {
                         /* Render immediate edit view */
                         char buf[21];
                         memset(buf, ' ', sizeof(buf));
                         buf[20] = '\0';
-                        switch (menu.editing)
-                        {
-                        case EDIT_VREF:
-                            memcpy(buf, "VRef:", 5);
-                            memcpy(&buf[6], vref_options[menu.edit_value], strlen(vref_options[menu.edit_value]));
-                            break;
-                        case EDIT_GPS_BAUD:
-                            memcpy(buf, "GPS Baud:", 9);
-                            memcpy(&buf[10], baud_options[menu.edit_value], strlen(baud_options[menu.edit_value]));
-                            break;
-                        case EDIT_STOPBITS:
-                            memcpy(buf, "Stop bits:", 10);
-                            memcpy(&buf[11], stop_options[menu.edit_value], strlen(stop_options[menu.edit_value]));
-                            break;
-                        case EDIT_PARITY:
-                            memcpy(buf, "Parity:", 7);
-                            memcpy(&buf[8], parity_options[menu.edit_value], strlen(parity_options[menu.edit_value]));
-                            break;
+                        switch (menu.editing) {
+                            case EDIT_VREF:
+                                memcpy(buf, "VRef:", 5);
+                                memcpy(&buf[6], vref_options[menu.edit_value], strlen(vref_options[menu.edit_value]));
+                                break;
+                            case EDIT_GPS_BAUD:
+                                memcpy(buf, "GPS Baud:", 9);
+                                memcpy(&buf[10], baud_options[menu.edit_value], strlen(baud_options[menu.edit_value]));
+                                break;
+                            case EDIT_STOPBITS:
+                                memcpy(buf, "GPS Stop:", 9);
+                                memcpy(&buf[10], stop_options[menu.edit_value], strlen(stop_options[menu.edit_value]));
+                                break;
+                            case EDIT_PARITY:
+                                memcpy(buf, "GPS Parity:", 11);
+                                memcpy(&buf[12], parity_options[menu.edit_value],
+                                       strlen(parity_options[menu.edit_value]));
+                                break;
+                            case EDIT_GPS_PROTOCOL:
+                                memcpy(buf, "GPS Proto:", 10);
+                                memcpy(&buf[11], protocol_options[menu.edit_value],
+                                       strlen(protocol_options[menu.edit_value]));
+                                break;
+                            case EDIT_EXT_BAUD:
+                                memcpy(buf, "Ext Baud:", 9);
+                                memcpy(&buf[10], baud_options[menu.edit_value], strlen(baud_options[menu.edit_value]));
+                                break;
+                            case EDIT_EXT_PARITY:
+                                memcpy(buf, "Ext Parity:", 11);
+                                memcpy(&buf[12], parity_options[menu.edit_value],
+                                       strlen(parity_options[menu.edit_value]));
+                                break;
                         }
-                        lcdClearDisplay();
-                        lcdWriteBuffer(LINE_0, buf);
-                        lcdWriteBuffer(LINE_1, "Press to save");
+                        lcdBufferClear();
+                        lcdBufferSetLine(0, buf);
+                        lcdBufferSetLine(1, "Press to save");
                         /* consume this button event by returning now so save requires
                          * a subsequent press (avoids entering-and-saving on same press) */
                         menu.last_button = btn;
                         return;
                     }
-                }
-                else
-                {
+                } else {
                     /* Leaf item: show temporary selection message then close */
                     char buf[21];
                     const char prefix[] = "Selected: ";
                     size_t p = sizeof(prefix) - 1; /* excludes null */
                     memset(buf, ' ', sizeof(buf));
-                    if (p < 20)
-                    {
+                    if (p < 20) {
                         memcpy(buf, prefix, p);
                         size_t tlen = strlen(item->text);
                         size_t copy = (tlen > (20 - p)) ? (20 - p) : tlen;
                         memcpy(&buf[p], item->text, copy);
-                    }
-                    else
-                    {
+                    } else {
                         memcpy(buf, prefix, 20);
                     }
                     buf[20] = '\0';
@@ -487,28 +463,34 @@ void menu_process(void)
         }
     }
     /* Handle saving while in edit mode and button pressed */
-    if (menu.editing != EDIT_NONE && btn && !menu.last_button)
-    {
-        switch (menu.editing)
-        {
-        case EDIT_VREF:
-            system_config.vref_source = menu.edit_value;
-            break;
-        case EDIT_GPS_BAUD:
-            system_config.gps_baud_index = menu.edit_value;
-            break;
-        case EDIT_STOPBITS:
-            system_config.gps_stop_bits = menu.edit_value;
-            break;
-        case EDIT_PARITY:
-            system_config.gps_parity = menu.edit_value;
-            break;
-        case EDIT_GPS_PROTOCOL:
-            system_config.gps_protocol = menu.edit_value;
-            gps_set_protocol((gps_protocol_t)menu.edit_value);
-            break;
+    if (menu.editing != EDIT_NONE && btn && !menu.last_button) {
+        switch (menu.editing) {
+            case EDIT_VREF:
+                system_config.vref_source = menu.edit_value;
+                break;
+            case EDIT_GPS_BAUD:
+                system_config.gps_baud_index = menu.edit_value;
+                break;
+            case EDIT_STOPBITS:
+                system_config.gps_stop_bits = menu.edit_value;
+                break;
+            case EDIT_PARITY:
+                system_config.gps_parity = menu.edit_value;
+                break;
+            case EDIT_GPS_PROTOCOL:
+                system_config.gps_protocol = menu.edit_value;
+                gps_set_protocol((gps_protocol_t)menu.edit_value);
+                break;
+            case EDIT_EXT_BAUD:
+                system_config.ext_baud_index = menu.edit_value;
+                serial_reconfigure(); // Apply new settings immediately
+                break;
+            case EDIT_EXT_PARITY:
+                system_config.ext_parity = menu.edit_value;
+                serial_reconfigure(); // Apply new settings immediately
+                break;
         }
-        config_save((const system_config_t *)&system_config);
+        config_save((const system_config_t*)&system_config);
         menu_show_message("Saved", 800);
         menu.editing = EDIT_NONE;
         menu_draw();
