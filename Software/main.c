@@ -17,15 +17,12 @@
  * and the rotary encoder, and persisted in the EEPROM.
  *
  * The system uses several LED indicators on the front panel.  These include:
- * - POWER_LED_N: Power on LED (active low)
+ * - POWER_N: Power on LED (active low)
  * - GPS_N: Indicates GPS signal lock (active low)
  * - HOLDOVER_N: Indicates holdover status (active low) (meaning the GPS signal is not available
- * - HIGH_N: Indicates that the OCXO output frequency is above the target frequency (active low)
- * - LOW_N: Indicates that the OCXO output frequency is below the target frequency (active low)
- * - LOCK_LED_N: Lock status LED (active low).  Indicates that the OCXO is locked to the GPS signal.
- * - FAULT_N: Indicates a fault condition (active low) *
+ * - LOCK_N: Lock status LED (active low).  Indicates that the OCXO is locked to the GPS signal.
  *
- * licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -48,9 +45,13 @@
 #include "lcd.h"
 #include "mcp23x17.h"
 #include "menu.h"
-#include "mytypes.h"
+#include <stdbool.h>
 #include "serial.h"
 #include "smt.h"
+#include "date.h"
+#include "isr.h"
+#include <stdio.h>
+#include <string.h>
 #include <xc.h>
 
 /*
@@ -58,91 +59,122 @@
  */
 void selfCheck(void);
 void startUp(void);
+static void formatGpsDateTime(const gps_data_t* gps_data, uint8_t tz_mode, int16_t tz_offset_min);
+
 
 /*
  * Global variables and data areas.
  */
-uint8_t buffer[16];
-IOPortA_t ioporta;
-system_config_t system_config;
+#include "config.h" /* central place for shared globals */
+
 
 /************************************************************************
  * Main program loop
  *
  * This is the main program code for the GPSDO (GPS Disciplined Oscillator)
  * project. It initializes the system, performs a self-check by cycling the
- * LEDs connected to the I/O expander, and then enters an infinite loop
- * where it continually processes inputs from either the rotary encoder
- * (to set or view system configuration or properties), or from the GPS module
- * (to discipline the local oscillator). The program uses I2C communication
- * to interface with the I/O expander for front panel controls and indicators.
+ * LEDs connected to the I/O expander, and then enters an infinite processing 
+ * loop.
+ * 
+ * This processing loop continuously polls the rotary encoder, processes menu inputs,
+ * and updates LCD display. This is to make sure that the user interface remains
+ * responsive under all conditions. 
+ * 
+ * The SMT (Signal Measurement Timer) processing is only performed when a new 
+ * capture is available, ensuring that the frequency discipline logic is executed 
+ * in a timely manner without blocking the UI updates.  This capture occurs each 
+ * time the SMT module window event triggers, indicating a new frequency 
+ * measurement is available.  This is triggered by the 1PPS signal from the GPS
+ * module.
+ * 
+ * During the SMT capture processing, the program updates the DAC to adjust the VCO 
+ * frequency based on the measured error from the GPS signal. It also updates the
+ * LCD display with the latest frequency measurement and manages the LOCK LED status.
+ * If the system is locked to the GPS signal, it persists the current DAC setting
+ * to EEPROM to maintain the frequency control across power cycles IF the setting
+ * has changed.  
+ * 
+ * Also during the SMT capture processing, the program transmits the latest GPS data
+ * over the serial interface for external monitoring or logging (about once per second).
+ * This information includes the current date, time, and position as reported by the 
+ * GPS module.  The date and time are also displayed on the LCD.
+ * 
+ * The user has the option to display the date/time in UTC or local time based on
+ * their configuration settings.  
  *
  ************************************************************************/
 void main(int argc, char** argv) {
 
     // Initialize the system
     initialize();
-    lcdSetBacklight(TRUE);
+    lcdSetBacklight(true);
     gps_init();
     serial_init();
     selfCheck();
     startUp();
 
-    // Main program loop: poll housekeeping (debounce) at ~10ms
+    /**
+     * Main processing loop. 
+     */
     while (1) {
         encoder_poll();
         menu_process();
-        // Update GPS data processing
         gps_update();
 
-        // Update LCD display once per second
-        static uint16_t tick = 0;
-        if (++tick >= 100) {
-            tick = 0;
+        /*
+         * Wait for the Timer1-driven 0.1s flag. While waiting, continue to poll
+         * encoder, menu and GPS so the UI remains responsive.
+         */
+        while (!timer_wait_flag) {
+            encoder_poll();
+            menu_process();
+            gps_update();
+            lcdBufferUpdate();
+            __delay_ms(1); // short yield
+        }
+
+        /* Clear timer flag so we await the next 0.1s interval */
+        timer_wait_flag = false;
+
+        // Send GPS data every cadence
+        gps_data_t gps_data;
+        gps_get_data(&gps_data);
+        serial_send_gps_data(&gps_data);
+
+        // Update LCD common lines
+        lcdBufferSetLine(0, "GPSDO V1.0");
+
+        char date_time_line[21];
+        gps_format_date_time(date_time_line, &gps_data.datetime);
+        lcdBufferSetLine(1, date_time_line);
+
+        char pos_line[21];
+        gps_format_position(pos_line, &gps_data.position);
+        lcdBufferSetLine(2, pos_line);
+
+        /* 
+         * Only perform SMT-based control processing when a new capture has
+         * been recorded by the SMT ISR. Clear the capture flag after handling.
+         */
+        if (smt_capture_available()) {
             uint32_t c = smt_get_last_count();
             int32_t err = smt_get_last_error();
             control_update(err);
-
-            // Get GPS data
-            gps_data_t gps_data;
-            gps_get_data(&gps_data);
-
-            // Send GPS data via serial port every second
-            serial_send_gps_data(&gps_data);
-
-            // Update LCD buffer with current data
-            lcdBufferSetLine(0, "GPS Disciplined Osc V1");
-
-            // Format and set date line
-            char date_line[21];
-            gps_format_date(date_line, &gps_data.datetime);
-            lcdBufferSetLine(1, date_line);
-
-            // Format and set position line
-            char pos_line[21];
-            gps_format_position(pos_line, &gps_data.position);
-            lcdBufferSetLine(2, pos_line);
 
             // Format and set frequency line using printf-style formatting
             lcdBufferPrintf(3, "Freq:%lu", (unsigned long)c);
 
             // Update LOCK LED if error is within +/-1 (active low)
-            static int prev_locked = -1;
             int locked = (err >= -1 && err <= 1) ? 1 : 0;
-            if (locked != prev_locked) {
-                prev_locked = locked;
-                uint8_t gpioa = 0xFF;
-                if (i2cReadRegister(MCP23017_ADDRESS, GPIOA, &gpioa) == I2C_SUCCESS) {
-                    if (locked) {
-                        ioporta.LOCK_N = 0; // active low -> clear bit to turn on
-                    } else {
-                        ioporta.LOCK_N = 1; // turn off
-                    }
-                    (void)i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
-                }
+            if (locked ) {
+                ioporta.LOCK_N = 0; // active low -> clear bit to turn on
+            } else {
+                ioporta.LOCK_N = 1; // turn off
             }
+            (void)i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
 
-            /* If locked, persist the current DAC setting to EEPROM (only if it differs)
+            /* 
+             * If locked, persist the current DAC setting to EEPROM (only if it differs)
              * We avoid repeated writes by checking the stored config value first.
              */
             if (locked) {
@@ -152,12 +184,13 @@ void main(int argc, char** argv) {
                     config_save((const system_config_t*)&system_config);
                 }
             }
+
+            /* Mark this capture as handled */
+            smt_clear_capture();
+        } else {
+            /* If no new capture, indicate waiting on line 3 */
+            lcdBufferSetLine(3, "Freq: waiting...");
         }
-
-        // Update LCD display from buffer
-        lcdBufferUpdate();
-
-        __delay_ms(10);
     }
 
     return;
@@ -167,7 +200,6 @@ void main(int argc, char** argv) {
  * Perform a self-check by cycling the LEDs on the I/O expander and by initializing
  * and displaying a test pattern on the front panel display LCD.
  */
-
 void selfCheck(void) {
     // Initialize LCD hardware and buffer system
     lcdInitialize();
@@ -188,7 +220,7 @@ void selfCheck(void) {
     __delay_ms(100); // Allow LCD to settle
 
     // Ensure backlight and display are fully on after self test
-    lcdSetBacklight(TRUE);
+    lcdSetBacklight(true);
     lcdWriteInstruction(DISPLAY_ON);
     __delay_ms(50);
 
@@ -222,6 +254,9 @@ void selfCheck(void) {
     __delay_ms(500);
 }
 
+/**
+ * Display startup message on LCD for 2 seconds.
+ */
 void startUp(void) {
     lcdBufferClear();
     lcdBufferSetLine(0, "GPS Disciplined Osc V1");

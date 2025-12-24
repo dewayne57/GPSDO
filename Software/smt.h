@@ -18,10 +18,15 @@
 #define SMT_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 void smt_init(void);                // call once at startup
 void smt_handle_capture(void);      // called from ISR when a capture event occurs
 uint32_t smt_get_last_count(void);  // get the last captured count value
 int32_t smt_get_last_error(void);   // get the last error code
+
+/* Capture flag helpers: main can check/clear whether a new capture is available */
+bool smt_capture_available(void);
+void smt_clear_capture(void);
 
 #endif // SMT_H

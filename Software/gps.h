@@ -1,10 +1,19 @@
-/* SPDX-License-Identifier: Apache-2.0 */
 /*
  * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
  *
  * GPS module for reading and parsing data from ublox M8M GPS receiver.
  * This module handles UART communication and NMEA message parsing to
  * extract date/time, position, and other relevant GPS data.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and  
+ * limitations under the License.
  */
 
 #ifndef GPS_H
@@ -83,8 +92,8 @@ extern "C"
     void gps_update(void);
     bool gps_has_new_data(void);
     void gps_get_data(gps_data_t *data);
-    void gps_format_date(char *buffer, const gps_datetime_t *dt);
     void gps_format_position(char *buffer, const gps_position_t *pos);
+    void gps_format_date_time(char *buffer, const gps_datetime_t *dt);
     void gps_set_protocol(gps_protocol_t protocol);
 
     /* Internal functions (exposed for testing) */

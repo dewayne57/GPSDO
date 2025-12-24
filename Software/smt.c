@@ -11,6 +11,19 @@
 
 volatile uint32_t smt_last_count = 0;
 volatile int32_t  smt_last_error = 0;
+volatile bool  smt_new_capture = false; /* set in ISR when capture completes */
+
+/* Return true if a new capture has been recorded (callers should clear it when handled) */
+bool smt_capture_available(void)
+{
+    return smt_new_capture;
+}
+
+/* Clear the capture-available flag (after handling) */
+void smt_clear_capture(void)
+{
+    smt_new_capture = false;
+}
 
 void smt_init(void)
 {
@@ -50,6 +63,9 @@ void smt_handle_capture(void)
     v = ((uint32_t)SMT1CPRU << 16) | ((uint32_t)SMT1CPRH << 8) | (uint32_t)SMT1CPRL;
     smt_last_count = v;
     smt_last_error = (int32_t)((int32_t)v - (int32_t)10000000);
+
+    /* Indicate to the rest of the system that a new capture is available */
+    smt_new_capture = true;
 
     // Clear the capture flag
     SMT1PRAIF = 0;

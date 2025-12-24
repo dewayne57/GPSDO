@@ -35,13 +35,13 @@ void __interrupt(irq(0x07), low_priority) ioChangeIsr(void) {
         IOCIF = 0;
         return;
     }
-
-    // Fall through for other low-priority interrupts if needed
-    NOP();
 }
 
 /*
- * UART1 Receive ISR
+ * UART1 Receive ISR. 
+ *
+ * UART1 is used for GPS module communication.  This interrupt reads incoming
+ * characters and stores them in a circular buffer for processing in the main loop.
  */
 void __interrupt(irq(U1RX), high_priority) uart1_rx_isr(void) {
     if (PIR4bits.U1RXIF) {
@@ -56,7 +56,13 @@ void __interrupt(irq(U1RX), high_priority) uart1_rx_isr(void) {
 }
 
 /*
- * UART2 Receive ISR (for external serial/bootloader)
+ * UART2 Receive ISR (for external serial/bootloader).
+ * 
+ * UART2 is used for external serial communication, normally for the GPS output 
+ * data (date, time, position) and can also support the boot loader to load new 
+ * firmware (e.g., bootloader interface).
+ * This interrupt reads incoming characters and stores them in a circular buffer
+ * when not used by the bootloader  .
  */
 void __interrupt(irq(U2RX), high_priority) uart2_rx_isr(void) {
     if (PIR8bits.U2RXIF) {
@@ -70,16 +76,44 @@ void __interrupt(irq(U2RX), high_priority) uart2_rx_isr(void) {
     }
 }
 
-/**
- * The default ISR simply clears all other interrupts and ignores them.
+/*
+ * Timer1 Overflow ISR 
+ *
+ * Timer1 is configured to overflow every ~10ms. This ISR counts 10 overflows
+ * to create a 0.1s (100ms) timer flag for the main loop.   
  */
-void __interrupt(irq(default)) defaultIsr(void) {
-    // Keep this minimal to avoid masking other unexpected interrupt sources
-    // SMT1 period result (capture on 1PPS)
+void __interrupt(irq(TMR1), low_priority) timer1_isr(void) {
+    if (TMR1IF) {
+        static uint8_t t1_cnt = 0;
+        TMR1IF = 0; // clear interrupt flag
+
+        /* Reload for next ~10ms interval (preload value for 20,000 ticks) */
+        TMR1H = 0xB2;
+        TMR1L = 0xA0;
+
+        if (++t1_cnt >= 10) {
+            t1_cnt = 0;
+            timer_wait_flag = true;
+        }
+    }
+}
+
+/**
+ * SMT1 Period Result (capture on 1PPS) ISR
+ * The CMT (Signal Measurement Timer) captures the timer count on each rising edge
+ * of the 1PPS signal from the GPS module. This ISR handles the capture event
+ * and processes the frequency measurement.
+ */
+void __interrupt(irq(SMT1PRA), low_priority) smt1_isr(void) {
     if (SMT1PRAIF) {
         smt_handle_capture();
-        return;
     }
+}
 
+/**
+ * The default ISR now handles non-Timer1 and non-SMT interrupts
+ */
+void __interrupt(irq(default)) defaultIsr(void) {
     NOP();
 }
+

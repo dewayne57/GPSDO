@@ -193,22 +193,6 @@ uint8_t i2cReadRegister(uint8_t address, uint8_t reg, uint8_t *data)
     return I2C_SUCCESS;
 }
 
-/*************************************************************************
- * Function: i2cResetBus
- * Description: Resets the state of the bus by clearing all error flags and
- * assuming an idle state. This function is useful for recovering from bus
- * errors or stuck conditions.
- * Parameters: None
- * Returns: None
- * ***********************************************************************/
-void i2cResetBus(void)
-{
-    // Reset bus to idle state (both lines high)
-    _i2cSdaHigh();
-    _i2cSclHigh();
-    I2C_DELAY();
-}
-
 /****************************************************************************
  * PRIVATE/INTERNAL FUNCTIONS
  ****************************************************************************/

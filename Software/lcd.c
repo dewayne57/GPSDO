@@ -24,31 +24,30 @@
 #include "config.h"
 #include "i2c.h"
 #include "mcp23x17.h"
-#include "mytypes.h"
+#include <stdbool.h>
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <xc.h>
 
-extern IOPortA_t ioporta;
-
 /* LCD Buffer System */
 static char lcd_buffer[LCD_LINES][LCD_CHARS_PER_LINE + 1]; // +1 for null terminator
-static boolean lcd_line_dirty[LCD_LINES];
-static boolean lcd_buffer_initialized = FALSE;
+static bool lcd_line_dirty[LCD_LINES];
+static bool lcd_buffer_initialized = false;
 
 /*********************************************************************************/
 /* LCD Functions                                                                 */
 /*                                                                               */
 /* LCD functions for writing to the display.                                     */
 /*********************************************************************************/
-static void _lcdWrite8Bits(boolean inst, uint8_t byte);
-static uint8_t _lcdRead8Bits(boolean inst);
+static void _lcdWriteByte(bool inst, uint8_t byte);
+static uint8_t _lcdReadByte(bool inst);
 
 /**
  * This function sets the LCD backlight state that all the other functions use.
  */
-void lcdSetBacklight(boolean state) {
+void lcdSetBacklight(bool state) {
     ioporta.LCD_BL = state ? 1 : 0;
 }
 
@@ -84,13 +83,6 @@ void lcdReturnHome(void) {
     lcdWriteInstruction(RETURN_HOME);
 }
 
-/**
- * Clears the LCD display.
- */
-void lcdClearDisplay(void) {
-    lcdWriteInstruction(CLEAR);
-}
-
 /*********************************************************************************/
 /* LCD Buffer System Functions                                                   */
 /*                                                                               */
@@ -102,7 +94,7 @@ void lcdClearDisplay(void) {
  */
 void lcdBufferInit(void) {
     lcdBufferClear();
-    lcd_buffer_initialized = TRUE;
+    lcd_buffer_initialized = true;
 }
 
 /**
@@ -112,12 +104,13 @@ void lcdBufferClear(void) {
     for (uint8_t i = 0; i < LCD_LINES; i++) {
         memset(lcd_buffer[i], ' ', LCD_CHARS_PER_LINE);
         lcd_buffer[i][LCD_CHARS_PER_LINE] = '\0';
-        lcd_line_dirty[i] = TRUE;
+        lcd_line_dirty[i] = true;
     }
 }
 
 /**
  * Set a complete line in the LCD buffer
+ * 
  * @param line Line number (0-3)
  * @param text Text to display (will be truncated or padded to 20 chars)
  */
@@ -137,25 +130,12 @@ void lcdBufferSetLine(uint8_t line, const char* text) {
     }
 
     lcd_buffer[line][LCD_CHARS_PER_LINE] = '\0';
-    lcd_line_dirty[line] = TRUE;
-}
-
-/**
- * Set a single character in the LCD buffer
- * @param line Line number (0-3)
- * @param col Column number (0-19)
- * @param c Character to set
- */
-void lcdBufferSetChar(uint8_t line, uint8_t col, char c) {
-    if (line >= LCD_LINES || col >= LCD_CHARS_PER_LINE || !lcd_buffer_initialized)
-        return;
-
-    lcd_buffer[line][col] = c;
-    lcd_line_dirty[line] = TRUE;
+    lcd_line_dirty[line] = true;
 }
 
 /**
  * Printf-style formatting to a line in the LCD buffer
+ * 
  * @param line Line number (0-3)
  * @param format Printf-style format string
  * @param ... Arguments for format string
@@ -185,20 +165,9 @@ void lcdBufferUpdate(void) {
     for (uint8_t i = 0; i < LCD_LINES; i++) {
         if (lcd_line_dirty[i]) {
             lcdWriteBuffer(line_addresses[i], lcd_buffer[i]);
-            lcd_line_dirty[i] = FALSE;
+            lcd_line_dirty[i] = false;
         }
     }
-}
-
-/**
- * Get a pointer to a line buffer (for direct manipulation)
- * @param line Line number (0-3)
- * @return Pointer to line buffer or NULL if invalid
- */
-char* lcdBufferGetLine(uint8_t line) {
-    if (line >= LCD_LINES || !lcd_buffer_initialized)
-        return NULL;
-    return lcd_buffer[line];
 }
 
 /**
@@ -207,8 +176,7 @@ char* lcdBufferGetLine(uint8_t line) {
  * @param data The instruction byte to write.
  */
 void lcdWriteInstruction(uint8_t data) {
-    // Send full byte
-    _lcdWrite8Bits(TRUE, data);
+    _lcdWriteByte(true, data);
 
     while (isLcdBusy()) {
     }
@@ -221,14 +189,14 @@ void lcdWriteInstruction(uint8_t data) {
  *
  */
 void lcdWriteChar(uint8_t data) {
-    _lcdWrite8Bits(FALSE, data);
+    _lcdWriteByte(false, data);
 }
 
 /**
  * Read a data byte from the LCD at the current address.
  */
 uint8_t lcdReadData(void) {
-    uint8_t byte = _lcdRead8Bits(FALSE);
+    uint8_t byte = _lcdReadByte(false);
 
     return byte;
 }
@@ -243,11 +211,9 @@ uint8_t lcdReadData(void) {
  * @return TRUE if the LCD is busy, FALSE if ready.
  *
  */
-boolean isLcdBusy(void) {
-    // To determin if the LCD is busy, we need to read the instruction byte and check
-    // the busy flag (D7).
-    uint8_t byte = _lcdRead8Bits(TRUE);
-    return (byte & 0x80) ? TRUE : FALSE;
+bool isLcdBusy(void) {
+     uint8_t byte = _lcdReadByte(true);
+    return (byte & 0x80) ? true : false;
 }
 
 /**
@@ -255,11 +221,11 @@ boolean isLcdBusy(void) {
  */
 void lcdInitialize(void) {
     // Initialize sequence for 8-bit mode per HD44780
-    _lcdWrite8Bits(TRUE, 0x03);
+    _lcdWriteByte(true, 0x03);
     __delay_ms(5);
-    _lcdWrite8Bits(TRUE, 0x03);
+    _lcdWriteByte(true, 0x03);
     __delay_us(150);
-    _lcdWrite8Bits(TRUE, 0x03);
+    _lcdWriteByte(true, 0x03);
     __delay_us(150);
 
     // Function set: 8-bit, 2 lines, 5x8 dots
@@ -296,24 +262,24 @@ void lcdSelfTest(void) {
     lcdBufferUpdate();
     __delay_ms(100);
 
-    // Display test pattern one line at a time, using shorter strings to avoid wrapping
-    lcdBufferSetLine(0, "abcdefghijklmnop"); // 16 chars instead of 20
+    // Display test pattern one line at a time
+    lcdBufferSetLine(0, "abcdefghijklmnop"); 
     lcdBufferUpdate();
     __delay_ms(1000);
 
-    lcdBufferSetLine(1, "ABCDEFGHIJKLMNOP"); // 16 chars instead of 20
+    lcdBufferSetLine(1, "ABCDEFGHIJKLMNOP"); 
     lcdBufferUpdate();
     __delay_ms(1000);
 
-    lcdBufferSetLine(2, "0123456789_!@#$%"); // 16 chars instead of 20
+    lcdBufferSetLine(2, "0123456789_!@#$%"); 
     lcdBufferUpdate();
     __delay_ms(1000);
 
-    lcdBufferSetLine(3, ",./;'[]-=<>?:{}+"); // 16 chars instead of 20
+    lcdBufferSetLine(3, ",./;'[]-=<>?:{}+"); 
     lcdBufferUpdate();
     __delay_ms(1000);
 
-    // Complete cleanup - buffer only, no direct LCD calls
+    // Clear display again
     lcdBufferClear();
     lcdBufferUpdate();
     __delay_ms(100);
@@ -323,6 +289,7 @@ void lcdSelfTest(void) {
     __delay_ms(50);
     while (isLcdBusy()) {
     }
+
     // Explicitly turn on display with full brightness
     lcdWriteInstruction(DISPLAY_ON);
     __delay_ms(10);
@@ -332,9 +299,9 @@ void lcdSelfTest(void) {
 
 /**
  * Write the full 8-bit byte to the LCD via an MCP23017 I/O expander.  The control
- * bits RS, RW, E are on PA0..PA3 and data bits D0..D7 are on PB0..PB7.
+ * bits RS, RW, E, and BL are on PA0..PA3 and data bits D0..D7 are on PB0..PB7.
  */
-static void _lcdWrite8Bits(boolean inst, uint8_t byte) {
+static void _lcdWriteByte(bool inst, uint8_t byte) {
     if (inst) {
         ioporta.LCD_RS = 0; // RS = 1
     } else {
@@ -353,14 +320,14 @@ static void _lcdWrite8Bits(boolean inst, uint8_t byte) {
 }
 
 /**
- * Helper: read a full 8-bit byte from the LCD via MCP23017 PB0..PB7 with
+ * Read a full 8-bit byte from the LCD via MCP23017 PB0..PB7 with
  * control bits on PA0..PA3.  Since the MCP23017 pins PB0..PB7 are normally
  * outputs, we need to change them to inputs temporarily to read data, then
  * restore them to outputs.
  *
  * @param inst TRUE if reading an instruction, FALSE for data
  */
-static uint8_t _lcdRead8Bits(boolean inst) {
+static uint8_t _lcdReadByte(bool inst) {
     // We need to change PB0..PB7 to inputs temporarily
     uint8_t iodir;
     (void)i2cReadRegister(MCP23017_ADDRESS, IODIRB, &iodir);

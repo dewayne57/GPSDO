@@ -29,20 +29,47 @@
 #include <string.h>
 #include <xc.h>
 
-/*
- * Consolidated constant definitions for serial communication
- * These are used across multiple modules (menu.c, serial.c, gps.c)
- */
-const uint32_t baud_rates[] = {4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800};
-const char* stop_options[] = {"0", "1", "2"};
-const char* parity_options[] = {"N", "E", "O"};
-const char* baud_options[] = {"4800", "9600", "19200", "38400", "57600", "115200", "230400", "460800"};
-const char* vref_options[] = {"DAC", "External"};
-const char* protocol_options[] = {"NMEA", "UBX", "RTCM"};
+// General purpose data i/o buffer
+uint8_t buffer[16];
 
-extern uint8_t buffer[16];
-extern IOPortA_t ioportA;
-extern system_config_t system_config;
+// I/O expander port A shadow register, default all LED outputs off (0xF0)
+IOPortA_t ioporta = {.all = 0xF0};
+
+// Persisted system configuration (defined here)
+system_config_t system_config;
+
+// Encoder state: initialize to known defaults.
+volatile encoder_state_t encoder_state = {
+    .position = 0, .last_state = 0, .button_raw = 1, .button_stable = 0, .debounce_cnt = 0};
+
+/* Timer flag used by ISR to signal main loop */
+volatile bool timer_wait_flag = false;
+
+/*
+ * Shared constant arrays used for menu display options, settings, etc.
+ */
+const char* stop_options[] = {"0", "1", "2"};
+const char* parity_options[] = {"None", "Even", "Odd", "Mark", "Space"};
+const char* baud_options[] = {"300", "600", "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200"};
+const char* vref_options[] = {"DAC", "Internal"};
+const char* protocol_options[] = {"NMEA", "UBX", "RTCM"};
+const char* tz_mode_options[] = {"UTC", "Local"};
+
+/* 
+ * Convert a baud rate option string to numeric baud value. 
+ */
+uint32_t baud_rate_from_index(uint8_t index) {
+    if (index >= BAUD_RATES_COUNT) {
+        return 9600U; /* default fallback */
+    }
+    const char *s = baud_options[index];
+    uint32_t r = 0U;
+    while (*s >= '0' && *s <= '9') {
+        r = r * 10U + (uint32_t)(*s - '0');
+        s++;
+    }
+    return r;
+} 
 
 /****************************************************************************/
 /*                                                                          */
@@ -276,33 +303,49 @@ void initialize(void) {
     /*
      * Load persistent system configuration from EEPROM (falls back to defaults)
      */
-    // config_load((system_config_t *)buffer); // buffer used as temp storage
+    config_load((system_config_t *)buffer); 
 
     /*
      * Initialize encoder GPIOs and state
      */
-    // encoder_init();
+    encoder_init();
 
     /*
      * Initialize menu state
      */
-    // menu_init();
+    menu_init();
 
     /*
      * Initialize SMT1 counting and DAC-based control loop
      */
-    // smt_init();
-    // dac_init();
-    // control_init();
+    smt_init();
+    dac_init();
+    control_init();
+
+    /* Configure Timer1 for periodic interrupts.
+     * Timer tick = Fosc/4 = 16MHz. With prescaler 1:8 -> timer increments at 2MHz.
+     * To get ~10ms intervals: 2MHz * 0.01s = 20,000 ticks. We preload TMR1 with
+     * (65536 - 20000) = 0xB2A0 so timer overflows in ~10ms. ISR counts 10 overflows
+     * to produce a 0.1s (100ms) periodic flag.
+     */
+    TMR1H = 0xB2;
+    TMR1L = 0xA0;
+    TMR1IF = 0;
+    TMR1IE = 1;   // enable Timer1 interrupt
+    TMR1IP = 0;   // low priority
+    /* Set prescaler to 1:8 */
+    TMR1CONbits.T1CKPS0 = 1;
+    TMR1CONbits.T1CKPS1 = 1;
+    TMR1CONbits.TMR1ON = 1; // start Timer1
 
     /*
      * Enable all peripheral modules that are required
      */
     PMD0bits.SYSCMD = 0; // System clock network enabled
-    PMD0bits.CLKRMD = 0; // Clock reference module disabled
+    PMD0bits.CLKRMD = 0; // Clock reference module enabled
     PMD0bits.IOCMD = 0;  // Interrupt on change module enabled
     PMD1bits.SMT1MD = 0; // SMT1 module enabled (for RF counting)
-    PMD1bits.TMR4MD = 0; // Timer4 module enabled
+    PMD1bits.TMR1MD = 0; // Timer1 module enabled
     PMD3bits.DAC1MD = 0; // DAC1 module enabled
     PMD3bits.ADCMD = 0;  // ADC module enabled
     PMD6bits.I2C1MD = 0; // I2C1 module enabled
@@ -386,6 +429,8 @@ void config_defaults(system_config_t* cfg) {
     cfg->ext_parity = PARITY_N;            /* no parity for external port */
     cfg->vco_dac = (uint16_t)DAC_MIDPOINT;
     memset(cfg->reserved, 0, sizeof(cfg->reserved));
+    cfg->tz_mode = 0;          /* default to UTC */
+    cfg->tz_offset_min = 0;    /* zero offset */
     cfg->crc = 0;
     cfg->crc = (uint8_t)(~checksum((uint8_t*)cfg, sizeof(system_config_t) - 1));
 }

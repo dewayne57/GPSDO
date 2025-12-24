@@ -22,7 +22,7 @@
  #ifndef LCD_H
 #define    LCD_H
 #include <xc.h> // include processor files - each processor file is guarded.  
-#include "mytypes.h" // for boolean type  
+#include <stdbool.h> // use standard bool/type
 
 #ifdef    __cplusplus
 extern "C" {
@@ -69,7 +69,7 @@ extern "C" {
 /*
  * Function Prototypes
  */
-void lcdSetBacklight(boolean state);
+void lcdSetBacklight(bool state);
 void lcdReturnHome(void); 
 void lcdClearDisplay(void); 
 void lcdWriteBuffer(uint8_t address, char* data);
@@ -77,7 +77,7 @@ void lcdWriteString(char * data);
 void lcdWriteChar(uint8_t data);
 void lcdWriteInstruction(uint8_t data);
 uint8_t lcdReadData(void);
-boolean isLcdBusy(void);
+bool isLcdBusy(void);
 void lcdInitialize(void);
 void lcdSelfTest(void);
 
@@ -85,10 +85,8 @@ void lcdSelfTest(void);
 void lcdBufferInit(void);
 void lcdBufferClear(void);
 void lcdBufferSetLine(uint8_t line, const char* text);
-void lcdBufferSetChar(uint8_t line, uint8_t col, char c);
 void lcdBufferPrintf(uint8_t line, const char* format, ...);
 void lcdBufferUpdate(void);
-char* lcdBufferGetLine(uint8_t line); 
 
 #ifdef    __cplusplus
 }

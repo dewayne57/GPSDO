@@ -22,11 +22,11 @@ extern "C"
 
 /* Serial UART2 configuration */
 #define SERIAL_BUFFER_SIZE 256
-#define SERIAL_BAUD_9600   0
-#define SERIAL_BAUD_19200  1  
-#define SERIAL_BAUD_38400  2
-#define SERIAL_BAUD_57600  3
-#define SERIAL_BAUD_115200 4
+#define SERIAL_BAUD_9600   5
+#define SERIAL_BAUD_19200  6
+#define SERIAL_BAUD_38400  7
+#define SERIAL_BAUD_57600  8
+#define SERIAL_BAUD_115200 9
 
 /* Serial message format structure */
 typedef struct

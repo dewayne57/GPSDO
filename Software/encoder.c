@@ -26,16 +26,8 @@
 #include <stdint.h>
 #include "config.h"
 #include "encoder.h"
+/* encoder_state is defined centrally in config.c */
 
-/*
- * Instance of encoder state shared across ISR and main code
- */
-volatile encoder_state_t encoder_state = {
-    .position = 0,      // initial/current position
-    .last_state = 0,    // last quadrature state
-    .button_raw = 1,    // raw 1/0 reading (active low)
-    .button_stable = 0, // debounced logical state (1=pressed)
-    .debounce_cnt = 0}; // remaining debounce polls
 
 /*
  * Initialize the encoder hardware and state.
@@ -92,14 +84,6 @@ void encoder_poll(void)
 uint8_t encoder_get_position(void)
 {
     return encoder_state.position;
-}
-
-/*
- * Reset the encoder position to zero.
- */
-void encoder_reset_position(void)
-{
-    encoder_state.position = 0;
 }
 
 /*

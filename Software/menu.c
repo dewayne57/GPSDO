@@ -12,8 +12,8 @@
 #include "encoder.h"
 #include "gps.h"
 #include "lcd.h"
-#include "mytypes.h"
 #include "serial.h"
+#include "date.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -54,8 +54,10 @@ static const menu_item_t gps_menu[] = {{"GPS Baud Rate", baud_menu},
 
 static const menu_item_t vref_menu[] = {{"DAC", NULL}, {"Internal", NULL}, {"Back", NULL}, {NULL, NULL}};
 
+static const menu_item_t date_menu[] = { {"TZ Mode", NULL}, {"TZ Offset", NULL}, {"Back", NULL}, {NULL, NULL} };
+
 static const menu_item_t settings_menu[] = {
-    {"VRef", vref_menu}, {"GPS", gps_menu}, {"Serial", serial_menu}, {"Back", NULL}, {NULL, NULL}};
+    {"VRef", vref_menu}, {"Date/Time", date_menu}, {"GPS", gps_menu}, {"Serial", serial_menu}, {"Back", NULL}, {NULL, NULL}};
 
 static const menu_item_t main_menu[] = {
     {"Status", NULL}, {"Settings...", settings_menu}, {"Calibrate...", calibrate_menu}, {"Close", NULL}, {NULL, NULL}};
@@ -90,10 +92,10 @@ static menu_t menu;
 #define EDIT_GPS_PROTOCOL 5
 #define EDIT_EXT_BAUD 6
 #define EDIT_EXT_PARITY 7
+#define EDIT_TZ_MODE 8
+#define EDIT_TZ_OFFSET 9
 
-/*
- * Note: String arrays are now defined in config.c and declared as extern in config.h
- */
+/* String arrays are now defined in data.c and declared in data.h */
 
 /*
  * Helpers
@@ -103,11 +105,6 @@ static uint8_t menu_count(const menu_item_t* m) {
     while (m && m[c].text)
         c++;
     return c;
-}
-
-static void lcd_print_line(uint8_t line, const char* s) {
-    uint8_t buffer_line = (line == LINE_0) ? 0 : (line == LINE_1) ? 1 : (line == LINE_2) ? 2 : 3;
-    lcdBufferSetLine(buffer_line, s);
 }
 
 static void menu_draw(void) {
@@ -364,6 +361,37 @@ void menu_process(void) {
                             }
                             break;
                     }
+                } else if (menu.stack[menu.depth - 1] == date_menu) {
+                    switch (sel) {
+                        case 0: /* TZ Mode */
+                            menu.editing = EDIT_TZ_MODE;
+                            menu.edit_value = system_config.tz_mode;
+                            break;
+                        case 1: /* TZ Offset */
+                            menu.editing = EDIT_TZ_OFFSET;
+                            /* Map offset (-720..+840) in 15-minute steps to an index */
+                            menu.edit_value = (uint8_t)((system_config.tz_offset_min + 720) / 15);
+                            break;
+                        default:
+                            /* For other leaves, show selection message */
+                            {
+                                char buf[21];
+                                const char prefix[] = "Selected: ";
+                                size_t p = sizeof(prefix) - 1;
+                                memset(buf, ' ', sizeof(buf));
+                                if (p < 20) {
+                                    memcpy(buf, prefix, p);
+                                    size_t tlen = strlen(item->text);
+                                    size_t copy = (tlen > (20 - p)) ? (20 - p) : tlen;
+                                    memcpy(&buf[p], item->text, copy);
+                                } else {
+                                    memcpy(buf, prefix, 20);
+                                }
+                                buf[20] = '\0';
+                                menu_show_message(buf, 1000);
+                            }
+                            break;
+                    }
                 } else if (menu.stack[menu.depth - 1] == serial_menu) {
                     switch (sel) {
                         case 0: /* External Baud Rate */
@@ -433,6 +461,18 @@ void menu_process(void) {
                                 memcpy(&buf[12], parity_options[menu.edit_value],
                                        strlen(parity_options[menu.edit_value]));
                                 break;
+                            case EDIT_TZ_MODE:
+                                memcpy(buf, "TZ Mode:", 8);
+                                memcpy(&buf[9], tz_mode_options[menu.edit_value], strlen(tz_mode_options[menu.edit_value]));
+                                break;
+                            case EDIT_TZ_OFFSET: {
+                                char ofs[8];
+                                int16_t min = (int16_t)menu.edit_value * 15 - 720;
+                                tz_offset_to_string(min, ofs);
+                                memcpy(buf, "TZ Offset:", 11);
+                                memcpy(&buf[12], ofs, strlen(ofs));
+                                break;
+                            }
                         }
                         lcdBufferClear();
                         lcdBufferSetLine(0, buf);
@@ -488,6 +528,13 @@ void menu_process(void) {
             case EDIT_EXT_PARITY:
                 system_config.ext_parity = menu.edit_value;
                 serial_reconfigure(); // Apply new settings immediately
+                break;
+            case EDIT_TZ_MODE:
+                system_config.tz_mode = menu.edit_value;
+                break;
+            case EDIT_TZ_OFFSET:
+                /* map index back to minutes */
+                system_config.tz_offset_min = (int16_t)menu.edit_value * 15 - 720;
                 break;
         }
         config_save((const system_config_t*)&system_config);

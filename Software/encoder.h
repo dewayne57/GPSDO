@@ -37,7 +37,6 @@ extern volatile encoder_state_t encoder_state;
 void encoder_init(void);            /* initialize encoder hardware and state */
 void encoder_poll(void);             /* periodic housekeeping (debounce) */
 uint8_t encoder_get_position(void);    /* get current encoder position (8-bit) */
-void encoder_reset_position(void);    /* reset encoder position to zero */
 uint8_t encoder_button_state(void); /* 1 = pressed, 0 = released (debounced) */
 
 /* Called from the ISR when IOC detected on RC5/6/7 */

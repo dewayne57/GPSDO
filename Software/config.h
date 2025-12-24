@@ -20,16 +20,12 @@
  */
 #ifndef CONFIG_H
 #define CONFIG_H
-
-#include <stdbool.h>
 #include <stdint.h>
+#include <stdbool.h>
+#include "encoder.h"
 
-/* Include mytypes.h for boolean type */
-#ifndef MYTYPES_H
-#include "mytypes.h"
-#endif
-
-#define _XTAL_FREQ 64000000UL // Define the operating frequency of the microcontroller (64 MHz)
+// Define the operating frequency of the microcontroller
+#define _XTAL_FREQ 64000000UL
 #define MCP23X17_BANKED
 
 // PIC 18F27Q43 Configuration Bit Settings
@@ -67,59 +63,59 @@
 /* Device addresses on the I2C buss                                         */
 /*                                                                          */
 /****************************************************************************/
-#define MCP23017_ADDRESS 0x20 // I/O Expander address
-#define EEPROM_ADDRESS 0x50   // EEPROM address
-#define DAC8571_ADDRESS 0x4C  // DAC address
+#define MCP23017_ADDRESS 0x20           // I/O Expander address
+#define EEPROM_ADDRESS 0x50             // EEPROM address
+#define DAC8571_ADDRESS 0x4C            // DAC address
 
-// DAC characteristics
-#define DAC_RESOLUTION 4096U // 12-bit
+/****************************************************************************/
+/*                                                                          */  
+/* System configuration definitions                                         */
+/*                                                                          */
+/****************************************************************************/
+#define DAC_RESOLUTION 4096U            // 12-bit
 #define DAC_MIDPOINT (DAC_RESOLUTION / 2)
-
-#define CONFIG_MAGIC 0xA5   // Magic number to identify valid config
-#define CONFIG_VERSION 0x01 // Configuration structure version
-#define EEPROM_PAGE_SIZE 16 // EEPROM page size for writes
-
-/*
- * Voltage reference source selection for the Menu.
- */
-typedef enum {
-    VREF_INTERNAL = 0, // use internal DAC as reference
-    VREF_EXTERNAL = 1  // OCXO provides its own reference
-} vref_source_t;
+#define CONFIG_MAGIC 0xA5               // Magic number to identify valid config
+#define CONFIG_VERSION 0x02             // Configuration structure version
+#define EEPROM_PAGE_SIZE 16             // EEPROM page size for writes
 
 /*
- * Serial communication constants (defined in config.c)
+ * Voltage reference source selection for the Menu (indexes into `vref_options[]`).
+ * Use named macros for readability when assigning or checking sources.
  */
-#define BAUD_RATES_COUNT 8
-extern const uint32_t baud_rates[];
-extern const char* stop_options[];
-extern const char* parity_options[];
-extern const char* baud_options[];
-extern const char* vref_options[];
-extern const char* protocol_options[];
+#define VREF_INTERNAL 0
+#define VREF_EXTERNAL 1
+#define VREF_OPTIONS_COUNT 2
 
 /*
- * GPS serial port options for the menus.
+ * GPS serial port options (indexes into `parity_options[]`).
+ * Keep named macros for readability when comparing or assigning parity.
  */
-typedef enum { PARITY_N = 0, PARITY_E = 1, PARITY_O = 2 } parity_t;
+#define PARITY_N 0
+#define PARITY_E 1
+#define PARITY_O 2
+#define PARITY_M 3
+#define PARITY_S 4
+#define PARITY_OPTIONS_COUNT 5
 
 /*
  * System configuration structure, saved in the external EEPROM
  */
 typedef struct {
-    uint8_t magic;
-    uint8_t version;
-    uint8_t vref_source;    /* vref_source_t */
-    uint8_t gps_baud_index; /* index into gps_baud_rates[] */
-    uint8_t gps_stop_bits;  /* 0,1,2 */
-    uint8_t gps_parity;     /* parity_t */
-    uint8_t gps_protocol;   /* gps_protocol_t */
-    uint16_t vco_dac;       /* stored VCO DAC raw value (0..4095) */
-    uint8_t ext_baud_index; /* index into gps_baud_rates[] for external port */
-    uint8_t ext_stop_bits;  /* 0,1,2 */
-    uint8_t ext_parity;     /* parity_t */
-    uint8_t reserved[5];    /* reserved for future use */
-    uint8_t crc;
+    uint8_t magic;                      // should be CONFIG_MAGIC        
+    uint8_t version;                    // should be CONFIG_VERSION
+    uint8_t vref_source;                // index into vref_options[]
+    uint8_t gps_baud_index;             // index into baud_options[]
+    uint8_t gps_stop_bits;              // 0,1,2
+    uint8_t gps_parity;                 // index into parity_options[]
+    uint8_t gps_protocol;               // gps_protocol_t
+    uint16_t vco_dac;                   // stored VCO DAC raw value (0..4095)
+    uint8_t ext_baud_index;             // index into baud_options[] for external port 
+    uint8_t ext_stop_bits;              // 0,1,2 
+    uint8_t ext_parity;                 // index into parity_options[]
+    uint8_t reserved[3];                // reserved for future use (shrunk to make room for tz fields)
+    uint8_t tz_mode;                    // 0=UTC, 1=Local
+    int16_t tz_offset_min;              // signed minutes offset from UTC (e.g., -300 = UTC-05:00)
+    uint8_t crc;                        // CRC-8 of all preceding bytes
 } system_config_t;
 
 /*
@@ -147,27 +143,27 @@ extern system_config_t system_config;
 /****************************************************************************/
 
 // Port A
-#define VREF_FB 1    // RA0: VREF feedback pin
-#define INT_REF 2    // RA1: Internal reference enable pin
-#define CLOCK_OUT 64 // RA6: Clock output pin
+#define VREF_FB 1                       // RA0: VREF feedback pin
+#define INT_REF 2                       // RA1: Internal reference enable pin
+#define CLOCK_OUT 64                    // RA6: Clock output pin
 
 // Port B
-#define GPS_TX 1   // RB0: GPS Transmit pin
-#define GPS_RX 2   // RB1: GPS Receive pin
-#define INT 4      // RB2: Interrupt pin from GPS module
-#define EXT_RX 8   // RB3: External RX input
-#define EXT_TX 16  // RB4: External TX output
-#define PROGRAM 32 // RB5: Program mode select (active high)
+#define GPS_TX 1                        // RB0: GPS Transmit pin
+#define GPS_RX 2                        // RB1: GPS Receive pin
+#define INT 4                           // RB2: Interrupt pin from GPS module
+#define EXT_RX 8                        // RB3: External RX input
+#define EXT_TX 16                       // RB4: External TX output
+#define PROGRAM 32                      // RB5: Program mode select (active high)
 
 // Port C
-#define PPS 1       // RC0: 1PPS signal from GPS module
-#define RF 2        // RC1: RF From OCXO
-#define RESET_N 4   // RC2: Active low reset for GPS module
-#define SCL 8       // RC3: I2C Clock
-#define SDA 16      // RC4: I2C Data
-#define PHASE_A 32  // RC5: Phase A input from encoder
-#define PHASE_B 64  // RC6: Phase B input from encoder
-#define ENTER_N 128 // RC7: Active low enter button
+#define PPS 1                           // RC0: 1PPS signal from GPS module
+#define RF 2                            // RC1: RF From OCXO
+#define RESET_N 4                       // RC2: Active low reset for GPS module
+#define SCL 8                           // RC3: I2C Clock
+#define SDA 16                          // RC4: I2C Data
+#define PHASE_A 32                      // RC5: Phase A input from encoder
+#define PHASE_B 64                      // RC6: Phase B input from encoder
+#define ENTER_N 128                     // RC7: Active low enter button
 
 /****************************************************************************/
 /*                                                                          */
@@ -184,17 +180,43 @@ extern system_config_t system_config;
 /****************************************************************************/
 typedef union {
     struct {
-        uint8_t LCD_RS : 1;     // LCD Register Select pin
-        uint8_t LCD_RW : 1;     // LCD Read/Write pin
-        uint8_t LCD_E : 1;      // LCD Enable pin
-        uint8_t LCD_BL : 1;     // LCD Backlight control pin
-        uint8_t POWER_N : 1;    // Power LED (active low)
-        uint8_t LOCK_N : 1;     // Lock status LED (active low)
-        uint8_t HOLDOVER_N : 1; // Holdover status LED (active low)
-        uint8_t GPS_N : 1;      // GPS lock status LED (active low)
+        uint8_t LCD_RS : 1;             // LCD Register Select pin
+        uint8_t LCD_RW : 1;             // LCD Read/Write pin
+        uint8_t LCD_E : 1;              // LCD Enable pin
+        uint8_t LCD_BL : 1;             // LCD Backlight control pin
+        uint8_t POWER_N : 1;            // Power LED (active low)
+        uint8_t LOCK_N : 1;             // Lock status LED (active low)
+        uint8_t HOLDOVER_N : 1;         // Holdover status LED (active low)
+        uint8_t GPS_N : 1;              // GPS lock status LED (active low)
     };
     uint8_t all;
 } IOPortA_t;
+
+/* General purpose data I/O buffer */
+extern uint8_t buffer[16];
+
+/* I/O expander port A shadow register */
+extern IOPortA_t ioporta;
+
+/* Encoder state */
+extern volatile encoder_state_t encoder_state;
+
+/* Timer flag used by ISR to signal main loop */
+extern volatile bool timer_wait_flag;
+
+/* Shared option arrays */
+#define BAUD_RATES_COUNT 10
+extern const char* stop_options[];
+extern const char* parity_options[];
+extern const char* baud_options[];
+extern const char* vref_options[];
+extern const char* protocol_options[];
+extern const char* tz_mode_options[];
+
+/* Return numeric baud rate parsed from baud_options index (e.g., "9600" -> 9600)
+ * If index is out of range, returns 9600 as a safe default.
+ */
+uint32_t baud_rate_from_index(uint8_t index);
 
 /****************************************************************************/
 /*                                                                          */

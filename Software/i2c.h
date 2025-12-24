@@ -83,13 +83,4 @@ uint8_t i2cReadBuffer(uint8_t address, uint8_t *data, uint8_t length);
  */
 uint8_t i2cReadRegister(uint8_t address, uint8_t reg, uint8_t *data);
 
-/**
- * &brief Resets the state of the bus by clearing all error flags and assuming
- * an idle state. 
- * This function is useful for recovering from bus errors or
- * stuck conditions.
- * @return None
- */
-void i2cResetBus(); 
-
 #endif

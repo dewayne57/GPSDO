@@ -9,6 +9,7 @@
 
 #include "serial.h"
 #include "config.h"
+#include "date.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -17,8 +18,7 @@ static char rx_buffer[SERIAL_BUFFER_SIZE];
 static volatile uint16_t rx_head = 0;
 static volatile uint16_t rx_tail = 0;
 
-/* Baud rate lookup table (use the one from config.h) */
-extern const uint32_t baud_rates[];
+/* Baud rate lookup table defined in data.c */
 
 /*
  * Initialize external serial communication using UART2
@@ -88,11 +88,11 @@ void serial_set_baud_rate(uint8_t baud_index) {
         return; // Invalid baud rate index
     }
 
-    uint32_t baud_rate = baud_rates[baud_index];
-    uint32_t baud_div = (_XTAL_FREQ / (4 * baud_rate)) - 1;
+    uint32_t baud_rate = baud_rate_from_index(baud_index);
+    uint32_t baud_div = (_XTAL_FREQ / (4 * baud_rate)) - 1U;
 
-    U2BRGL = (uint8_t)(baud_div & 0xFF);
-    U2BRGH = (uint8_t)((baud_div >> 8) & 0xFF);
+    U2BRGL = (uint8_t)(baud_div & 0xFFU);
+    U2BRGH = (uint8_t)((baud_div >> 8) & 0xFFU);
 }
 
 /*
@@ -167,9 +167,23 @@ void serial_format_gps_message(char* buffer, const gps_data_t* gps_data) {
         return;
     }
 
-    sprintf(buffer, "DATE: 20%02d-%02d-%02d TIME: %02d:%02d:%02d LAT: %+09.6f LON: %+010.6f ALT: %+07.1f SAT: %02d\r\n",
-            gps_data->datetime.year, gps_data->datetime.month, gps_data->datetime.day, gps_data->datetime.hour,
-            gps_data->datetime.minute, gps_data->datetime.second, gps_data->position.latitude,
+    /* Respect timezone settings */
+    char tzbuf[8] = {0};
+    gps_datetime_t outdt;
+    const gps_datetime_t *use_dt = &gps_data->datetime;
+    if (system_config.tz_mode == 1) {
+        /* Local: apply offset */
+        date_apply_offset(&gps_data->datetime, &outdt, system_config.tz_offset_min);
+        use_dt = &outdt;
+        tz_offset_to_string(system_config.tz_offset_min, tzbuf);
+    } else {
+        /* UTC */
+        strcpy(tzbuf, "UTC");
+    }
+
+    sprintf(buffer, "DATE: 20%02d-%02d-%02d TIME: %02d:%02d:%02d TZ: %s LAT: %+09.6f LON: %+010.6f ALT: %+07.1f SAT: %02d\r\n",
+            use_dt->year, use_dt->month, use_dt->day, use_dt->hour,
+            use_dt->minute, use_dt->second, tzbuf, gps_data->position.latitude,
             gps_data->position.longitude, gps_data->position.altitude, gps_data->position.satellites);
 }
 
