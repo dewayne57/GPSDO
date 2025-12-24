@@ -200,9 +200,9 @@ void initialize(void) {
     LATC = 0x00;
 
     /*
-     * Enable weak pull-ups on I2C and encoder pins
+     * Enable weak pull-ups on encoder pins
      */
-    WPUC = SDA + SCL + PHASE_A + PHASE_B + ENTER_N;
+    WPUC = PHASE_A + PHASE_B + ENTER_N;
     INLVLC = 0x00;
 
     /*
@@ -210,10 +210,10 @@ void initialize(void) {
      */
     ODCONC = SDA + SCL + PHASE_A + PHASE_B + ENTER_N;
 
-    RC3I2C = 0x00;         // Disable I2C thresholds on RC3 (SCL)
-    RC4I2C = 0x00;         // Disable I2C thresholds on RC4 (SDA)
-    SLRCONCbits.SLRC3 = 0; // maximum slew rate for bit-bang timing
-    SLRCONCbits.SLRC4 = 0; // maximum slew rate for bit-bang timing
+    RC3I2C = 0x51;         // i2c fast mode, 2x pullups, i2c thresholds on RC3 (SCL)
+    RC4I2C = 0x51;         // i2c fast mode, 2x pullups, i2c thresholds on RC4 (SDA)
+    //SLRCONCbits.SLRC3 = 0; // maximum slew rate for bit-bang timing
+    //SLRCONCbits.SLRC4 = 0; // maximum slew rate for bit-bang timing
 
     /*
      * Set up external interrupt 0 (active-high from GPS module)
@@ -225,13 +225,23 @@ void initialize(void) {
     PIE1bits.INT0IE = 1;     // Enable External Interrupt 0
 
     /*
-     * Set up PPS for interrupt
+     * Set up PPS as needed
      */
     PPSLOCK = 0x55;
     PPSLOCK = 0xAA;
     PPSLOCKbits.PPSLOCKED = 0; // unlock
 
     INT0PPS = 0x0A; // RB2 -> INT0 input
+
+    // RB4 (EXT_RX) -> UART2 RX input (for bootloader)
+    U2RXPPS = 0x0C; // RB4
+    // RB3 (EXT_TX) -> UART2 TX output (for data transmission)
+    RB3PPS = 0x23; // UART2 TX
+
+    PPSLOCK = 0x55;
+    PPSLOCK = 0xAA;
+    PPSLOCKbits.PPSLOCKED = 1; // lock
+
 
     PPSLOCK = 0x55;
     PPSLOCK = 0xAA;

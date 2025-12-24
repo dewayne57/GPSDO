@@ -39,17 +39,18 @@
 #include "config.h"
 #include "control.h"
 #include "dac.h"
+#include "date.h"
+#include "dv.h"
 #include "encoder.h"
 #include "gps.h"
 #include "i2c.h"
+#include "isr.h"
 #include "lcd.h"
 #include "mcp23x17.h"
 #include "menu.h"
-#include <stdbool.h>
 #include "serial.h"
 #include "smt.h"
-#include "date.h"
-#include "isr.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <xc.h>
@@ -61,46 +62,44 @@ void selfCheck(void);
 void startUp(void);
 static void formatGpsDateTime(const gps_data_t* gps_data, uint8_t tz_mode, int16_t tz_offset_min);
 
-
 /*
  * Global variables and data areas.
  */
 #include "config.h" /* central place for shared globals */
-
 
 /************************************************************************
  * Main program loop
  *
  * This is the main program code for the GPSDO (GPS Disciplined Oscillator)
  * project. It initializes the system, performs a self-check by cycling the
- * LEDs connected to the I/O expander, and then enters an infinite processing 
+ * LEDs connected to the I/O expander, and then enters an infinite processing
  * loop.
- * 
+ *
  * This processing loop continuously polls the rotary encoder, processes menu inputs,
  * and updates LCD display. This is to make sure that the user interface remains
- * responsive under all conditions. 
- * 
- * The SMT (Signal Measurement Timer) processing is only performed when a new 
- * capture is available, ensuring that the frequency discipline logic is executed 
- * in a timely manner without blocking the UI updates.  This capture occurs each 
- * time the SMT module window event triggers, indicating a new frequency 
+ * responsive under all conditions.
+ *
+ * The SMT (Signal Measurement Timer) processing is only performed when a new
+ * capture is available, ensuring that the frequency discipline logic is executed
+ * in a timely manner without blocking the UI updates.  This capture occurs each
+ * time the SMT module window event triggers, indicating a new frequency
  * measurement is available.  This is triggered by the 1PPS signal from the GPS
  * module.
- * 
- * During the SMT capture processing, the program updates the DAC to adjust the VCO 
+ *
+ * During the SMT capture processing, the program updates the DAC to adjust the VCO
  * frequency based on the measured error from the GPS signal. It also updates the
  * LCD display with the latest frequency measurement and manages the LOCK LED status.
  * If the system is locked to the GPS signal, it persists the current DAC setting
  * to EEPROM to maintain the frequency control across power cycles IF the setting
- * has changed.  
- * 
+ * has changed.
+ *
  * Also during the SMT capture processing, the program transmits the latest GPS data
  * over the serial interface for external monitoring or logging (about once per second).
- * This information includes the current date, time, and position as reported by the 
+ * This information includes the current date, time, and position as reported by the
  * GPS module.  The date and time are also displayed on the LCD.
- * 
+ *
  * The user has the option to display the date/time in UTC or local time based on
- * their configuration settings.  
+ * their configuration settings.
  *
  ************************************************************************/
 void main(int argc, char** argv) {
@@ -110,11 +109,14 @@ void main(int argc, char** argv) {
     lcdSetBacklight(true);
     gps_init();
     serial_init();
+    dv_init(); // Initialize Data Visualizer streaming
     selfCheck();
     startUp();
+    dv_printf("GPSDO System Started - DVRT Active\r\n");
+    serial_debug_printf("GPSDO System Started\r\n");
 
     /**
-     * Main processing loop. 
+     * Main processing loop.
      */
     while (1) {
         encoder_poll();
@@ -125,21 +127,15 @@ void main(int argc, char** argv) {
          * Wait for the Timer1-driven 0.1s flag. While waiting, continue to poll
          * encoder, menu and GPS so the UI remains responsive.
          */
-        while (!timer_wait_flag) {
-            encoder_poll();
-            menu_process();
-            gps_update();
-            lcdBufferUpdate();
-            __delay_ms(1); // short yield
-        }
 
-        /* Clear timer flag so we await the next 0.1s interval */
-        timer_wait_flag = false;
-
-        // Send GPS data every cadence
         gps_data_t gps_data;
-        gps_get_data(&gps_data);
-        serial_send_gps_data(&gps_data);
+        if (timer_wait_flag) {
+            /* Clear timer flag so we await the next 0.1s interval */
+            timer_wait_flag = false;
+            // Send GPS data every cadence
+            gps_get_data(&gps_data);
+            serial_send_gps_data(&gps_data);
+        }
 
         // Update LCD common lines
         lcdBufferSetLine(0, "GPSDO V1.0");
@@ -152,7 +148,7 @@ void main(int argc, char** argv) {
         gps_format_position(pos_line, &gps_data.position);
         lcdBufferSetLine(2, pos_line);
 
-        /* 
+        /*
          * Only perform SMT-based control processing when a new capture has
          * been recorded by the SMT ISR. Clear the capture flag after handling.
          */
@@ -161,19 +157,25 @@ void main(int argc, char** argv) {
             int32_t err = smt_get_last_error();
             control_update(err);
 
+            // Send debug data to Data Visualizer
+            dv_debug_int("SMT Count", (int32_t)c);
+            dv_debug_int("Freq Error", err);
+            dv_debug_int("DAC Output", (int32_t)dac_get_raw());
+            dv_send_multi_graph_data(1, (float)err, (float)dac_get_raw(), (float)c);
+
             // Format and set frequency line using printf-style formatting
             lcdBufferPrintf(3, "Freq:%lu", (unsigned long)c);
 
             // Update LOCK LED if error is within +/-1 (active low)
             int locked = (err >= -1 && err <= 1) ? 1 : 0;
-            if (locked ) {
+            if (locked) {
                 ioporta.LOCK_N = 0; // active low -> clear bit to turn on
             } else {
                 ioporta.LOCK_N = 1; // turn off
             }
             (void)i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
 
-            /* 
+            /*
              * If locked, persist the current DAC setting to EEPROM (only if it differs)
              * We avoid repeated writes by checking the stored config value first.
              */

@@ -53,6 +53,16 @@ void serial_send_string(const char *str);
 void serial_send_gps_data(const gps_data_t *gps_data);
 void serial_format_gps_message(char *buffer, const gps_data_t *gps_data);
 
+/* Debug helper functions */
+void serial_debug_printf(const char *format, ...);
+void serial_debug_int(const char *label, int32_t value);
+void serial_debug_float(const char *label, float value);
+void serial_debug_hex(const char *label, uint32_t value);
+
+/* Data Visualizer structured output */
+void serial_send_csv_header(void);
+void serial_send_csv_data(float timestamp, float value1, float value2, float value3);
+
 /* Bootloader support functions */
 bool serial_data_available(void);
 char serial_get_char(void);

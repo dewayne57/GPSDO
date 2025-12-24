@@ -37,7 +37,7 @@ extern "C"
 #endif
 
 /* GPS UART configuration */
-#define GPS_BUFFER_SIZE 256
+#define GPS_BUFFER_SIZE 1024
 #define GPS_MAX_SENTENCE 120
 
     /* GPS data validity states */

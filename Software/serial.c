@@ -10,6 +10,7 @@
 #include "serial.h"
 #include "config.h"
 #include "date.h"
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -28,20 +29,6 @@ void serial_init(void) {
     // Clear receive buffer
     memset(rx_buffer, 0, sizeof(rx_buffer));
     rx_head = rx_tail = 0;
-
-    // Configure PPS for UART2 RX/TX
-    PPSLOCK = 0x55;
-    PPSLOCK = 0xAA;
-    PPSLOCKbits.PPSLOCKED = 0; // unlock
-
-    // RB4 (EXT_RX) -> UART2 RX input (for bootloader)
-    U2RXPPS = 0x0C; // RB4
-    // RB3 (EXT_TX) -> UART2 TX output (for data transmission)
-    RB3PPS = 0x17; // UART2 TX
-
-    PPSLOCK = 0x55;
-    PPSLOCK = 0xAA;
-    PPSLOCKbits.PPSLOCKED = 1; // lock
 
     // Configure UART2 registers
     U2CON0 = 0x00; // Reset UART2
@@ -170,7 +157,7 @@ void serial_format_gps_message(char* buffer, const gps_data_t* gps_data) {
     /* Respect timezone settings */
     char tzbuf[8] = {0};
     gps_datetime_t outdt;
-    const gps_datetime_t *use_dt = &gps_data->datetime;
+    const gps_datetime_t* use_dt = &gps_data->datetime;
     if (system_config.tz_mode == 1) {
         /* Local: apply offset */
         date_apply_offset(&gps_data->datetime, &outdt, system_config.tz_offset_min);
@@ -181,10 +168,11 @@ void serial_format_gps_message(char* buffer, const gps_data_t* gps_data) {
         strcpy(tzbuf, "UTC");
     }
 
-    sprintf(buffer, "DATE: 20%02d-%02d-%02d TIME: %02d:%02d:%02d TZ: %s LAT: %+09.6f LON: %+010.6f ALT: %+07.1f SAT: %02d\r\n",
-            use_dt->year, use_dt->month, use_dt->day, use_dt->hour,
-            use_dt->minute, use_dt->second, tzbuf, gps_data->position.latitude,
-            gps_data->position.longitude, gps_data->position.altitude, gps_data->position.satellites);
+    sprintf(buffer,
+            "DATE: 20%02d-%02d-%02d TIME: %02d:%02d:%02d TZ: %s LAT: %+09.6f LON: %+010.6f ALT: %+07.1f SAT: %02d\r\n",
+            use_dt->year, use_dt->month, use_dt->day, use_dt->hour, use_dt->minute, use_dt->second, tzbuf,
+            gps_data->position.latitude, gps_data->position.longitude, gps_data->position.altitude,
+            gps_data->position.satellites);
 }
 
 /*
@@ -244,4 +232,61 @@ void serial_buffer_put_char(char c) {
         rx_head = next_head;
     }
     // If buffer is full, discard character (could add overflow flag here)
+}
+
+/*
+ * Debug helper function for formatted output
+ */
+void serial_debug_printf(const char* format, ...) {
+    char debug_buffer[128];
+    va_list args;
+
+    va_start(args, format);
+    vsnprintf(debug_buffer, sizeof(debug_buffer), format, args);
+    va_end(args);
+
+    serial_send_string(debug_buffer);
+}
+
+/*
+ * Debug helper for integer values
+ */
+void serial_debug_int(const char* label, int32_t value) {
+    char debug_buffer[64];
+    sprintf(debug_buffer, "[DEBUG] %s: %ld\r\n", label, value);
+    serial_send_string(debug_buffer);
+}
+
+/*
+ * Debug helper for float values
+ */
+void serial_debug_float(const char* label, float value) {
+    char debug_buffer[64];
+    sprintf(debug_buffer, "[DEBUG] %s: %.6f\r\n", label, value);
+    serial_send_string(debug_buffer);
+}
+
+/*
+ * Debug helper for hexadecimal values
+ */
+void serial_debug_hex(const char* label, uint32_t value) {
+    char debug_buffer[64];
+    sprintf(debug_buffer, "[DEBUG] %s: 0x%08lX\r\n", label, value);
+    serial_send_string(debug_buffer);
+}
+
+/*
+ * Send CSV header for Data Visualizer plotting
+ */
+void serial_send_csv_header(void) {
+    serial_send_string("Time,Value1,Value2,Value3\r\n");
+}
+
+/*
+ * Send CSV formatted data for Data Visualizer plotting
+ */
+void serial_send_csv_data(float timestamp, float value1, float value2, float value3) {
+    char csv_buffer[128];
+    sprintf(csv_buffer, "%.3f,%.6f,%.6f,%.6f\r\n", timestamp, value1, value2, value3);
+    serial_send_string(csv_buffer);
 }
