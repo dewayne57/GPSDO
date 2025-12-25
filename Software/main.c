@@ -40,7 +40,6 @@
 #include "control.h"
 #include "dac.h"
 #include "date.h"
-#include "dv.h"
 #include "encoder.h"
 #include "gps.h"
 #include "i2c.h"
@@ -52,22 +51,25 @@
 #include "smt.h"
 #include <stdbool.h>
 #include <stdio.h>
-#include <string.h>
 #include <xc.h>
 
 /*
  * Function prototypes
  */
 void selfCheck(void);
-void startUp(void);
-static void formatGpsDateTime(const gps_data_t* gps_data, uint8_t tz_mode, int16_t tz_offset_min);
+void updateDisplay(void);
 
 /*
  * Global variables and data areas.
  */
-#include "config.h" /* central place for shared globals */
+extern system_config_t system_config;
+extern IOPortA_t ioporta;
+extern uint8_t buffer[16];
+extern volatile encoder_state_t encoder_state;
+extern bool system_initialized;
 
-/************************************************************************
+
+ /************************************************************************
  * Main program loop
  *
  * This is the main program code for the GPSDO (GPS Disciplined Oscillator)
@@ -106,47 +108,15 @@ void main(int argc, char** argv) {
 
     // Initialize the system
     initialize();
-    lcdSetBacklight(true);
-    gps_init();
-    serial_init();
-    dv_init(); // Initialize Data Visualizer streaming
-    selfCheck();
-    startUp();
-    dv_printf("GPSDO System Started - DVRT Active\r\n");
+    updateDisplay();
     serial_debug_printf("GPSDO System Started\r\n");
 
     /**
      * Main processing loop.
      */
     while (1) {
-        encoder_poll();
         menu_process();
         gps_update();
-
-        /*
-         * Wait for the Timer1-driven 0.1s flag. While waiting, continue to poll
-         * encoder, menu and GPS so the UI remains responsive.
-         */
-
-        gps_data_t gps_data;
-        if (timer_wait_flag) {
-            /* Clear timer flag so we await the next 0.1s interval */
-            timer_wait_flag = false;
-            // Send GPS data every cadence
-            gps_get_data(&gps_data);
-            serial_send_gps_data(&gps_data);
-        }
-
-        // Update LCD common lines
-        lcdBufferSetLine(0, "GPSDO V1.0");
-
-        char date_time_line[21];
-        gps_format_date_time(date_time_line, &gps_data.datetime);
-        lcdBufferSetLine(1, date_time_line);
-
-        char pos_line[21];
-        gps_format_position(pos_line, &gps_data.position);
-        lcdBufferSetLine(2, pos_line);
 
         /*
          * Only perform SMT-based control processing when a new capture has
@@ -157,11 +127,11 @@ void main(int argc, char** argv) {
             int32_t err = smt_get_last_error();
             control_update(err);
 
-            // Send debug data to Data Visualizer
-            dv_debug_int("SMT Count", (int32_t)c);
-            dv_debug_int("Freq Error", err);
-            dv_debug_int("DAC Output", (int32_t)dac_get_raw());
-            dv_send_multi_graph_data(1, (float)err, (float)dac_get_raw(), (float)c);
+            // Send debug data over serial
+            serial_debug_int("SMT Count", (int32_t)c);
+            serial_debug_int("Freq Error", err);
+            serial_debug_int("DAC Output", (int32_t)dac_get_raw());
+            serial_send_csv_data(0.0f, (float)err, (float)dac_get_raw(), (float)c);
 
             // Format and set frequency line using printf-style formatting
             lcdBufferPrintf(3, "Freq:%lu", (unsigned long)c);
@@ -193,78 +163,8 @@ void main(int argc, char** argv) {
             /* If no new capture, indicate waiting on line 3 */
             lcdBufferSetLine(3, "Freq: waiting...");
         }
+        updateDisplay();
     }
 
     return;
-}
-
-/*
- * Perform a self-check by cycling the LEDs on the I/O expander and by initializing
- * and displaying a test pattern on the front panel display LCD.
- */
-void selfCheck(void) {
-    // Initialize LCD hardware and buffer system
-    lcdInitialize();
-    __delay_ms(100); // Give LCD time to initialize
-    lcdBufferInit();
-    lcdBufferClear();
-    lcdBufferUpdate();
-    __delay_ms(100); // Ensure clean start
-
-    lcdSelfTest();
-
-    // Ensure completely clean state after self test
-    __delay_ms(100); // Let self test complete
-    lcdBufferClear();
-    lcdBufferUpdate();
-    __delay_ms(100); // Allow buffer update to complete
-    lcdReturnHome();
-    __delay_ms(100); // Allow LCD to settle
-
-    // Ensure backlight and display are fully on after self test
-    lcdSetBacklight(true);
-    lcdWriteInstruction(DISPLAY_ON);
-    __delay_ms(50);
-
-    /*
-     * Turn ON all LEDs (active low): drive Port A low
-     */
-    ioporta.POWER_N = 0;
-    ioporta.GPS_N = 0;
-    ioporta.HOLDOVER_N = 0;
-    ioporta.LOCK_N = 0;
-
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
-    __delay_ms(500);
-
-    /*
-     * Turn OFF all LEDs (active low): drive Port A high
-     */
-    ioporta.POWER_N = 1;
-    ioporta.GPS_N = 1;
-    ioporta.HOLDOVER_N = 1;
-    ioporta.LOCK_N = 1;
-
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
-    __delay_ms(500);
-
-    /*
-     * Turn ON only the power LED (active low)
-     */
-    ioporta.POWER_N = 0;
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
-    __delay_ms(500);
-}
-
-/**
- * Display startup message on LCD for 2 seconds.
- */
-void startUp(void) {
-    lcdBufferClear();
-    lcdBufferSetLine(0, "GPS Disciplined Osc V1");
-    lcdBufferSetLine(1, "Initializing...");
-    lcdBufferSetLine(2, "Waiting for GPS...");
-    lcdBufferSetLine(3, "Please wait...");
-    lcdBufferUpdate(); // Force immediate display update
-    __delay_ms(2000);  // Show startup message for 2 seconds
 }

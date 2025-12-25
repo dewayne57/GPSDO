@@ -16,8 +16,8 @@
 
 /* UART2 receive buffer and state */
 static char rx_buffer[SERIAL_BUFFER_SIZE];
-static volatile uint16_t rx_head = 0;
-static volatile uint16_t rx_tail = 0;
+static volatile uint8_t rx_head = 0; /* 0-255 index (buffer is 256 bytes) */
+static volatile uint8_t rx_tail = 0;
 
 /* Baud rate lookup table defined in data.c */
 
@@ -33,7 +33,7 @@ void serial_init(void) {
     // Configure UART2 registers
     U2CON0 = 0x00; // Reset UART2
     U2CON1 = 0x00; // Reset UART2
-    U2CON2 = 0x00; // Reset UART2
+    U2CON2 = 0x04; // BRGS=1 for high-speed baud (4x clock in divisor)
 
     // Set initial baud rate to 9600 (index from system config ext_baud_index)
     uint8_t baud_index = system_config.ext_baud_index;
@@ -47,10 +47,14 @@ void serial_init(void) {
     U2CON0bits.RXEN = 1;   // Enable receiver (for future bootloader)
     U2CON0bits.TXEN = 1;   // Enable transmitter
 
-    // Configure parity and stop bits based on system config
-    if (system_config.ext_parity == PARITY_E) {
+    // Configure parity and stop bits based on system config (only N/E/O supported)
+    uint8_t parity = system_config.ext_parity;
+    if (parity >= PARITY_OPTIONS_COUNT) {
+        parity = PARITY_N;
+    }
+    if (parity == PARITY_E) {
         U2CON0bits.MODE = 0x1; // 8-bit with even parity
-    } else if (system_config.ext_parity == PARITY_O) {
+    } else if (parity == PARITY_O) {
         U2CON0bits.MODE = 0x3; // 8-bit with odd parity
     } else {
         U2CON0bits.MODE = 0x0; // 8-bit no parity
@@ -97,10 +101,14 @@ void serial_reconfigure(void) {
     }
     serial_set_baud_rate(baud_index);
 
-    // Configure parity from config
-    if (system_config.ext_parity == PARITY_E) {
+    // Configure parity from config (only N/E/O supported)
+    uint8_t parity = system_config.ext_parity;
+    if (parity >= PARITY_OPTIONS_COUNT) {
+        parity = PARITY_N;
+    }
+    if (parity == PARITY_E) {
         U2CON0bits.MODE = 0x1; // 8-bit with even parity
-    } else if (system_config.ext_parity == PARITY_O) {
+    } else if (parity == PARITY_O) {
         U2CON0bits.MODE = 0x3; // 8-bit with odd parity
     } else {
         U2CON0bits.MODE = 0x0; // 8-bit no parity
@@ -201,7 +209,7 @@ char serial_get_char(void) {
     }
 
     char c = rx_buffer[rx_tail];
-    rx_tail = (rx_tail + 1) % SERIAL_BUFFER_SIZE;
+    rx_tail = (uint8_t)(rx_tail + 1); // wraps naturally at 256
     return c;
 }
 
@@ -225,7 +233,7 @@ void serial_disable_rx_interrupt(void) {
  * Put character into receive buffer (called from ISR)
  */
 void serial_buffer_put_char(char c) {
-    uint16_t next_head = (rx_head + 1) % SERIAL_BUFFER_SIZE;
+    uint8_t next_head = (uint8_t)(rx_head + 1); // wraps at 256
 
     if (next_head != rx_tail) { // Buffer not full
         rx_buffer[rx_head] = c;

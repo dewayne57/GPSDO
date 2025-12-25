@@ -32,24 +32,33 @@
 void __interrupt(irq(0x07), low_priority) ioChangeIsr(void) {
     if (IOCIF) {
         encoder_handle_ioc();
-        IOCIF = 0;
+        IOCCF = 0; // clear all IOC flags for port C
+        IOCIF = 0; // clear global IOC interrupt flag
         return;
     }
 }
 
 /*
- * UART1 Receive ISR. 
+ * UART1 Receive ISR.
  *
  * UART1 is used for GPS module communication.  This interrupt reads incoming
  * characters and stores them in a circular buffer for processing in the main loop.
  */
 void __interrupt(irq(U1RX), high_priority) uart1_rx_isr(void) {
     if (PIR4bits.U1RXIF) {
-        // Read character from UART
-        char c = U1RXB;
+        // Clear overrun if present to keep receiver alive
+        if (U1ERRIRbits.RXFOIF) {
+            U1CON0bits.RXEN = 0;
+            NOP();
+            U1CON0bits.RXEN = 1;
+            (void)U1RXB;            // Flush
+            PIR4bits.U1RXIF = 0;    // Clear interrupt flag
+            U1ERRIRbits.RXFOIF = 0; // Clear overrun flag
+            return;
+        }
 
-        // Store in circular buffer
-        gps_buffer_put_char(c);
+        char c = U1RXB;         // Read character
+        gps_buffer_put_char(c); // Store in circular buffer
 
         PIR4bits.U1RXIF = 0; // Clear interrupt flag
     }
@@ -57,44 +66,30 @@ void __interrupt(irq(U1RX), high_priority) uart1_rx_isr(void) {
 
 /*
  * UART2 Receive ISR (for external serial/bootloader).
- * 
- * UART2 is used for external serial communication, normally for the GPS output 
- * data (date, time, position) and can also support the boot loader to load new 
+ *
+ * UART2 is used for external serial communication, normally for the GPS output
+ * data (date, time, position) and can also support the boot loader to load new
  * firmware (e.g., bootloader interface).
  * This interrupt reads incoming characters and stores them in a circular buffer
  * when not used by the bootloader  .
  */
 void __interrupt(irq(U2RX), high_priority) uart2_rx_isr(void) {
     if (PIR8bits.U2RXIF) {
-        // Read character from UART2
-        char c = U2RXB;
+        // Clear overrun if present to keep receiver alive
+        if (U2ERRIRbits.RXFOIF) {
+            U2CON0bits.RXEN = 0;
+            NOP();
+            U2CON0bits.RXEN = 1;
+            (void)U2RXB;            // Flush
+            PIR8bits.U2RXIF = 0;    // Clear interrupt flag
+            U2ERRIRbits.RXFOIF = 0; // Clear overrun flag
+            return;
+        }
 
-        // Store in circular buffer
-        serial_buffer_put_char(c);
+        char c = U2RXB;            // Read character from UART2
+        serial_buffer_put_char(c); // Store in circular buffer
 
         PIR8bits.U2RXIF = 0; // Clear interrupt flag
-    }
-}
-
-/*
- * Timer1 Overflow ISR 
- *
- * Timer1 is configured to overflow every ~10ms. This ISR counts 10 overflows
- * to create a 0.1s (100ms) timer flag for the main loop.   
- */
-void __interrupt(irq(TMR1), low_priority) timer1_isr(void) {
-    if (TMR1IF) {
-        static uint8_t t1_cnt = 0;
-        TMR1IF = 0; // clear interrupt flag
-
-        /* Reload for next ~10ms interval (preload value for 20,000 ticks) */
-        TMR1H = 0xB2;
-        TMR1L = 0xA0;
-
-        if (++t1_cnt >= 10) {
-            t1_cnt = 0;
-            timer_wait_flag = true;
-        }
     }
 }
 
@@ -107,13 +102,18 @@ void __interrupt(irq(TMR1), low_priority) timer1_isr(void) {
 void __interrupt(irq(SMT1PRA), low_priority) smt1_isr(void) {
     if (SMT1PRAIF) {
         smt_handle_capture();
+        SMT1PRAIF = 0; // clear capture interrupt flag
     }
 }
 
 /**
- * The default ISR now handles non-Timer1 and non-SMT interrupts
+ * This ISR does nothing and does not clear any pending interrupt flags.  The
+ * intention is that all other interrupts should have their own dedicated ISRs.
+ * If an unexpected interrupt occurs, this default ISR will be invoked and
+ * simply return, leaving the interrupt flag set.  This will allow debugging
+ * to determine which interrupt source is misconfigured or unhandled as it
+ * will continuously re-enter this ISR (loop of death) until the issue is resolved.
  */
 void __interrupt(irq(default)) defaultIsr(void) {
     NOP();
 }
-

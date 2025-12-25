@@ -22,6 +22,7 @@
 #include <xc.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 /* GPS protocol options */
 typedef enum
@@ -90,10 +91,11 @@ extern "C"
     /* Function prototypes */
     void gps_init(void);
     void gps_update(void);
+    bool gps_has_valid_fix(void);
     bool gps_has_new_data(void);
     void gps_get_data(gps_data_t *data);
-    void gps_format_position(char *buffer, const gps_position_t *pos);
-    void gps_format_date_time(char *buffer, const gps_datetime_t *dt);
+    void gps_format_position(char *buffer, size_t len, const gps_position_t *pos);
+    void gps_format_date_time(char *buffer, size_t len, const gps_datetime_t *dt);
     void gps_set_protocol(gps_protocol_t protocol);
 
     /* Internal functions (exposed for testing) */

@@ -98,10 +98,10 @@ void date_format_time_short(char *buf, const gps_datetime_t *dt)
 {
     if (!buf || !dt) return;
     if (dt->valid != GPS_VALID) {
-        strcpy(buf, "--:--");
+        (void)snprintf(buf, 6, "--:--");
         return;
     }
-    sprintf(buf, "%02d:%02d", dt->hour, dt->minute);
+    (void)snprintf(buf, 6, "%02d:%02d", dt->hour, dt->minute);
 }
 
 /**
@@ -115,5 +115,5 @@ void tz_offset_to_string(int16_t offset_minutes, char *buf)
     int absmin = (offset_minutes >= 0) ? offset_minutes : -offset_minutes;
     int h = absmin / 60;
     int m = absmin % 60;
-    sprintf(buf, "%c%02d:%02d", (sign >= 0) ? '+' : '-', h, m);
+    (void)snprintf(buf, 7, "%c%02d:%02d", (sign >= 0) ? '+' : '-', h, m);
 }

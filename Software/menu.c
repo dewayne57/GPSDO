@@ -19,9 +19,6 @@
 #include <string.h>
 #include <xc.h>
 
-/* Forward declaration of system startup display (present in main.c) */
-extern void startUp(void);
-
 /*
  * Menu item definition
  */
@@ -30,37 +27,87 @@ typedef struct menu_item {
     const struct menu_item* submenu; /* NULL if leaf item */
 } menu_item_t;
 
-static const menu_item_t calibrate_menu[] = {{"VCO", NULL}, {"DAC", NULL}, {"Back", NULL}, {NULL, NULL}};
+static const menu_item_t calibrate_menu[] = {
+    {"VCO", NULL}, 
+    {"DAC", NULL}, 
+    {"Back", NULL}, 
+    {NULL, NULL}};
 
 static const menu_item_t gps_protocol_menu[] = {
-    {"NMEA", NULL}, {"UBX", NULL}, {"RTCM", NULL}, {"Back", NULL}, {NULL, NULL}};
+    {"NMEA", NULL}, 
+    {"UBX", NULL}, 
+    {"RTCM", NULL}, 
+    {"Back", NULL}, 
+    {NULL, NULL}};
 
-static const menu_item_t stopbits_menu[] = {{"0", NULL}, {"1", NULL}, {"2", NULL}, {"Back", NULL}};
+static const menu_item_t stopbits_menu[] = {
+    {"0", NULL}, 
+    {"1", NULL}, 
+    {"2", NULL}, 
+    {"Back", NULL}, 
+    {NULL, NULL}};
 
-static const menu_item_t parity_menu[] = {{"N", NULL}, {"E", NULL}, {"O", NULL}, {"Back", NULL}, {NULL, NULL}};
+static const menu_item_t parity_menu[] = {
+    {"None", NULL}, 
+    {"Even", NULL}, 
+    {"Odd", NULL}, 
+    {"Mark", NULL}, 
+    {"Space", NULL},
+    {"Back", NULL}, 
+    {NULL, NULL}};
 
-static const menu_item_t baud_menu[] = {{"4800", NULL},  {"9600", NULL},   {"19200", NULL},  {"38400", NULL},
-                                        {"57600", NULL}, {"115200", NULL}, {"230400", NULL}, {"460800", NULL},
-                                        {"Back", NULL},  {NULL, NULL}};
+static const menu_item_t baud_menu[] = {
+    {"4800", NULL},  
+    {"9600", NULL},   
+    {"19200", NULL},  
+    {"38400", NULL},
+    {"57600", NULL}, 
+    {"115200", NULL}, 
+    {"230400", NULL}, 
+    {"460800", NULL},
+    {"Back", NULL},  
+    {NULL, NULL}};
 
-static const menu_item_t serial_menu[] = {{"Ext Baud", NULL}, {"Ext Parity", NULL}, {"Back", NULL}, {NULL, NULL}};
+static const menu_item_t serial_menu[] = {
+    {"Ext Baud", NULL}, 
+    {"Ext Parity", NULL}, 
+    {"Back", NULL}, 
+    {NULL, NULL}};
 
-static const menu_item_t gps_menu[] = {{"GPS Baud Rate", baud_menu},
-                                       {"GPS Stop bits", stopbits_menu},
-                                       {"GPS Parity", parity_menu},
-                                       {"GPS Protocol", gps_protocol_menu},
-                                       {"Back", NULL},
-                                       {NULL, NULL}};
+static const menu_item_t gps_menu[] = {
+    {"GPS Baud Rate", baud_menu},
+    {"GPS Stop bits", stopbits_menu},
+    {"GPS Parity", parity_menu},
+    {"GPS Protocol", gps_protocol_menu},
+    {"Back", NULL},
+    {NULL, NULL}};
 
-static const menu_item_t vref_menu[] = {{"DAC", NULL}, {"Internal", NULL}, {"Back", NULL}, {NULL, NULL}};
+static const menu_item_t vref_menu[] = {
+    {"DAC", NULL}, 
+    {"Internal", NULL}, 
+    {"Back", NULL}, 
+    {NULL, NULL}};
 
-static const menu_item_t date_menu[] = { {"TZ Mode", NULL}, {"TZ Offset", NULL}, {"Back", NULL}, {NULL, NULL} };
+static const menu_item_t date_menu[] = { 
+    {"TZ Mode", NULL}, 
+    {"TZ Offset", NULL}, 
+    {"Back", NULL}, 
+    {NULL, NULL} };
 
 static const menu_item_t settings_menu[] = {
-    {"VRef", vref_menu}, {"Date/Time", date_menu}, {"GPS", gps_menu}, {"Serial", serial_menu}, {"Back", NULL}, {NULL, NULL}};
+    {"VRef", vref_menu}, 
+    {"Date/Time", date_menu}, 
+    {"GPS", gps_menu}, 
+    {"Serial", serial_menu}, 
+    {"Back", NULL}, 
+    {NULL, NULL}};
 
 static const menu_item_t main_menu[] = {
-    {"Status", NULL}, {"Settings...", settings_menu}, {"Calibrate...", calibrate_menu}, {"Close", NULL}, {NULL, NULL}};
+    {"Status", NULL}, 
+    {"Settings...", settings_menu}, 
+    {"Calibrate...", calibrate_menu}, 
+    {"Close", NULL}, 
+    {NULL, NULL}};
 
 /*
  * Menu runtime state
@@ -68,18 +115,19 @@ static const menu_item_t main_menu[] = {
 #define MENU_MAX_DEPTH 4
 typedef struct {
     const menu_item_t* stack[MENU_MAX_DEPTH];
-    uint8_t selection[MENU_MAX_DEPTH];
-    uint8_t depth;
-    uint8_t active; /* 0 = closed, 1 = open */
-    uint8_t last_encoder_pos;
-    uint8_t last_button;
-    uint16_t notify_ticks; /* temporary message duration in ticks (~10ms) */
-    char notify_msg[21];
-    uint8_t editing;    /* 0 = not editing, otherwise EDIT_* */
-    uint8_t edit_value; /* current temporary value while editing */
+    uint8_t selection[MENU_MAX_DEPTH];  // current selection index at each depth
+    uint8_t depth;                      // current depth in menu stack
+    uint8_t active;                     // 0 = closed, 1 = open 
+    uint8_t last_encoder_pos;           // last encoder position
+    uint8_t last_button;                // last encoder button state
+    uint16_t notify_ticks;              // temporary message duration in ticks (~10ms)
+    char notify_msg[21];                // temporary message text
+    uint8_t editing;                    // 0 = not editing, otherwise EDIT_*
+    uint8_t edit_value;                 // current temporary value while editing
 } menu_t;
 
-static menu_t menu;
+// Global menu state
+static menu_t menu;                     
 
 /*
  * Edit field identifiers
@@ -95,7 +143,8 @@ static menu_t menu;
 #define EDIT_TZ_MODE 8
 #define EDIT_TZ_OFFSET 9
 
-/* String arrays are now defined in data.c and declared in data.h */
+// Timezone offsets span -12:00..+14:00 in 15-minute steps (105 values)
+#define TZ_OFFSET_STEPS 105
 
 /*
  * Helpers
@@ -107,6 +156,9 @@ static uint8_t menu_count(const menu_item_t* m) {
     return c;
 }
 
+/**
+ * Draw the current menu state to the LCD.
+ */
 static void menu_draw(void) {
     const menu_item_t* cur = menu.stack[menu.depth - 1];
     uint8_t cnt = menu_count(cur);
@@ -147,6 +199,9 @@ static void menu_draw(void) {
     lcdBufferSetLine(1, line1);
 }
 
+/**
+ * Initialize menu system
+ */
 void menu_init(void) {
     memset(&menu, 0, sizeof(menu));
     menu.last_encoder_pos = encoder_get_position();
@@ -155,6 +210,9 @@ void menu_init(void) {
     menu.notify_ticks = 0;
 }
 
+/**
+ * Open the menu system
+ */
 void menu_open(void) {
     menu.depth = 1;
     menu.stack[0] = main_menu;
@@ -168,10 +226,13 @@ void menu_open(void) {
     menu_draw();
 }
 
+/**
+ * Close the menu system
+ */
 void menu_close(void) {
     menu.active = 0;
     /* Restore startup display */
-    startUp();
+    updateDisplay();
 }
 
 /*
@@ -187,6 +248,9 @@ static void menu_show_message(const char* msg, uint16_t duration_ms) {
     lcdBufferSetLine(0, menu.notify_msg);
 }
 
+/**
+ * Process menu input and state (to be called periodically)
+ */
 void menu_process(void) {
     /* Handle temporary message timeout */
     if (menu.notify_ticks) {
@@ -219,6 +283,18 @@ void menu_process(void) {
                         break;
                     case EDIT_GPS_PROTOCOL:
                         max = 3;
+                        break;
+                    case EDIT_EXT_BAUD:
+                        max = BAUD_RATES_COUNT;
+                        break;
+                    case EDIT_EXT_PARITY:
+                        max = PARITY_OPTIONS_COUNT;
+                        break;
+                    case EDIT_TZ_MODE:
+                        max = 2;
+                        break;
+                    case EDIT_TZ_OFFSET:
+                        max = TZ_OFFSET_STEPS;
                         break;
                 }
                 uint8_t v = (uint8_t)(menu.edit_value + delta);

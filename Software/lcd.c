@@ -23,7 +23,9 @@
 #include "lcd.h"
 #include "config.h"
 #include "i2c.h"
+#include "gps.h"
 #include "mcp23x17.h"
+#include "smt.h"
 #include <stdbool.h>
 
 #include <stdarg.h>
@@ -31,18 +33,108 @@
 #include <string.h>
 #include <xc.h>
 
+#define LCD_BUSY_MAX_POLLS 5000
+
 /* LCD Buffer System */
 static char lcd_buffer[LCD_LINES][LCD_CHARS_PER_LINE + 1]; // +1 for null terminator
 static bool lcd_line_dirty[LCD_LINES];
 static bool lcd_buffer_initialized = false;
+
+/*
+ * Global variables and data areas.
+ */
+extern volatile bool smt_new_capture;
+extern volatile uint32_t smt_last_count;
+extern volatile int32_t smt_last_error;
+extern system_config_t system_config;
+extern IOPortA_t ioporta;
+extern uint8_t buffer[16];
+extern volatile encoder_state_t encoder_state;
+extern bool system_initialized;
+extern volatile gps_data_t gps_data;
+extern volatile bool gps_data_available;
 
 /*********************************************************************************/
 /* LCD Functions                                                                 */
 /*                                                                               */
 /* LCD functions for writing to the display.                                     */
 /*********************************************************************************/
-static void _lcdWriteByte(bool inst, uint8_t byte);
-static uint8_t _lcdReadByte(bool inst);
+static uint8_t _lcdWriteByte(bool inst, uint8_t byte);
+static uint8_t _lcdReadByte(bool inst, uint8_t *value);
+static uint8_t _lcdWaitReady(uint16_t maxPolls);
+
+/**
+ * Update the LCD display with the current system status.
+ *
+ * This function displays the current system state on the LCD and is updated
+ * during the main loop processing.  The LCD used is a 4X20 character display.
+ * It is organized using the 4 lines as follows:
+ * - Line 0: Static title "GPSDO V1.0 - 2025 DLH"
+ * - Line 1: Date and time (UTC or local based on configuration) from the GPS.
+ *           If the system is being initialized it displays "Initializing...".
+ *           Once initialized, if a valid GPS fix is not available, displays
+ *           "Waiting on GPS...".  Once a valid fix is obtained, displays the
+ *           date and time.
+ * - Line 2: Latitude, longitude, and altitide from the GPS.  If a valid GPS
+ *           fix is not available, displays a blank line.
+ * - Line 3: The current frequence measurement from the SMT module, updated
+ *           each second when a new capture is available.  If GPS lock has
+ *           not been obtained and the 1PPS signal is not present, displays
+ *           a blank line.
+ */
+void updateDisplay(void) {
+    lcdBufferSetLine(0, "GPSDO V1.0 - (C) 2025 DLH");
+    if (!system_initialized) {
+        lcdBufferSetLine(1, "Initializing... ");
+        lcdBufferSetLine(2, " ");
+        lcdBufferSetLine(3, " ");
+        lcdBufferUpdate(); // Force immediate display update
+        return;
+    }
+
+    if (!gps_has_valid_fix()) {
+        lcdBufferSetLine(1, "Waiting on GPS...");
+        lcdBufferSetLine(2, " ");
+        lcdBufferSetLine(3, " ");
+        lcdBufferUpdate(); // Force immediate display update
+        return;
+    }
+
+    uint8_t gie_saved;
+    uint8_t giel_saved;
+    CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
+    gps_datetime_t dt = gps_data.datetime;      // snapshot volatile data atomically
+    gps_position_t pos = gps_data.position;     // snapshot volatile data atomically
+    CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
+
+    if (dt.valid == GPS_VALID && pos.valid == GPS_VALID) {
+        // Valid GPS data available
+        char date_time_line[21];
+        gps_format_date_time(date_time_line, sizeof(date_time_line), &dt);
+        lcdBufferSetLine(1, date_time_line);
+
+        char pos_line[21];
+        gps_format_position(pos_line, sizeof(pos_line), &pos);
+        lcdBufferSetLine(2, pos_line);
+
+        if (smt_capture_available()) {
+            uint32_t c = smt_get_last_count();
+            char freq_line[21];
+            snprintf(freq_line, sizeof(freq_line), "Freq:%lu", (unsigned long)c);
+            lcdBufferSetLine(3, freq_line);
+        } else {
+            /* If no new capture, indicate waiting on line 3 */
+            lcdBufferSetLine(3, " ");
+        }
+
+    } else {
+        // No valid GPS data
+        lcdBufferSetLine(1, "Waiting on GPS...");
+        lcdBufferSetLine(2, " ");
+    }
+
+    lcdBufferUpdate(); // Force immediate display update
+}
 
 /**
  * This function sets the LCD backlight state that all the other functions use.
@@ -110,7 +202,7 @@ void lcdBufferClear(void) {
 
 /**
  * Set a complete line in the LCD buffer
- * 
+ *
  * @param line Line number (0-3)
  * @param text Text to display (will be truncated or padded to 20 chars)
  */
@@ -118,6 +210,18 @@ void lcdBufferSetLine(uint8_t line, const char* text) {
     if (line >= LCD_LINES || !lcd_buffer_initialized)
         return;
 
+    // Check to see if it changed 
+    if (text != NULL) {
+        if (strncmp(lcd_buffer[line], text, LCD_CHARS_PER_LINE) == 0) {
+            return; // No change
+        }
+    } else {
+        // If text is NULL, treat as empty string
+        if (strncmp(lcd_buffer[line], "                    ", LCD_CHARS_PER_LINE) == 0) {
+            return; // No change
+        }
+    }
+    
     // Clear line first
     memset(lcd_buffer[line], ' ', LCD_CHARS_PER_LINE);
 
@@ -135,7 +239,7 @@ void lcdBufferSetLine(uint8_t line, const char* text) {
 
 /**
  * Printf-style formatting to a line in the LCD buffer
- * 
+ *
  * @param line Line number (0-3)
  * @param format Printf-style format string
  * @param ... Arguments for format string
@@ -176,10 +280,11 @@ void lcdBufferUpdate(void) {
  * @param data The instruction byte to write.
  */
 void lcdWriteInstruction(uint8_t data) {
-    _lcdWriteByte(true, data);
-
-    while (isLcdBusy()) {
+    if (_lcdWriteByte(true, data) != I2C_SUCCESS) {
+        return;
     }
+
+    (void)_lcdWaitReady(LCD_BUSY_MAX_POLLS);
 }
 
 /**
@@ -189,14 +294,19 @@ void lcdWriteInstruction(uint8_t data) {
  *
  */
 void lcdWriteChar(uint8_t data) {
-    _lcdWriteByte(false, data);
+    if (_lcdWriteByte(false, data) != I2C_SUCCESS) {
+        return;
+    }
+
+    (void)_lcdWaitReady(LCD_BUSY_MAX_POLLS);
 }
 
 /**
  * Read a data byte from the LCD at the current address.
  */
 uint8_t lcdReadData(void) {
-    uint8_t byte = _lcdReadByte(false);
+    uint8_t byte = 0;
+    (void)_lcdReadByte(false, &byte);
 
     return byte;
 }
@@ -212,20 +322,49 @@ uint8_t lcdReadData(void) {
  *
  */
 bool isLcdBusy(void) {
-     uint8_t byte = _lcdReadByte(true);
+    uint8_t byte = 0;
+    if (_lcdReadByte(true, &byte) != I2C_SUCCESS) {
+        return true;
+    }
     return (byte & 0x80) ? true : false;
+}
+
+static uint8_t _lcdWaitReady(uint16_t maxPolls) {
+    while (maxPolls--) {
+        uint8_t byte = 0;
+        uint8_t status = _lcdReadByte(true, &byte);
+        if (status != I2C_SUCCESS) {
+            return status;
+        }
+
+        if ((byte & 0x80) == 0) {
+            return I2C_SUCCESS;
+        }
+
+        __delay_us(40);
+    }
+
+    return I2C_TIMEOUT;
 }
 
 /**
  * Initialize the LCD in the appropriate mode
  */
 void lcdInitialize(void) {
+    lcdBufferInit();
+
     // Initialize sequence for 8-bit mode per HD44780
-    _lcdWriteByte(true, 0x03);
+    if (_lcdWriteByte(true, 0x03) != I2C_SUCCESS) {
+        return;
+    }
     __delay_ms(5);
-    _lcdWriteByte(true, 0x03);
+    if (_lcdWriteByte(true, 0x03) != I2C_SUCCESS) {
+        return;
+    }
     __delay_us(150);
-    _lcdWriteByte(true, 0x03);
+    if (_lcdWriteByte(true, 0x03) != I2C_SUCCESS) {
+        return;
+    }
     __delay_us(150);
 
     // Function set: 8-bit, 2 lines, 5x8 dots
@@ -254,8 +393,7 @@ void lcdSelfTest(void) {
     __delay_ms(50);
 
     // Wait for LCD to be completely ready
-    while (isLcdBusy()) {
-    }
+    (void)_lcdWaitReady(LCD_BUSY_MAX_POLLS);
 
     // Initialize buffer system cleanly
     lcdBufferClear();
@@ -263,19 +401,19 @@ void lcdSelfTest(void) {
     __delay_ms(100);
 
     // Display test pattern one line at a time
-    lcdBufferSetLine(0, "abcdefghijklmnop"); 
+    lcdBufferSetLine(0, "abcdefghijklmnop");
     lcdBufferUpdate();
     __delay_ms(1000);
 
-    lcdBufferSetLine(1, "ABCDEFGHIJKLMNOP"); 
+    lcdBufferSetLine(1, "ABCDEFGHIJKLMNOP");
     lcdBufferUpdate();
     __delay_ms(1000);
 
-    lcdBufferSetLine(2, "0123456789_!@#$%"); 
+    lcdBufferSetLine(2, "0123456789_!@#$%");
     lcdBufferUpdate();
     __delay_ms(1000);
 
-    lcdBufferSetLine(3, ",./;'[]-=<>?:{}+"); 
+    lcdBufferSetLine(3, ",./;'[]-=<>?:{}+");
     lcdBufferUpdate();
     __delay_ms(1000);
 
@@ -287,8 +425,7 @@ void lcdSelfTest(void) {
     // Final hardware reset and ensure display is fully on
     lcdReturnHome();
     __delay_ms(50);
-    while (isLcdBusy()) {
-    }
+    (void)_lcdWaitReady(LCD_BUSY_MAX_POLLS);
 
     // Explicitly turn on display with full brightness
     lcdWriteInstruction(DISPLAY_ON);
@@ -301,22 +438,36 @@ void lcdSelfTest(void) {
  * Write the full 8-bit byte to the LCD via an MCP23017 I/O expander.  The control
  * bits RS, RW, E, and BL are on PA0..PA3 and data bits D0..D7 are on PB0..PB7.
  */
-static void _lcdWriteByte(bool inst, uint8_t byte) {
+static uint8_t _lcdWriteByte(bool inst, uint8_t byte) {
+    uint8_t status;
+
     if (inst) {
-        ioporta.LCD_RS = 0; // RS = 1
+        ioporta.LCD_RS = 0; // RS = instruction
     } else {
-        ioporta.LCD_RS = 1; // RS = 0
+        ioporta.LCD_RS = 1; // RS = data
     }
-    ioporta.LCD_RW = 0; // RW = 0
+    ioporta.LCD_RW = 0; // RW = write
     ioporta.LCD_E = 1;  // E = 1
 
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOB, byte);
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOB, byte);
+    if (status != I2C_SUCCESS) {
+        return status;
+    }
+
+    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    if (status != I2C_SUCCESS) {
+        return status;
+    }
     __delay_us(2);
 
     ioporta.LCD_E = 0; // E = 0
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    if (status != I2C_SUCCESS) {
+        return status;
+    }
     __delay_us(40);
+
+    return I2C_SUCCESS;
 }
 
 /**
@@ -327,32 +478,50 @@ static void _lcdWriteByte(bool inst, uint8_t byte) {
  *
  * @param inst TRUE if reading an instruction, FALSE for data
  */
-static uint8_t _lcdReadByte(bool inst) {
+static uint8_t _lcdReadByte(bool inst, uint8_t *value) {
     // We need to change PB0..PB7 to inputs temporarily
     uint8_t iodir;
-    (void)i2cReadRegister(MCP23017_ADDRESS, IODIRB, &iodir);
-    i2cWriteRegister(MCP23017_ADDRESS, IODIRB, (iodir | 0xFF)); // All inputs
+    uint8_t status = i2cReadRegister(MCP23017_ADDRESS, IODIRB, &iodir);
+    if (status != I2C_SUCCESS) {
+        return status;
+    }
+
+    status = i2cWriteRegister(MCP23017_ADDRESS, IODIRB, (iodir | 0xFF)); // All inputs
+    if (status != I2C_SUCCESS) {
+        return status;
+    }
 
     if (inst) {
-        ioporta.LCD_RS = 0; // RS = 1
+        ioporta.LCD_RS = 0; // RS = instruction
     } else {
-        ioporta.LCD_RS = 1; // RS = 0
+        ioporta.LCD_RS = 1; // RS = data
     }
-    ioporta.LCD_RW = 1; // RW = 1
+    ioporta.LCD_RW = 1; // RW = read
     ioporta.LCD_E = 1;  // E = 1
 
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    if (status != I2C_SUCCESS) {
+        return status;
+    }
     __delay_us(2);
 
-    uint8_t byte;
-    (void)i2cReadRegister(MCP23017_ADDRESS, GPIOB, &byte);
+    status = i2cReadRegister(MCP23017_ADDRESS, GPIOB, value);
+    if (status != I2C_SUCCESS) {
+        return status;
+    }
 
     ioporta.LCD_E = 0; // E = 0
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    if (status != I2C_SUCCESS) {
+        return status;
+    }
     __delay_us(1);
 
     // Restore PB0..PB7 to outputs
-    i2cWriteRegister(MCP23017_ADDRESS, IODIRB, iodir); // Restore IODIR
+    status = i2cWriteRegister(MCP23017_ADDRESS, IODIRB, iodir); // Restore IODIR
+    if (status != I2C_SUCCESS) {
+        return status;
+    }
 
-    return byte;
+    return I2C_SUCCESS;
 }

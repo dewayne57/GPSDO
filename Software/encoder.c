@@ -7,9 +7,8 @@
  * - RC7 = Switch (active low, pulled to ground when closed)
  *
  * This implementation enables weak pull-ups on RC5/6/7, processes the pin changes
- * as part of an interrup-on-change (IOC) service routine, debounces the
- * pins in `encoder_poll()` and updates a signed 32-bit position counter.
- * The button is debounced with a simple stable-sample counter.
+ * as part of an interrup-on-change (IOC) service routine, and updates a signed
+ * 8-bit position counter. Button debouncing is handled externally.
 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,26 +59,9 @@ void encoder_init(void)
     encoder_state.button_stable = (encoder_state.button_raw == 0) ? 1 : 0;
     encoder_state.debounce_cnt = 0;
 }
-/*
- * Optional periodic poll to handle button debouncing.
- */
-void encoder_poll(void)
-{
-    /*
-     * We will effectively debounce the button press by sampling the current button some number of times
-     */
-    if (encoder_state.debounce_cnt > 0)
-    {
-        encoder_state.debounce_cnt--;
-        if (encoder_state.debounce_cnt == 0)
-        {
-            encoder_state.button_stable = (encoder_state.button_raw == 0) ? 1 : 0;
-        }
-    }
-}
 
 /*
- * Get the current encoder position (8-bit, wraps around).
+ * Get the current encoder position (8-bit, clamped 0..127).
  */
 uint8_t encoder_get_position(void)
 {
@@ -94,36 +76,44 @@ uint8_t encoder_button_state(void)
     return encoder_state.button_stable;
 }
 
-/* Called from ISR when IOC event on RC5/RC6/RC7 detected. Performs a quick
- * sample of the pins and updates position and button raw state. Debouncing
- * of the button is handled in encoder_poll(). This function is safe to call
- * from ISR context (keeps it short). */
+/*
+ * Called from ISR when IOC event on RC5/RC6/RC7 detected. Performs a quick
+ * sample of the pins and updates position and button raw state. Button
+ * debouncing is handled externally. This function is safe to call from ISR
+ * context (keeps it short).
+ */
 void encoder_handle_ioc(void)
 {
-    uint8_t a = PORTC & PHASE_A ? 1 : 0;
-    uint8_t b = PORTC & PHASE_B ? 1 : 0;
+    // Snapshot PORTC once to keep A/B/button sampling coherent during IOC handling
+    uint8_t portc = PORTC;
+
+    uint8_t a = (portc & PHASE_A) ? 1U : 0U;
+    uint8_t b = (portc & PHASE_B) ? 1U : 0U;
     uint8_t cur = (uint8_t)((a << 1) | b);
 
     uint8_t last = encoder_state.last_state;
     if (cur != last)
     {
-        if (((last + 1) & 3) == cur)
+        if (((last + 1) & 3U) == cur)
         {
-            encoder_state.position = (uint8_t)(encoder_state.position + 1);
+            if (encoder_state.position < 127U)
+            {
+                encoder_state.position = (uint8_t)(encoder_state.position + 1U);
+            }
         }
-        else if (((last + 3) & 3) == cur)
+        else if (((last + 3) & 3U) == cur)
         {
-            encoder_state.position = (uint8_t)(encoder_state.position - 1);
+            if (encoder_state.position > 0U)
+            {
+                encoder_state.position = (uint8_t)(encoder_state.position - 1U);
+            }
         }
         encoder_state.last_state = cur;
     }
 
-    uint8_t braw = PORTC & ENTER_N ? 1 : 0; // active high when released
-    if (braw != encoder_state.button_raw)
-    {
-        encoder_state.button_raw = braw;
-        encoder_state.debounce_cnt = ENCODER_BUTTON_DEBOUNCE_POLL_COUNT;
-    }
+    uint8_t braw = (portc & ENTER_N) ? 1U : 0U; // active high when released
+    encoder_state.button_raw = braw;
+    encoder_state.button_stable = braw; // no internal debounce
 
     // Clear IOC flags for the handled pins (write 0 to clear)
     IOCCF &= (uint8_t)~(PHASE_A + PHASE_B + ENTER_N);

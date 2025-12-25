@@ -60,7 +60,11 @@ void smt_init(void)
 void smt_handle_capture(void)
 {
     uint32_t v = 0;
-    v = ((uint32_t)SMT1CPRU << 16) | ((uint32_t)SMT1CPRH << 8) | (uint32_t)SMT1CPRL;
+    /* Read low byte first to latch upper bytes coherently */
+    uint8_t l = SMT1CPRL;
+    uint8_t h = SMT1CPRH;
+    uint8_t u = SMT1CPRU;
+    v = ((uint32_t)u << 16) | ((uint32_t)h << 8) | (uint32_t)l;
     smt_last_count = v;
     smt_last_error = (int32_t)((int32_t)v - (int32_t)10000000);
 
@@ -73,10 +77,21 @@ void smt_handle_capture(void)
 
 uint32_t smt_get_last_count(void)
 {
-    return smt_last_count;
+    /* Protect 32-bit read from tearing while ISR updates */
+    uint8_t gie_saved;
+    uint8_t giel_saved;
+    CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
+    uint32_t v = smt_last_count;
+    CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
+    return v;
 }
 
 int32_t smt_get_last_error(void)
 {
-    return smt_last_error;
+    uint8_t gie_saved;
+    uint8_t giel_saved;
+    CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
+    int32_t v = smt_last_error;
+    CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
+    return v;
 }

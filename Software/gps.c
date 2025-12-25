@@ -25,9 +25,13 @@
 #include <string.h>
 #include <xc.h>
 
-/* Global GPS data */
-static volatile gps_data_t gps_data;
-static volatile bool new_data_available = false;
+
+/* 
+ * global data areas 
+ */
+extern system_config_t system_config;       // System configuration data
+volatile gps_data_t gps_data;               // Global GPS data
+volatile bool gps_data_available;           // Flag for new GPS data available
 
 /* Forward declaration of internal functions */
 static void gps_update_led(void);
@@ -71,7 +75,7 @@ void gps_init(void) {
     memset(rx_buffer, 0, sizeof(rx_buffer));
     memset(sentence_buffer, 0, sizeof(sentence_buffer));
     rx_head = rx_tail = 0;
-    new_data_available = false;
+    gps_data_available = false;
 
     // Configure UART1 for GPS communication
     // PPS configuration for UART1 RX/TX
@@ -154,12 +158,27 @@ void gps_send_command(const char* cmd) {
  * Update GPS data (call from main loop)
  */
 void gps_update(void) {
-    // Process any complete sentences in the receive buffer
-    while (rx_head != rx_tail) {
-        char c = rx_buffer[rx_tail];
-        rx_tail = (rx_tail + 1) % GPS_BUFFER_SIZE;
+    static uint8_t sentence_pos = 0;
 
-        static uint8_t sentence_pos = 0;
+    // Process any complete sentences in the receive buffer
+    while (1) {
+        uint16_t head;
+        uint16_t tail;
+        char c;
+        uint8_t gie_saved;
+        uint8_t giel_saved;
+
+        // Take an atomic snapshot of the buffer indices and consume one byte if available
+        CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
+        head = rx_head;
+        tail = rx_tail;
+        if (head == tail) {
+            CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
+            break; // no data
+        }
+        c = rx_buffer[tail];
+        rx_tail = (uint16_t)((tail + 1U) % GPS_BUFFER_SIZE);
+        CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
 
         if (c == '$') {
             // Start of new sentence
@@ -175,16 +194,30 @@ void gps_update(void) {
         } else if (sentence_pos < (GPS_MAX_SENTENCE - 1)) {
             // Add character to sentence
             sentence_buffer[sentence_pos++] = c;
+        } else {
+            // Sentence too long/noisy—drop it and wait for next '$'
+            sentence_pos = 0;
         }
     }
+}
+
+/**
+ * Check if GPS has a valid fix
+ */
+bool gps_has_valid_fix(void) {
+    return (gps_data.position.valid == GPS_VALID);
 }
 
 /*
  * Check if new GPS data is available
  */
 bool gps_has_new_data(void) {
-    bool result = new_data_available;
-    new_data_available = false;
+    uint8_t gie_saved;
+    uint8_t giel_saved;
+    CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
+    bool result = gps_data_available;
+    gps_data_available = false;
+    CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
     return result;
 }
 
@@ -193,9 +226,11 @@ bool gps_has_new_data(void) {
  */
 void gps_get_data(gps_data_t* data) {
     // Copy current GPS data (atomic read)
-    INTCON0bits.GIEH = 0; // Disable high priority interrupts
+    uint8_t gie_saved;
+    uint8_t giel_saved;
+    CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
     memcpy(data, (void*)&gps_data, sizeof(gps_data_t));
-    INTCON0bits.GIEH = 1; // Re-enable interrupts
+    CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
 }
 
 /*
@@ -206,6 +241,23 @@ void gps_parse_sentence(const char* sentence) {
     const char* checksum_pos = strrchr(sentence, '*');
     if (!checksum_pos)
         return;
+
+    // Verify checksum (XOR of chars between '$' and '*')
+    if (checksum_pos[1] == '\0' || checksum_pos[2] == '\0') {
+        return; // incomplete checksum
+    }
+    uint8_t calc = 0;
+    for (const char* p = sentence + 1; p < checksum_pos; p++) {
+        calc ^= (uint8_t)(*p);
+    }
+    char chkbuf[3];
+    chkbuf[0] = checksum_pos[1];
+    chkbuf[1] = checksum_pos[2];
+    chkbuf[2] = '\0';
+    uint8_t expected = (uint8_t)strtoul(chkbuf, NULL, 16);
+    if (calc != expected) {
+        return; // checksum mismatch
+    }
 
     // Split sentence into fields
     const char* fields[20];
@@ -327,7 +379,7 @@ void gps_parse_gprmc(const char* fields[], uint8_t field_count) {
 
     gps_data.datetime.valid = GPS_VALID;
     gps_data.position.valid = GPS_VALID;
-    new_data_available = true;
+    gps_data_available = true;
 }
 
 /*
@@ -362,7 +414,7 @@ void gps_parse_gpgga(const char* fields[], uint8_t field_count) {
     // Update validity based on fix quality
     if (gps_data.position.fix_type != GPS_NO_FIX) {
         gps_data.position.valid = GPS_VALID;
-        new_data_available = true;
+        gps_data_available = true;
     }
 
     // Update GPS LED based on fix status
@@ -393,25 +445,28 @@ static void gps_update_led(void) {
 /*
  * Format position for display (Lat: XX.XXX Lon: XX.XXX Alt: XXXM)
  */
-void gps_format_position(char* buffer, const gps_position_t* pos) {
+void gps_format_position(char* buffer, size_t len, const gps_position_t* pos) {
+    if (buffer == NULL || len == 0) {
+        return;
+    }
+
     if (pos->valid == GPS_VALID) {
-        sprintf(buffer, "%.3f,%.3f,%.0fm", pos->latitude, pos->longitude, pos->altitude);
+        (void)snprintf(buffer, len, "%.3f,%.3f,%.0fm", pos->latitude, pos->longitude, pos->altitude);
     } else {
-        strcpy(buffer, "No GPS Fix");
+        (void)snprintf(buffer, len, "No GPS Fix");
     }
 }
 
 /**
  * Format date and time for display (DD-MM-YY HH:MM+HH:MM)
  */
-void gps_format_date_time(char* buffer, const gps_datetime_t* dt) {
+void gps_format_date_time(char* buffer, size_t len, const gps_datetime_t* dt) {
 
-    if (dt == NULL) {
+    if (dt == NULL || buffer == NULL || len == 0U) {
         return;
     }
 
     if (dt->valid == GPS_VALID) {
-        char date_line[21];
         char timebuf[8];
         char tzbuf[8];
         gps_datetime_t outdt;
@@ -425,9 +480,9 @@ void gps_format_date_time(char* buffer, const gps_datetime_t* dt) {
         }
         date_format_time_short(timebuf, display_dt);
         /* Format: "DD-MM-YY HH:MM+HH:MM" (20 chars max) */
-        sprintf(buffer, "%02d-%02d-%02d %s%s", display_dt->day, display_dt->month, display_dt->year, timebuf, tzbuf);
+        snprintf(buffer, len, "%02d-%02d-%02d %s%s", display_dt->day, display_dt->month, display_dt->year, timebuf, tzbuf);
     } else {
-        strcpy(buffer, "No GPS Fix");
+        (void)snprintf(buffer, len, "No GPS Fix");
     }
 }
 

@@ -23,27 +23,26 @@
 #include "encoder.h"
 #include "gps.h"
 #include "i2c.h"
+#include "lcd.h"
+#include "serial.h"
 #include "mcp23x17.h"
 #include "menu.h"
 #include "smt.h"
 #include <string.h>
 #include <xc.h>
 
-// General purpose data i/o buffer
-uint8_t buffer[16];
-
-// I/O expander port A shadow register, default all LED outputs off (0xF0)
-IOPortA_t ioporta = {.all = 0xF0};
-
-// Persisted system configuration (defined here)
-system_config_t system_config;
-
-// Encoder state: initialize to known defaults.
+/**
+ * Global variables and data areas.
+ */
+bool system_initialized = false;    // Flag indicating system initialization complete
+uint8_t buffer[16];                 // General-purpose I2C buffer
+IOPortA_t ioporta = {.all = 0xF0};  // I/O expander Port A state shadow register
+system_config_t system_config;      // System configuration data 
 volatile encoder_state_t encoder_state = {
-    .position = 0, .last_state = 0, .button_raw = 1, .button_stable = 0, .debounce_cnt = 0};
-
-/* Timer flag used by ISR to signal main loop */
-volatile bool timer_wait_flag = false;
+    .position = 0, .last_state = 0, .button_raw = 1, .button_stable = 0, .debounce_cnt = 0
+};                                  // Rotary encoder state
+extern volatile gps_data_t gps_data;       // Global GPS data (defined in gps.c)
+extern volatile bool gps_data_available;   // Flag for new GPS data available (defined in gps.c)
 
 /*
  * Shared constant arrays used for menu display options, settings, etc.
@@ -54,6 +53,11 @@ const char* baud_options[] = {"300", "600", "1200", "2400", "4800", "9600", "192
 const char* vref_options[] = {"DAC", "Internal"};
 const char* protocol_options[] = {"NMEA", "UBX", "RTCM"};
 const char* tz_mode_options[] = {"UTC", "Local"};
+
+/*
+ * forward definitions
+ */
+static void selfCheck(void);
 
 /* 
  * Convert a baud rate option string to numeric baud value. 
@@ -77,12 +81,14 @@ uint32_t baud_rate_from_index(uint8_t index) {
 /*                                                                          */
 /****************************************************************************/
 void initialize(void) {
+    system_initialized = false;
+
     /*
      * Disable interrupts
      */
     INTCON0bits.GIEH = 0; // Turn off high priority interrupts
     INTCON0bits.GIEL = 0; // And low priority interrupts too
-
+  
     /*
      * Clear all interrupt enables
      */
@@ -227,8 +233,8 @@ void initialize(void) {
     /*
      * Set up PPS as needed
      */
-    PPSLOCK = 0x55;
-    PPSLOCK = 0xAA;
+    PPSLOCK = 0x55;          // unlock PPS
+    PPSLOCK = 0xAA;          // unlock PPS
     PPSLOCKbits.PPSLOCKED = 0; // unlock
 
     INT0PPS = 0x0A; // RB2 -> INT0 input
@@ -238,13 +244,8 @@ void initialize(void) {
     // RB3 (EXT_TX) -> UART2 TX output (for data transmission)
     RB3PPS = 0x23; // UART2 TX
 
-    PPSLOCK = 0x55;
-    PPSLOCK = 0xAA;
-    PPSLOCKbits.PPSLOCKED = 1; // lock
-
-
-    PPSLOCK = 0x55;
-    PPSLOCK = 0xAA;
+    PPSLOCK = 0x55;         // lock PPS
+    PPSLOCK = 0xAA;         // lock PPS
     PPSLOCKbits.PPSLOCKED = 1; // lock
 
     /*
@@ -265,7 +266,7 @@ void initialize(void) {
     /*
      * Initialize MCP23017 #1 for sequential mode to initialize all the registers
      */
-    i2cWriteRegister(MCP23017_ADDRESS, 0x0A, 0x80); // banked, sequential, no interrupts
+    i2cWriteRegister(MCP23017_ADDRESS, 0x0A, 0x80); // Set BANK=0, SEQOP=1
 
     /*
      * Initialize MCP23017 Port A
@@ -302,7 +303,7 @@ void initialize(void) {
     /*
      * Now, set the IO Configuration to byte mode
      */
-    i2cWriteRegister(MCP23017_ADDRESS, IOCON, 0xE4); // Change to byte mode
+    i2cWriteRegister(MCP23017_ADDRESS, IOCON, 0xE4); // BANK=0, SEQOP=0, HAEN=1, ODR=0, INTCC=0
 
     /*
      * Clear any pending MCP23017 interrupt from initialization (read INTFA then GPIOA)
@@ -332,21 +333,13 @@ void initialize(void) {
     dac_init();
     control_init();
 
-    /* Configure Timer1 for periodic interrupts.
-     * Timer tick = Fosc/4 = 16MHz. With prescaler 1:8 -> timer increments at 2MHz.
-     * To get ~10ms intervals: 2MHz * 0.01s = 20,000 ticks. We preload TMR1 with
-     * (65536 - 20000) = 0xB2A0 so timer overflows in ~10ms. ISR counts 10 overflows
-     * to produce a 0.1s (100ms) periodic flag.
+    /* Timer1 is not used for main-loop timing anymore. Ensure it is stopped
+     * and its interrupt is disabled so it does not affect the main loop.
      */
-    TMR1H = 0xB2;
-    TMR1L = 0xA0;
     TMR1IF = 0;
-    TMR1IE = 1;   // enable Timer1 interrupt
-    TMR1IP = 0;   // low priority
-    /* Set prescaler to 1:8 */
-    TMR1CONbits.T1CKPS0 = 1;
-    TMR1CONbits.T1CKPS1 = 1;
-    TMR1CONbits.TMR1ON = 1; // start Timer1
+    TMR1IE = 0;   // don't enable Timer1 interrupt
+    TMR1IP = 0;   // low priority if ever enabled
+    TMR1CONbits.TMR1ON = 0; // ensure Timer1 is stopped
 
     /*
      * Enable all peripheral modules that are required
@@ -367,6 +360,74 @@ void initialize(void) {
      */
     INTCON0bits.GIEH = 1; // High priority enabled
     INTCON0bits.GIEL = 1; // Low priority enabled
+
+    /*
+     * Initialize all other sub-systems 
+     */
+    lcdSetBacklight(true);
+    gps_init();
+    serial_init();
+    selfCheck();
+
+    system_initialized = true;
+}
+
+/*
+ * Perform a self-check by cycling the LEDs on the I/O expander and by initializing
+ * and displaying a test pattern on the front panel display LCD.
+ */
+static void selfCheck(void) {
+    // Initialize LCD hardware and buffer system
+    lcdInitialize();
+    __delay_ms(100); // Give LCD time to initialize
+    lcdBufferInit();
+    lcdBufferClear();
+    lcdBufferUpdate();
+    __delay_ms(100); // Ensure clean start
+
+    lcdSelfTest();
+
+    // Ensure completely clean state after self test
+    __delay_ms(100); // Let self test complete
+    lcdBufferClear();
+    lcdBufferUpdate();
+    __delay_ms(100); // Allow buffer update to complete
+    lcdReturnHome();
+    __delay_ms(100); // Allow LCD to settle
+
+    // Ensure backlight and display are fully on after self test
+    lcdSetBacklight(true);
+    lcdWriteInstruction(DISPLAY_ON);
+    __delay_ms(50);
+
+    /*
+     * Turn ON all LEDs (active low): drive Port A low
+     */
+    ioporta.POWER_N = 0;
+    ioporta.GPS_N = 0;
+    ioporta.HOLDOVER_N = 0;
+    ioporta.LOCK_N = 0;
+
+    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    __delay_ms(500);
+
+    /*
+     * Turn OFF all LEDs (active low): drive Port A high
+     */
+    ioporta.POWER_N = 1;
+    ioporta.GPS_N = 1;
+    ioporta.HOLDOVER_N = 1;
+    ioporta.LOCK_N = 1;
+
+    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    __delay_ms(500);
+
+    /*
+     * Turn ON only the power LED (active low)
+     */
+    ioporta.POWER_N = 0;
+    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    __delay_ms(500);
 }
 
 /*

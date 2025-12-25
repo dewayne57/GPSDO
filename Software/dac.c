@@ -24,6 +24,7 @@
 
 static uint16_t dac_current = 0;
 extern system_config_t system_config;
+extern uint8_t buffer[16];
 
 /*
  * Initialize the DAC module.  Sets the DAC to a known state.
@@ -41,21 +42,18 @@ void dac_init(void)
     dac_set_raw(dac_current);
 }
 
-/* Format the 12-bit value as two bytes (MSB first). Many 12-bit DACs
- * expect a 16-bit write where the 12-bit data is left-aligned or right-aligned
- * depending on part. This implementation sends MSB then LSB where MSB
- * contains the top 8 bits and LSB contains the low 8 bits (low nibble used).
+/* DAC8571 write: control byte followed by 16-bit data (big-endian).
+ * Control 0x10 = write-and-update, power-up (per DAC8571 datasheet).
  */
 void dac_set_raw(uint16_t value)
 {
     if (value >= DAC_RESOLUTION) value = (uint16_t)(DAC_RESOLUTION - 1);
 
-    uint8_t buf[2];
-    // Send 12-bit value MSB first (upper 8 bits then lower 8 bits)
-    buf[0] = (uint8_t)((value >> 8) & 0x0F); // upper 4 bits in low nibble
-    buf[1] = (uint8_t)(value & 0xFF);
+    buffer[0] = 0x10;                              // control: write + update DAC, power-up
+    buffer[1] = (uint8_t)((value >> 8) & 0xFF);    // D15..D8
+    buffer[2] = (uint8_t)(value & 0xFF);           // D7..D0
 
-    i2cWriteBuffer(DAC8571_ADDRESS, buf, 2);
+    i2cWriteBuffer(DAC8571_ADDRESS, buffer, 3);
     dac_current = value;
 }
 

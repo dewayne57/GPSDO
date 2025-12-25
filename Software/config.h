@@ -20,9 +20,31 @@
  */
 #ifndef CONFIG_H
 #define CONFIG_H
+#include <xc.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include "encoder.h"
+
+/*
+ * Enter a critical section by saving the global interrupt enable states
+ * and then disabling global interrupts.  This is done to protect access
+ * to shared data that may be modified in interrupt service routines.
+ */
+#define CRITICAL_SECTION_ENTER(gie_saved, giel_saved) do { \
+    (gie_saved) = INTCON0bits.GIEH; \
+    (giel_saved) = INTCON0bits.GIEL; \
+    INTCON0bits.GIEH = 0; \
+    INTCON0bits.GIEL = 0; \
+} while (0)
+
+/*
+ * Exit a critical section by restoring the saved global interrupt
+ * enable states.
+ */
+#define CRITICAL_SECTION_EXIT(gie_saved, giel_saved) do { \
+    INTCON0bits.GIEH = (gie_saved); \
+    INTCON0bits.GIEL = (giel_saved); \
+} while (0)
 
 // Define the operating frequency of the microcontroller
 #define _XTAL_FREQ 64000000UL
@@ -72,7 +94,7 @@
 /* System configuration definitions                                         */
 /*                                                                          */
 /****************************************************************************/
-#define DAC_RESOLUTION 4096U            // 12-bit
+#define DAC_RESOLUTION 65535U           // 16-bit
 #define DAC_MIDPOINT (DAC_RESOLUTION / 2)
 #define CONFIG_MAGIC 0xA5               // Magic number to identify valid config
 #define CONFIG_VERSION 0x02             // Configuration structure version
@@ -200,9 +222,6 @@ extern IOPortA_t ioporta;
 
 /* Encoder state */
 extern volatile encoder_state_t encoder_state;
-
-/* Timer flag used by ISR to signal main loop */
-extern volatile bool timer_wait_flag;
 
 /* Shared option arrays */
 #define BAUD_RATES_COUNT 10

@@ -69,6 +69,7 @@ extern "C" {
 /*
  * Function Prototypes
  */
+void updateDisplay(void); 
 void lcdSetBacklight(bool state);
 void lcdReturnHome(void); 
 void lcdClearDisplay(void); 
