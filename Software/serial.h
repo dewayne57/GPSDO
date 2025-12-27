@@ -1,10 +1,20 @@
-/* SPDX-License-Identifier: Apache-2.0 */
 /*
  * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
  *
  * External serial communication module for RS-232 interface.
  * This module handles UART2 communication on pins RB3 (TxD) and RB4 (RxD)
  * for transmitting GPS data and supporting future bootloader functionality.
+ * All output now goes through printf redirection to UART2.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 #ifndef SERIAL_H
@@ -46,22 +56,8 @@ typedef struct
 
 /* Function prototypes */
 void serial_init(void);
-void serial_set_baud_rate(uint8_t baud_index);
 void serial_reconfigure(void);
-void serial_send_char(char c);
-void serial_send_string(const char *str);
 void serial_send_gps_data(const gps_data_t *gps_data);
-void serial_format_gps_message(char *buffer, const gps_data_t *gps_data);
-
-/* Debug helper functions */
-void serial_debug_printf(const char *format, ...);
-void serial_debug_int(const char *label, int32_t value);
-void serial_debug_float(const char *label, float value);
-void serial_debug_hex(const char *label, uint32_t value);
-
-/* Data Visualizer structured output */
-void serial_send_csv_header(void);
-void serial_send_csv_data(float timestamp, float value1, float value2, float value3);
 
 /* Bootloader support functions */
 bool serial_data_available(void);

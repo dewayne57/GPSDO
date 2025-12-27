@@ -17,21 +17,20 @@
 
 #include "gps.h"
 #include "config.h"
+#include "date.h"
 #include "i2c.h"
 #include "mcp23x17.h"
-#include "date.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <xc.h>
 
-
-/* 
- * global data areas 
+/*
+ * global data areas
  */
-extern system_config_t system_config;       // System configuration data
-volatile gps_data_t gps_data;               // Global GPS data
-volatile bool gps_data_available;           // Flag for new GPS data available
+extern system_config_t system_config; // System configuration data
+volatile gps_data_t gps_data;         // Global GPS data
+volatile bool gps_data_available;     // Flag for new GPS data available
 
 /* Forward declaration of internal functions */
 static void gps_update_led(void);
@@ -62,6 +61,15 @@ static char rx_buffer[GPS_BUFFER_SIZE];
 static volatile uint16_t rx_head = 0;
 static volatile uint16_t rx_tail = 0;
 static char sentence_buffer[GPS_MAX_SENTENCE];
+static volatile bool sentence_available = false;
+static volatile bool buffer_resync_mode = false; // True when looking for start-of-sentence
+
+/* Binary protocol message state tracking */
+static volatile uint8_t ubx_state = 0;    // UBX message parsing state
+static volatile uint16_t ubx_length = 0;  // Expected UBX message length
+static volatile uint16_t ubx_count = 0;   // Current byte count in UBX message
+static volatile uint16_t rtcm_length = 0; // Expected RTCM message length
+static volatile uint16_t rtcm_count = 0;  // Current byte count in RTCM message
 
 /*
  * Initialize GPS UART communication
@@ -76,6 +84,13 @@ void gps_init(void) {
     memset(sentence_buffer, 0, sizeof(sentence_buffer));
     rx_head = rx_tail = 0;
     gps_data_available = false;
+    sentence_available = false;
+    buffer_resync_mode = false;
+
+    // Initialize binary protocol state
+    ubx_state = 0;
+    ubx_length = ubx_count = 0;
+    rtcm_length = rtcm_count = 0;
 
     // Configure UART1 for GPS communication
     // PPS configuration for UART1 RX/TX
@@ -160,6 +175,11 @@ void gps_send_command(const char* cmd) {
 void gps_update(void) {
     static uint8_t sentence_pos = 0;
 
+    // Only process if we have data available or a sentence ready to be processed
+    if (!gps_sentence_ready() && rx_head == rx_tail) {
+        return; // No data and no complete sentences to process
+    }
+
     // Process any complete sentences in the receive buffer
     while (1) {
         uint16_t head;
@@ -189,6 +209,10 @@ void gps_update(void) {
             if (sentence_pos > 6) { // Minimum valid sentence length
                 sentence_buffer[sentence_pos] = '\0';
                 gps_parse_sentence(sentence_buffer);
+                // Clear the sentence ready flag after processing
+                CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
+                sentence_available = false;
+                CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
             }
             sentence_pos = 0;
         } else if (sentence_pos < (GPS_MAX_SENTENCE - 1)) {
@@ -217,6 +241,18 @@ bool gps_has_new_data(void) {
     CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
     bool result = gps_data_available;
     gps_data_available = false;
+    CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
+    return result;
+}
+
+/*
+ * Check if a complete sentence is available for processing
+ */
+bool gps_sentence_ready(void) {
+    uint8_t gie_saved;
+    uint8_t giel_saved;
+    CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
+    bool result = sentence_available;
     CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
     return result;
 }
@@ -480,7 +516,8 @@ void gps_format_date_time(char* buffer, size_t len, const gps_datetime_t* dt) {
         }
         date_format_time_short(timebuf, display_dt);
         /* Format: "DD-MM-YY HH:MM+HH:MM" (20 chars max) */
-        snprintf(buffer, len, "%02d-%02d-%02d %s%s", display_dt->day, display_dt->month, display_dt->year, timebuf, tzbuf);
+        snprintf(buffer, len, "%02d-%02d-%02d %s%s", display_dt->day, display_dt->month, display_dt->year, timebuf,
+                 tzbuf);
     } else {
         (void)snprintf(buffer, len, "No GPS Fix");
     }
@@ -526,14 +563,161 @@ void gps_set_protocol(gps_protocol_t protocol) {
 
 /*
  * Put character into GPS receive buffer (called from ISR)
+ * Enhanced to handle buffer overflow by resetting and resyncing
  */
 void gps_buffer_put_char(char c) {
     uint16_t next_head = (rx_head + 1) % GPS_BUFFER_SIZE;
 
     // Check for buffer overflow
-    if (next_head != rx_tail) {
-        rx_buffer[rx_head] = c;
-        rx_head = next_head;
+    if (next_head == rx_tail) {
+        // Buffer is full - reset and enter resync mode
+        rx_head = rx_tail = 0;
+        buffer_resync_mode = true;
+        sentence_available = false;
+        // Reset protocol state machines
+        ubx_state = 0;
+        ubx_length = ubx_count = 0;
+        rtcm_length = rtcm_count = 0;
+        // Continue processing this character to check for start sequence
     }
-    // If buffer is full, character is discarded
+
+    // If in resync mode, only store characters after finding start-of-sentence
+    if (buffer_resync_mode) {
+        bool is_start_sequence = false;
+        bool allow_character = false;
+
+        // Check for protocol start sequences based on current protocol
+        switch (gps_data.current_protocol) {
+            case GPS_PROTOCOL_NMEA:
+                is_start_sequence = (c == '$');
+                // Also allow CR/LF characters through for proper sentence termination
+                allow_character = is_start_sequence || (c == '\n') || (c == '\r');
+                break;
+
+            case GPS_PROTOCOL_UBX:
+                is_start_sequence = (c == 0xB5); // UBX sync char 1
+                allow_character = is_start_sequence;
+                break;
+
+            case GPS_PROTOCOL_RTCM:
+                is_start_sequence = (c == 0xD3); // RTCM preamble
+                allow_character = is_start_sequence;
+                break;
+
+            default:
+                // Unknown protocol, try NMEA as fallback
+                is_start_sequence = (c == '$');
+                allow_character = is_start_sequence || (c == '\n') || (c == '\r');
+                break;
+        }
+
+        if (is_start_sequence) {
+            // Found start of sentence - exit resync mode
+            buffer_resync_mode = false;
+            // Reset protocol state for new message
+            ubx_state = (gps_data.current_protocol == GPS_PROTOCOL_UBX) ? 1 : 0;
+            ubx_length = ubx_count = 0;
+            rtcm_length = rtcm_count = 0;
+        } else if (!allow_character) {
+            // Still looking for start and this character isn't allowed - discard
+            return;
+        }
+        // If allow_character is true but not start_sequence, continue processing (for CR/LF)
+    }
+
+    // Store character in buffer
+    rx_buffer[rx_head] = c;
+    rx_head = (rx_head + 1) % GPS_BUFFER_SIZE;
+
+    // Handle end-of-message detection based on protocol
+    switch (gps_data.current_protocol) {
+        case GPS_PROTOCOL_NMEA:
+            // NMEA uses CR/LF as end-of-sentence markers
+            if (c == '\n' || c == '\r') {
+                sentence_available = true;
+            }
+            break;
+
+        case GPS_PROTOCOL_UBX:
+            // UBX protocol state machine
+            switch (ubx_state) {
+                case 0: // Looking for sync char 1 (0xB5)
+                    if ((uint8_t)c == 0xB5) {
+                        ubx_state = 1;
+                        ubx_count = 1;
+                    }
+                    break;
+                case 1: // Looking for sync char 2 (0x62)
+                    if ((uint8_t)c == 0x62) {
+                        ubx_state = 2;
+                        ubx_count = 2;
+                    } else {
+                        ubx_state = 0;
+                        ubx_count = 0;
+                    }
+                    break;
+                case 2: // Class byte
+                    ubx_state = 3;
+                    ubx_count = 3;
+                    break;
+                case 3: // ID byte
+                    ubx_state = 4;
+                    ubx_count = 4;
+                    break;
+                case 4: // Length low byte
+                    ubx_length = (uint8_t)c;
+                    ubx_state = 5;
+                    ubx_count = 5;
+                    break;
+                case 5: // Length high byte
+                    ubx_length |= ((uint16_t)(uint8_t)c) << 8;
+                    ubx_state = 6;
+                    ubx_count = 6;
+                    break;
+                case 6: // Payload + checksum bytes
+                    ubx_count++;
+                    // Total message = 6 header + length + 2 checksum = 8 + length
+                    if (ubx_count >= (8 + ubx_length)) {
+                        sentence_available = true;
+                        ubx_state = 0;
+                        ubx_count = 0;
+                    }
+                    break;
+            }
+            break;
+
+        case GPS_PROTOCOL_RTCM:
+            // RTCM protocol message detection
+            if (rtcm_count == 0 && (uint8_t)c == 0xD3) {
+                // Start of RTCM message
+                rtcm_count = 1;
+            } else if (rtcm_count == 1) {
+                // Second byte contains length bits [15:8] & reserved bits
+                rtcm_length = ((uint16_t)(uint8_t)c & 0x03) << 8;
+                rtcm_count = 2;
+            } else if (rtcm_count == 2) {
+                // Third byte contains length bits [7:0]
+                rtcm_length |= (uint8_t)c;
+                rtcm_count = 3;
+            } else if (rtcm_count > 2) {
+                // Data + CRC bytes
+                rtcm_count++;
+                // Total RTCM message = 3 header + length + 3 CRC = 6 + length
+                if (rtcm_count >= (6 + rtcm_length)) {
+                    sentence_available = true;
+                    rtcm_count = 0;
+                }
+            } else {
+                // Invalid RTCM data - reset
+                rtcm_count = 0;
+            }
+            break;
+
+        default:
+            // Unknown protocol, assume NMEA behavior
+            if (c == '\n' || c == '\r') {
+                sentence_available = true;
+            }
+            break;
+    }
 }

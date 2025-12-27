@@ -24,7 +24,7 @@
 
 static uint16_t dac_current = 0;
 extern system_config_t system_config;
-extern uint8_t buffer[16];
+extern uint8_t buffer[128];
 
 /*
  * Initialize the DAC module.  Sets the DAC to a known state.

@@ -215,7 +215,7 @@ typedef union {
 } IOPortA_t;
 
 /* General purpose data I/O buffer */
-extern uint8_t buffer[16];
+extern uint8_t buffer[128];
 
 /* I/O expander port A shadow register */
 extern IOPortA_t ioporta;

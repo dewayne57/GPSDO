@@ -35,7 +35,7 @@
  * Global variables and data areas.
  */
 bool system_initialized = false;    // Flag indicating system initialization complete
-uint8_t buffer[16];                 // General-purpose I2C buffer
+uint8_t buffer[128];                // General-purpose I2C buffer
 IOPortA_t ioporta = {.all = 0xF0};  // I/O expander Port A state shadow register
 system_config_t system_config;      // System configuration data 
 volatile encoder_state_t encoder_state = {

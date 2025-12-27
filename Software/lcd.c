@@ -22,8 +22,8 @@
  */
 #include "lcd.h"
 #include "config.h"
-#include "i2c.h"
 #include "gps.h"
+#include "i2c.h"
 #include "mcp23x17.h"
 #include "smt.h"
 #include <stdbool.h>
@@ -48,7 +48,7 @@ extern volatile uint32_t smt_last_count;
 extern volatile int32_t smt_last_error;
 extern system_config_t system_config;
 extern IOPortA_t ioporta;
-extern uint8_t buffer[16];
+extern uint8_t buffer[128];
 extern volatile encoder_state_t encoder_state;
 extern bool system_initialized;
 extern volatile gps_data_t gps_data;
@@ -60,7 +60,7 @@ extern volatile bool gps_data_available;
 /* LCD functions for writing to the display.                                     */
 /*********************************************************************************/
 static uint8_t _lcdWriteByte(bool inst, uint8_t byte);
-static uint8_t _lcdReadByte(bool inst, uint8_t *value);
+static uint8_t _lcdReadByte(bool inst, uint8_t* value);
 static uint8_t _lcdWaitReady(uint16_t maxPolls);
 
 /**
@@ -83,7 +83,7 @@ static uint8_t _lcdWaitReady(uint16_t maxPolls);
  *           a blank line.
  */
 void updateDisplay(void) {
-    lcdBufferSetLine(0, "GPSDO V1.0 - (C) 2025 DLH");
+    lcdBufferSetLine(0, "GPSDO V1.0 2025 DLH");
     if (!system_initialized) {
         lcdBufferSetLine(1, "Initializing... ");
         lcdBufferSetLine(2, " ");
@@ -103,8 +103,8 @@ void updateDisplay(void) {
     uint8_t gie_saved;
     uint8_t giel_saved;
     CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
-    gps_datetime_t dt = gps_data.datetime;      // snapshot volatile data atomically
-    gps_position_t pos = gps_data.position;     // snapshot volatile data atomically
+    gps_datetime_t dt = gps_data.datetime;  // snapshot volatile data atomically
+    gps_position_t pos = gps_data.position; // snapshot volatile data atomically
     CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
 
     if (dt.valid == GPS_VALID && pos.valid == GPS_VALID) {
@@ -156,15 +156,29 @@ void lcdWriteBuffer(uint8_t address, char* data) {
 
 /**
  * This function writes a null-terminated string to the LCD at the current cursor position.
+ * Highly optimized version that sends all register writes in a single I2C transaction.
  *
  * @param data The null-terminated string to write.
  *
  */
 void lcdWriteString(char* data) {
+    if (!data || !*data)
+        return; // Handle empty strings
+
+    size_t len = strlen(data);
+    if (len == 0) {
+        return;
+    }
+
     char* p = data;
     while (*p) {
-        lcdWriteChar(*p++);
+        if (_lcdWriteByte(false, *p++) != I2C_SUCCESS) {
+            return;
+        }
+        __delay_us(50);
     }
+    
+    (void)_lcdWaitReady(LCD_BUSY_MAX_POLLS);
 }
 
 /**
@@ -210,7 +224,7 @@ void lcdBufferSetLine(uint8_t line, const char* text) {
     if (line >= LCD_LINES || !lcd_buffer_initialized)
         return;
 
-    // Check to see if it changed 
+    // Check to see if it changed
     if (text != NULL) {
         if (strncmp(lcd_buffer[line], text, LCD_CHARS_PER_LINE) == 0) {
             return; // No change
@@ -221,7 +235,7 @@ void lcdBufferSetLine(uint8_t line, const char* text) {
             return; // No change
         }
     }
-    
+
     // Clear line first
     memset(lcd_buffer[line], ' ', LCD_CHARS_PER_LINE);
 
@@ -344,7 +358,7 @@ static uint8_t _lcdWaitReady(uint16_t maxPolls) {
         __delay_us(40);
     }
 
-    return I2C_TIMEOUT;
+    return I2C_ERROR;
 }
 
 /**
@@ -478,7 +492,7 @@ static uint8_t _lcdWriteByte(bool inst, uint8_t byte) {
  *
  * @param inst TRUE if reading an instruction, FALSE for data
  */
-static uint8_t _lcdReadByte(bool inst, uint8_t *value) {
+static uint8_t _lcdReadByte(bool inst, uint8_t* value) {
     // We need to change PB0..PB7 to inputs temporarily
     uint8_t iodir;
     uint8_t status = i2cReadRegister(MCP23017_ADDRESS, IODIRB, &iodir);

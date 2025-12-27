@@ -64,12 +64,11 @@ void updateDisplay(void);
  */
 extern system_config_t system_config;
 extern IOPortA_t ioporta;
-extern uint8_t buffer[16];
+extern uint8_t buffer[128];
 extern volatile encoder_state_t encoder_state;
 extern bool system_initialized;
 
-
- /************************************************************************
+/************************************************************************
  * Main program loop
  *
  * This is the main program code for the GPSDO (GPS Disciplined Oscillator)
@@ -109,14 +108,18 @@ void main(int argc, char** argv) {
     // Initialize the system
     initialize();
     updateDisplay();
-    serial_debug_printf("GPSDO System Started\r\n");
+    printf("GPSDO System Started\r\n");
 
     /**
      * Main processing loop.
      */
     while (1) {
         menu_process();
-        gps_update();
+
+        // Only process GPS data when complete sentences are available
+        if (gps_sentence_ready()) {
+            gps_update();
+        }
 
         /*
          * Only perform SMT-based control processing when a new capture has
@@ -128,10 +131,7 @@ void main(int argc, char** argv) {
             control_update(err);
 
             // Send debug data over serial
-            serial_debug_int("SMT Count", (int32_t)c);
-            serial_debug_int("Freq Error", err);
-            serial_debug_int("DAC Output", (int32_t)dac_get_raw());
-            serial_send_csv_data(0.0f, (float)err, (float)dac_get_raw(), (float)c);
+            printf("[PRINTF] Count: %lu, Error: %ld, DAC: %d\r\n", (unsigned long)c, (long)err, (int)dac_get_raw());
 
             // Format and set frequency line using printf-style formatting
             lcdBufferPrintf(3, "Freq:%lu", (unsigned long)c);

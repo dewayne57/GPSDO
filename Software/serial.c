@@ -1,16 +1,27 @@
-/* SPDX-License-Identifier: Apache-2.0 */
 /*
  * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
  *
  * External serial communication module implementation.
  * Handles UART2 for RS-232 communication on RB3 (TxD) and RB4 (RxD).
- * Transmits GPS data every second and provides bootloader support.
+ * Uses printf redirection for all serial output.
+ *
+ * Supports sending GPS data and future bootloader functionality.
+ * Configurable baud rate, parity, and stop bits via system configuration.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 #include "serial.h"
 #include "config.h"
 #include "date.h"
-#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -19,7 +30,33 @@ static char rx_buffer[SERIAL_BUFFER_SIZE];
 static volatile uint8_t rx_head = 0; /* 0-255 index (buffer is 256 bytes) */
 static volatile uint8_t rx_tail = 0;
 
-/* Baud rate lookup table defined in data.c */
+/*
+ * Send a single character via UART2 (static - only used internally)
+ */
+static void serial_send_char(char c) {
+    // Wait for transmit buffer to be empty
+    while (!U2FIFObits.TXBE) {
+        // Wait
+    }
+
+    // Send character
+    U2TXB = c;
+}
+
+/*
+ * Set UART2 baud rate (static - only used internally)
+ */
+static void serial_set_baud_rate(uint8_t baud_index) {
+    if (baud_index >= BAUD_RATES_COUNT) {
+        return; // Invalid baud rate index
+    }
+
+    uint32_t baud_rate = baud_rate_from_index(baud_index);
+    uint32_t baud_div = (_XTAL_FREQ / (4 * baud_rate)) - 1U;
+
+    U2BRGL = (uint8_t)(baud_div & 0xFFU);
+    U2BRGH = (uint8_t)((baud_div >> 8) & 0xFFU);
+}
 
 /*
  * Initialize external serial communication using UART2
@@ -63,27 +100,12 @@ void serial_init(void) {
     // Note: Stop bits configuration not directly available in this UART module
     // The PIC18F27Q43 UART2 uses 1 stop bit by default in asynchronous mode
 
-    // Enable UART2 (start disabled for now - will enable when needed)
+    // Enable UART2
     U2CON1bits.ON = 1; // Enable UART2
 
     // For now, don't enable RX interrupt (will be enabled when bootloader is needed)
     PIR8bits.U2RXIF = 0; // Clear interrupt flag
     PIE8bits.U2RXIE = 0; // Disable UART2 RX interrupt for now
-}
-
-/*
- * Set UART2 baud rate
- */
-void serial_set_baud_rate(uint8_t baud_index) {
-    if (baud_index >= BAUD_RATES_COUNT) {
-        return; // Invalid baud rate index
-    }
-
-    uint32_t baud_rate = baud_rate_from_index(baud_index);
-    uint32_t baud_div = (_XTAL_FREQ / (4 * baud_rate)) - 1U;
-
-    U2BRGL = (uint8_t)(baud_div & 0xFFU);
-    U2BRGH = (uint8_t)((baud_div >> 8) & 0xFFU);
 }
 
 /*
@@ -114,51 +136,21 @@ void serial_reconfigure(void) {
         U2CON0bits.MODE = 0x0; // 8-bit no parity
     }
 
-    // Note: Stop bits configuration not directly available in this UART module
-    // The PIC18F27Q43 UART2 uses 1 stop bit by default in asynchronous mode
-
     // Re-enable UART2
     U2CON1bits.ON = 1;
 }
 
 /*
- * Send a single character via UART2
+ * Send GPS data via UART2 using printf
  */
-void serial_send_char(char c) {
-    // Wait for transmit buffer to be empty
-    while (!U2FIFObits.TXBE) {
-        // Wait
-    }
-
-    // Send character
-    U2TXB = c;
-}
-
-/*
- * Send a null-terminated string via UART2
- */
-void serial_send_string(const char* str) {
-    if (str == NULL) {
-        return;
-    }
-
-    while (*str) {
-        serial_send_char(*str++);
-    }
-}
-
-/*
- * Format GPS data into a readable message string
- * Format: "DATE: YYYY-MM-DD TIME: HH:MM:SS LAT: +/-XX.XXXXXX LON: +/-XXX.XXXXXX ALT: XXXX.X SAT: XX\r\n"
- */
-void serial_format_gps_message(char* buffer, const gps_data_t* gps_data) {
-    if (buffer == NULL || gps_data == NULL) {
+void serial_send_gps_data(const gps_data_t* gps_data) {
+    if (gps_data == NULL) {
         return;
     }
 
     // Check if GPS data is valid
     if (!gps_data->datetime.valid || !gps_data->position.valid) {
-        sprintf(buffer, "GPS: NO VALID DATA\r\n");
+        printf("GPS: NO VALID DATA\r\n");
         return;
     }
 
@@ -176,21 +168,10 @@ void serial_format_gps_message(char* buffer, const gps_data_t* gps_data) {
         strcpy(tzbuf, "UTC");
     }
 
-    sprintf(buffer,
-            "DATE: 20%02d-%02d-%02d TIME: %02d:%02d:%02d TZ: %s LAT: %+09.6f LON: %+010.6f ALT: %+07.1f SAT: %02d\r\n",
-            use_dt->year, use_dt->month, use_dt->day, use_dt->hour, use_dt->minute, use_dt->second, tzbuf,
-            gps_data->position.latitude, gps_data->position.longitude, gps_data->position.altitude,
-            gps_data->position.satellites);
-}
-
-/*
- * Send GPS data via UART2 in a formatted message
- */
-void serial_send_gps_data(const gps_data_t* gps_data) {
-    char message_buffer[256];
-
-    serial_format_gps_message(message_buffer, gps_data);
-    serial_send_string(message_buffer);
+    printf("DATE: 20%02d-%02d-%02d TIME: %02d:%02d:%02d TZ: %s LAT: %+09.6f LON: %+010.6f ALT: %+07.1f SAT: %02d\r\n",
+           use_dt->year, use_dt->month, use_dt->day, use_dt->hour, use_dt->minute, use_dt->second, tzbuf,
+           gps_data->position.latitude, gps_data->position.longitude, gps_data->position.altitude,
+           gps_data->position.satellites);
 }
 
 /*
@@ -243,66 +224,9 @@ void serial_buffer_put_char(char c) {
 }
 
 /*
- * Debug helper function for formatted output
- */
-void serial_debug_printf(const char* format, ...) {
-    char debug_buffer[128];
-    va_list args;
-
-    va_start(args, format);
-    vsnprintf(debug_buffer, sizeof(debug_buffer), format, args);
-    va_end(args);
-
-    serial_send_string(debug_buffer);
-}
-
-/*
- * Debug helper for integer values
- */
-void serial_debug_int(const char* label, int32_t value) {
-    char debug_buffer[64];
-    sprintf(debug_buffer, "[DEBUG] %s: %ld\r\n", label, value);
-    serial_send_string(debug_buffer);
-}
-
-/*
- * Debug helper for float values
- */
-void serial_debug_float(const char* label, float value) {
-    char debug_buffer[64];
-    sprintf(debug_buffer, "[DEBUG] %s: %.6f\r\n", label, value);
-    serial_send_string(debug_buffer);
-}
-
-/*
- * Debug helper for hexadecimal values
- */
-void serial_debug_hex(const char* label, uint32_t value) {
-    char debug_buffer[64];
-    sprintf(debug_buffer, "[DEBUG] %s: 0x%08lX\r\n", label, value);
-    serial_send_string(debug_buffer);
-}
-
-/*
- * Send CSV header for Data Visualizer plotting
- */
-void serial_send_csv_header(void) {
-    serial_send_string("Time,Value1,Value2,Value3\r\n");
-}
-
-/*
- * Send CSV formatted data for Data Visualizer plotting
- */
-void serial_send_csv_data(float timestamp, float value1, float value2, float value3) {
-    char csv_buffer[128];
-    sprintf(csv_buffer, "%.3f,%.6f,%.6f,%.6f\r\n", timestamp, value1, value2, value3);
-    serial_send_string(csv_buffer);
-}
-
-/*
  * Printf redirection function
  * This function is called by the XC8 compiler's printf implementation
- * to output characters to UART2 for debugging
+ * to output characters to UART2
  */
 void putch(char c) {
     serial_send_char(c);
