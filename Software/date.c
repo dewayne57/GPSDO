@@ -111,9 +111,9 @@ void date_format_time_short(char *buf, const gps_datetime_t *dt)
 void tz_offset_to_string(int16_t offset_minutes, char *buf)
 {
     if (!buf) return;
-    int sign = (offset_minutes >= 0) ? 1 : -1;
-    int absmin = (offset_minutes >= 0) ? offset_minutes : -offset_minutes;
+    char sign_char = (offset_minutes >= 0) ? '+' : '-';
+    int absmin = (offset_minutes >= 0) ? (int)offset_minutes : -(int)offset_minutes;
     int h = absmin / 60;
     int m = absmin % 60;
-    (void)snprintf(buf, 7, "%c%02d:%02d", (sign >= 0) ? '+' : '-', h, m);
+    (void)snprintf(buf, 7, "%c%02d:%02d", sign_char, h, m);
 }

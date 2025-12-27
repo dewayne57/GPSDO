@@ -57,13 +57,6 @@ typedef struct
 /* Function prototypes */
 void serial_init(void);
 void serial_reconfigure(void);
-void serial_send_gps_data(const gps_data_t *gps_data);
-
-/* Bootloader support functions */
-bool serial_data_available(void);
-char serial_get_char(void);
-void serial_enable_rx_interrupt(void);
-void serial_disable_rx_interrupt(void);
 
 /* Internal buffer management (for ISR) */
 void serial_buffer_put_char(char c);

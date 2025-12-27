@@ -24,9 +24,9 @@
 #include "gps.h"
 #include "i2c.h"
 #include "lcd.h"
-#include "serial.h"
 #include "mcp23x17.h"
 #include "menu.h"
+#include "serial.h"
 #include "smt.h"
 #include <string.h>
 #include <xc.h>
@@ -34,15 +34,14 @@
 /**
  * Global variables and data areas.
  */
-bool system_initialized = false;    // Flag indicating system initialization complete
-uint8_t buffer[128];                // General-purpose I2C buffer
-IOPortA_t ioporta = {.all = 0xF0};  // I/O expander Port A state shadow register
-system_config_t system_config;      // System configuration data 
+bool system_initialized = false;     // Flag indicating system initialization complete
+uint8_t i2c_buffer[I2C_BUFFER_SIZE]; // General-purpose I2C buffer
+IOPortA_t ioporta = {.all = 0xF0};   // I/O expander Port A state shadow register
+system_config_t system_config;       // System configuration data
 volatile encoder_state_t encoder_state = {
-    .position = 0, .last_state = 0, .button_raw = 1, .button_stable = 0, .debounce_cnt = 0
-};                                  // Rotary encoder state
-extern volatile gps_data_t gps_data;       // Global GPS data (defined in gps.c)
-extern volatile bool gps_data_available;   // Flag for new GPS data available (defined in gps.c)
+    .position = 0, .last_state = 0, .button_raw = 1, .button_stable = 0, .debounce_cnt = 0}; // Rotary encoder state
+extern volatile gps_data_t gps_data;     // Global GPS data (defined in gps.c)
+extern volatile bool gps_data_available; // Flag for new GPS data available (defined in gps.c)
 
 /*
  * Shared constant arrays used for menu display options, settings, etc.
@@ -53,27 +52,42 @@ const char* baud_options[] = {"300", "600", "1200", "2400", "4800", "9600", "192
 const char* vref_options[] = {"DAC", "Internal"};
 const char* protocol_options[] = {"NMEA", "UBX", "RTCM"};
 const char* tz_mode_options[] = {"UTC", "Local"};
+#define DEFAULT_GPS_BAUD 5      // Index into baud_options for default GPS baud rate (9600)
+#define DEFAULT_GPS_PARITY 0    // Index into parity_options for default GPS parity option
+#define DEFAULT_GPS_STOP_BITS 1 // Index into stop_options for default GPS stop bits (1 stop bit)
 
 /*
  * forward definitions
  */
 static void selfCheck(void);
 
-/* 
- * Convert a baud rate option string to numeric baud value. 
+/*
+ * Convert a baud rate option string to numeric baud value.
  */
 uint32_t baud_rate_from_index(uint8_t index) {
     if (index >= BAUD_RATES_COUNT) {
         return 9600U; /* default fallback */
     }
-    const char *s = baud_options[index];
+    const char* s = baud_options[index];
     uint32_t r = 0U;
     while (*s >= '0' && *s <= '9') {
         r = r * 10U + (uint32_t)(*s - '0');
         s++;
     }
     return r;
-} 
+}
+
+/*
+ * Convert a numeric baud rate to its index in baud_options array.
+ */
+uint8_t baud_rate_index(uint32_t baud_rate) {
+    for (uint8_t i = 0; i < BAUD_RATES_COUNT; i++) {
+        if (baud_rate_from_index(i) == baud_rate) {
+            return i;
+        }
+    }
+    return DEFAULT_GPS_BAUD; /* default to 9600 baud index */
+}
 
 /****************************************************************************/
 /*                                                                          */
@@ -88,7 +102,7 @@ void initialize(void) {
      */
     INTCON0bits.GIEH = 0; // Turn off high priority interrupts
     INTCON0bits.GIEL = 0; // And low priority interrupts too
-  
+
     /*
      * Clear all interrupt enables
      */
@@ -216,10 +230,10 @@ void initialize(void) {
      */
     ODCONC = SDA + SCL + PHASE_A + PHASE_B + ENTER_N;
 
-    RC3I2C = 0x51;         // i2c fast mode, 2x pullups, i2c thresholds on RC3 (SCL)
-    RC4I2C = 0x51;         // i2c fast mode, 2x pullups, i2c thresholds on RC4 (SDA)
-    //SLRCONCbits.SLRC3 = 0; // maximum slew rate for bit-bang timing
-    //SLRCONCbits.SLRC4 = 0; // maximum slew rate for bit-bang timing
+    RC3I2C = 0x51; // i2c fast mode, 2x pullups, i2c thresholds on RC3 (SCL)
+    RC4I2C = 0x51; // i2c fast mode, 2x pullups, i2c thresholds on RC4 (SDA)
+    // SLRCONCbits.SLRC3 = 0; // maximum slew rate for bit-bang timing
+    // SLRCONCbits.SLRC4 = 0; // maximum slew rate for bit-bang timing
 
     /*
      * Set up external interrupt 0 (active-high from GPS module)
@@ -233,8 +247,8 @@ void initialize(void) {
     /*
      * Set up PPS as needed
      */
-    PPSLOCK = 0x55;          // unlock PPS
-    PPSLOCK = 0xAA;          // unlock PPS
+    PPSLOCK = 0x55;            // unlock PPS
+    PPSLOCK = 0xAA;            // unlock PPS
     PPSLOCKbits.PPSLOCKED = 0; // unlock
 
     INT0PPS = 0x0A; // RB2 -> INT0 input
@@ -244,8 +258,8 @@ void initialize(void) {
     // RB3 (EXT_TX) -> UART2 TX output (for data transmission)
     RB3PPS = 0x23; // UART2 TX
 
-    PPSLOCK = 0x55;         // lock PPS
-    PPSLOCK = 0xAA;         // lock PPS
+    PPSLOCK = 0x55;            // lock PPS
+    PPSLOCK = 0xAA;            // lock PPS
     PPSLOCKbits.PPSLOCKED = 1; // lock
 
     /*
@@ -271,34 +285,34 @@ void initialize(void) {
     /*
      * Initialize MCP23017 Port A
      */
-    buffer[0] = IODIRA; // Write IODIRA register
-    buffer[1] = 0x00;   // All pins are output
-    buffer[2] = 0x00;   // pins are not inverted
-    buffer[3] = 0x00;   // No IOC
-    buffer[4] = 0x00;   // default compare register
-    buffer[5] = 0x00;   // compare against previous value
-    buffer[6] = 0x80;   // re-write iocon for now
-    buffer[7] = 0x00;   // disable pullups
-    buffer[8] = 0x00;   // Ignored
-    buffer[9] = 0x00;   // not used
-    buffer[10] = 0xF0;  // All LEDs off
-    i2cWriteBuffer(MCP23017_ADDRESS, buffer, 11);
+    i2c_buffer[0] = IODIRA; // Write IODIRA register
+    i2c_buffer[1] = 0x00;   // All pins are output
+    i2c_buffer[2] = 0x00;   // pins are not inverted
+    i2c_buffer[3] = 0x00;   // No IOC
+    i2c_buffer[4] = 0x00;   // default compare register
+    i2c_buffer[5] = 0x00;   // compare against previous value
+    i2c_buffer[6] = 0x80;   // re-write iocon for now
+    i2c_buffer[7] = 0x00;   // disable pullups
+    i2c_buffer[8] = 0x00;   // Ignored
+    i2c_buffer[9] = 0x00;   // not used
+    i2c_buffer[10] = 0xF0;  // All LEDs off
+    i2cWriteBuffer(MCP23017_ADDRESS, i2c_buffer, 11);
 
     /*
      * Initialize MCP23017 #1 Port B
      */
-    buffer[0] = IODIRB; // Write IODIRB register
-    buffer[1] = 0x00;   // All pins output
-    buffer[2] = 0x00;   // pins are NOT inverted
-    buffer[3] = 0x00;   // No IOC
-    buffer[4] = 0x00;   // Default compare
-    buffer[5] = 0x00;   // Compare against prev value
-    buffer[6] = 0x80;   // Re-write IOCON for now
-    buffer[7] = 0x00;   // Disable pullups
-    buffer[8] = 0x00;   // Ignored
-    buffer[9] = 0x00;   // not used
-    buffer[10] = 0x00;  // All pins low
-    i2cWriteBuffer(MCP23017_ADDRESS, buffer, 11);
+    i2c_buffer[0] = IODIRB; // Write IODIRB register
+    i2c_buffer[1] = 0x00;   // All pins output
+    i2c_buffer[2] = 0x00;   // pins are NOT inverted
+    i2c_buffer[3] = 0x00;   // No IOC
+    i2c_buffer[4] = 0x00;   // Default compare
+    i2c_buffer[5] = 0x00;   // Compare against prev value
+    i2c_buffer[6] = 0x80;   // Re-write IOCON for now
+    i2c_buffer[7] = 0x00;   // Disable pullups
+    i2c_buffer[8] = 0x00;   // Ignored
+    i2c_buffer[9] = 0x00;   // not used
+    i2c_buffer[10] = 0x00;  // All pins low
+    i2cWriteBuffer(MCP23017_ADDRESS, i2c_buffer, 11);
 
     /*
      * Now, set the IO Configuration to byte mode
@@ -308,13 +322,13 @@ void initialize(void) {
     /*
      * Clear any pending MCP23017 interrupt from initialization (read INTFA then GPIOA)
      */
-    i2cReadRegister(MCP23017_ADDRESS, INTFA, buffer);
-    i2cReadRegister(MCP23017_ADDRESS, GPIOA, buffer);
+    i2cReadRegister(MCP23017_ADDRESS, INTFA, i2c_buffer);
+    i2cReadRegister(MCP23017_ADDRESS, GPIOA, i2c_buffer);
 
     /*
      * Load persistent system configuration from EEPROM (falls back to defaults)
      */
-    config_load((system_config_t *)buffer); 
+    config_load((system_config_t*)i2c_buffer);
 
     /*
      * Initialize encoder GPIOs and state
@@ -337,8 +351,8 @@ void initialize(void) {
      * and its interrupt is disabled so it does not affect the main loop.
      */
     TMR1IF = 0;
-    TMR1IE = 0;   // don't enable Timer1 interrupt
-    TMR1IP = 0;   // low priority if ever enabled
+    TMR1IE = 0;             // don't enable Timer1 interrupt
+    TMR1IP = 0;             // low priority if ever enabled
     TMR1CONbits.TMR1ON = 0; // ensure Timer1 is stopped
 
     /*
@@ -362,7 +376,7 @@ void initialize(void) {
     INTCON0bits.GIEL = 1; // Low priority enabled
 
     /*
-     * Initialize all other sub-systems 
+     * Initialize all other sub-systems
      */
     lcdSetBacklight(true);
     gps_init();
@@ -491,17 +505,17 @@ void config_defaults(system_config_t* cfg) {
     cfg->magic = CONFIG_MAGIC;
     cfg->version = CONFIG_VERSION;
     cfg->vref_source = VREF_INTERNAL;
-    cfg->gps_baud_index = 1; /* default 9600 */
-    cfg->gps_stop_bits = 1;  /* 1 stop bit */
-    cfg->gps_parity = PARITY_N;
-    cfg->gps_protocol = GPS_PROTOCOL_NMEA; /* default NMEA */
-    cfg->ext_baud_index = 1;               /* default 9600 for external port */
-    cfg->ext_stop_bits = 1;                /* 1 stop bit for external port */
-    cfg->ext_parity = PARITY_N;            /* no parity for external port */
+    cfg->gps_baud = DEFAULT_GPS_BAUD;           /* default 9600 */
+    cfg->gps_stop_bits = DEFAULT_GPS_STOP_BITS; /* 1 stop bit */
+    cfg->gps_parity = DEFAULT_GPS_PARITY;       /* no parity for GPS */
+    cfg->gps_protocol = GPS_PROTOCOL_NMEA;      /* default NMEA */
+    cfg->ext_baud = 1;                          /* default 9600 for external port */
+    cfg->ext_stop_bits = 1;                     /* 1 stop bit for external port */
+    cfg->ext_parity = PARITY_N;                 /* no parity for external port */
     cfg->vco_dac = (uint16_t)DAC_MIDPOINT;
     memset(cfg->reserved, 0, sizeof(cfg->reserved));
-    cfg->tz_mode = 0;          /* default to UTC */
-    cfg->tz_offset_min = 0;    /* zero offset */
+    cfg->tz_mode = 0;       /* default to UTC */
+    cfg->tz_offset_min = 0; /* zero offset */
     cfg->crc = 0;
     cfg->crc = (uint8_t)(~checksum((uint8_t*)cfg, sizeof(system_config_t) - 1));
 }

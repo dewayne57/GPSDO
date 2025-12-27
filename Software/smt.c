@@ -5,28 +5,25 @@
  * Capture result read from SMT1CPR (24-bit) when SMT1PRAIF is set.
  */
 
-#include <xc.h>
-#include <stdint.h>
 #include "config.h"
+#include <stdint.h>
+#include <xc.h>
 
 volatile uint32_t smt_last_count = 0;
-volatile int32_t  smt_last_error = 0;
-volatile bool  smt_new_capture = false; /* set in ISR when capture completes */
+volatile int32_t smt_last_error = 0;
+volatile bool smt_new_capture = false; /* set in ISR when capture completes */
 
 /* Return true if a new capture has been recorded (callers should clear it when handled) */
-bool smt_capture_available(void)
-{
+bool smt_capture_available(void) {
     return smt_new_capture;
 }
 
 /* Clear the capture-available flag (after handling) */
-void smt_clear_capture(void)
-{
+void smt_clear_capture(void) {
     smt_new_capture = false;
 }
 
-void smt_init(void)
-{
+void smt_init(void) {
     // Enable SMT1 module in PMD
     PMD1bits.SMT1MD = 0;
 
@@ -57,8 +54,7 @@ void smt_init(void)
 }
 
 /* Called from ISR when a capture completes (SMT1PRAIF set) */
-void smt_handle_capture(void)
-{
+void smt_handle_capture(void) {
     uint32_t v = 0;
     /* Read low byte first to latch upper bytes coherently */
     uint8_t l = SMT1CPRL;
@@ -66,7 +62,7 @@ void smt_handle_capture(void)
     uint8_t u = SMT1CPRU;
     v = ((uint32_t)u << 16) | ((uint32_t)h << 8) | (uint32_t)l;
     smt_last_count = v;
-    smt_last_error = (int32_t)((int32_t)v - (int32_t)10000000);
+    smt_last_error = (int32_t)v - 10000000L;
 
     /* Indicate to the rest of the system that a new capture is available */
     smt_new_capture = true;
@@ -75,8 +71,7 @@ void smt_handle_capture(void)
     SMT1PRAIF = 0;
 }
 
-uint32_t smt_get_last_count(void)
-{
+uint32_t smt_get_last_count(void) {
     /* Protect 32-bit read from tearing while ISR updates */
     uint8_t gie_saved;
     uint8_t giel_saved;
@@ -86,8 +81,7 @@ uint32_t smt_get_last_count(void)
     return v;
 }
 
-int32_t smt_get_last_error(void)
-{
+int32_t smt_get_last_error(void) {
     uint8_t gie_saved;
     uint8_t giel_saved;
     CRITICAL_SECTION_ENTER(gie_saved, giel_saved);

@@ -31,7 +31,6 @@ typedef enum { GPS_PROTOCOL_NMEA = 0, GPS_PROTOCOL_UBX = 1, GPS_PROTOCOL_RTCM = 
 extern "C" {
 #endif
 
-/* GPS UART configuration */
 #define GPS_BUFFER_SIZE 1024
 #define GPS_MAX_SENTENCE 120
 
@@ -71,22 +70,29 @@ typedef struct {
 } gps_data_t;
 
 /* Function prototypes */
+// Initialize GPS UART communication
 void gps_init(void);
-void gps_update(void);
+// determines if a valid GPS fix is available
 bool gps_has_valid_fix(void);
-bool gps_has_new_data(void);
-bool gps_sentence_ready(void);
-void gps_get_data(gps_data_t* data);
+// Update GPS data for positioning information
 void gps_format_position(char* buffer, size_t len, const gps_position_t* pos);
+// Update GPS data for date/time information
 void gps_format_date_time(char* buffer, size_t len, const gps_datetime_t* dt);
+// Set GPS protocol (NMEA, UBX, or RTCM)
 void gps_set_protocol(gps_protocol_t protocol);
+// Parse a complete NMEA, UBX, or RTCM sentence
+void gps_parse_sentence(void);
 
 /* Internal functions (exposed for testing) */
-void gps_parse_sentence(const char* sentence);
+// Parses NMEA GPRMC sentence
 void gps_parse_gprmc(const char* fields[], uint8_t field_count);
+// Parses NMEA GPGGA sentence
 void gps_parse_gpgga(const char* fields[], uint8_t field_count);
+//  Parses UBX message
 void gps_parse_ubx_message(const uint8_t* data, uint16_t length);
+//  Parses RTCM message
 void gps_parse_rtcm_message(const uint8_t* data, uint16_t length);
+// Splits a NMEA sentence into fields
 uint8_t gps_split_sentence(const char* sentence, const char* fields[], uint8_t max_fields);
 
 /* GPS buffer access functions for ISR */

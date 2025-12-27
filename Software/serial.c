@@ -73,7 +73,7 @@ void serial_init(void) {
     U2CON2 = 0x04; // BRGS=1 for high-speed baud (4x clock in divisor)
 
     // Set initial baud rate to 9600 (index from system config ext_baud_index)
-    uint8_t baud_index = system_config.ext_baud_index;
+    uint8_t baud_index = baud_rate_index(system_config.ext_baud);
     if (baud_index >= BAUD_RATES_COUNT) {
         baud_index = SERIAL_BAUD_9600; // Default to 9600 if invalid
     }
@@ -117,7 +117,7 @@ void serial_reconfigure(void) {
     U2CON1bits.ON = 0;
 
     // Set baud rate from config
-    uint8_t baud_index = system_config.ext_baud_index;
+    uint8_t baud_index = baud_rate_index(system_config.ext_baud);
     if (baud_index >= BAUD_RATES_COUNT) {
         baud_index = SERIAL_BAUD_9600; // Default to 9600 if invalid
     }
@@ -138,76 +138,6 @@ void serial_reconfigure(void) {
 
     // Re-enable UART2
     U2CON1bits.ON = 1;
-}
-
-/*
- * Send GPS data via UART2 using printf
- */
-void serial_send_gps_data(const gps_data_t* gps_data) {
-    if (gps_data == NULL) {
-        return;
-    }
-
-    // Check if GPS data is valid
-    if (!gps_data->datetime.valid || !gps_data->position.valid) {
-        printf("GPS: NO VALID DATA\r\n");
-        return;
-    }
-
-    /* Respect timezone settings */
-    char tzbuf[8] = {0};
-    gps_datetime_t outdt;
-    const gps_datetime_t* use_dt = &gps_data->datetime;
-    if (system_config.tz_mode == 1) {
-        /* Local: apply offset */
-        date_apply_offset(&gps_data->datetime, &outdt, system_config.tz_offset_min);
-        use_dt = &outdt;
-        tz_offset_to_string(system_config.tz_offset_min, tzbuf);
-    } else {
-        /* UTC */
-        strcpy(tzbuf, "UTC");
-    }
-
-    printf("DATE: 20%02d-%02d-%02d TIME: %02d:%02d:%02d TZ: %s LAT: %+09.6f LON: %+010.6f ALT: %+07.1f SAT: %02d\r\n",
-           use_dt->year, use_dt->month, use_dt->day, use_dt->hour, use_dt->minute, use_dt->second, tzbuf,
-           gps_data->position.latitude, gps_data->position.longitude, gps_data->position.altitude,
-           gps_data->position.satellites);
-}
-
-/*
- * Check if data is available in the receive buffer
- */
-bool serial_data_available(void) {
-    return (rx_head != rx_tail);
-}
-
-/*
- * Get a character from the receive buffer
- */
-char serial_get_char(void) {
-    if (rx_head == rx_tail) {
-        return 0; // No data available
-    }
-
-    char c = rx_buffer[rx_tail];
-    rx_tail = (uint8_t)(rx_tail + 1); // wraps naturally at 256
-    return c;
-}
-
-/*
- * Enable UART2 receive interrupt (for bootloader mode)
- */
-void serial_enable_rx_interrupt(void) {
-    PIR8bits.U2RXIF = 0; // Clear interrupt flag
-    IPR8bits.U2RXIP = 0; // Low priority interrupt
-    PIE8bits.U2RXIE = 1; // Enable UART2 RX interrupt
-}
-
-/*
- * Disable UART2 receive interrupt
- */
-void serial_disable_rx_interrupt(void) {
-    PIE8bits.U2RXIE = 0; // Disable UART2 RX interrupt
 }
 
 /*

@@ -28,12 +28,16 @@
 /*
  * global data areas
  */
-extern system_config_t system_config; // System configuration data
-volatile gps_data_t gps_data;         // Global GPS data
-volatile bool gps_data_available;     // Flag for new GPS data available
+extern system_config_t system_config;         // System configuration data
+volatile gps_data_t gps_data;                 // Global GPS data
+volatile bool gps_data_available;             // Flag for new GPS data available
+volatile bool gps_sentence_available;         // Flag for new GPS sentence available
+volatile char gps_sentence[GPS_MAX_SENTENCE]; // Current GPS sentence buffer
 
 /* Forward declaration of internal functions */
 static void gps_update_led(void);
+static void reset_buffer(void);
+static void snapshot_sentence(void);
 
 /*
  *  NMEA Protocol Configuration Commands
@@ -57,19 +61,12 @@ static const uint8_t ubx_cfg_rtcm[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01,
                                        0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xB9, 0x42};
 
 /* UART receive buffer and state */
-static char rx_buffer[GPS_BUFFER_SIZE];
-static volatile uint16_t rx_head = 0;
-static volatile uint16_t rx_tail = 0;
-static char sentence_buffer[GPS_MAX_SENTENCE];
-static volatile bool sentence_available = false;
-static volatile bool buffer_resync_mode = false; // True when looking for start-of-sentence
-
-/* Binary protocol message state tracking */
-static volatile uint8_t ubx_state = 0;    // UBX message parsing state
-static volatile uint16_t ubx_length = 0;  // Expected UBX message length
-static volatile uint16_t ubx_count = 0;   // Current byte count in UBX message
-static volatile uint16_t rtcm_length = 0; // Expected RTCM message length
-static volatile uint16_t rtcm_count = 0;  // Current byte count in RTCM message
+static char gps_rx_buffer[GPS_BUFFER_SIZE];
+static volatile uint16_t gps_rx_head = 0;
+static volatile uint16_t gps_rx_tail = 0;
+static volatile bool gps_buffer_resync_mode = false; // True when looking for start-of-sentence
+static volatile bool gps_sentence_started = false;   // True when we have seen start of sentence
+static volatile uint16_t gps_sentence_length = 0;    // Current sentence length for UBX and RTCM
 
 /*
  * Initialize GPS UART communication
@@ -80,17 +77,14 @@ void gps_init(void) {
     gps_data.current_protocol = (gps_protocol_t)system_config.gps_protocol;
 
     // Clear buffers
-    memset(rx_buffer, 0, sizeof(rx_buffer));
-    memset(sentence_buffer, 0, sizeof(sentence_buffer));
-    rx_head = rx_tail = 0;
+    memset(gps_rx_buffer, 0, sizeof(gps_rx_buffer));
+    memset((void*)gps_sentence, 0, sizeof(gps_sentence));
+    gps_rx_head = gps_rx_tail = 0;
     gps_data_available = false;
-    sentence_available = false;
-    buffer_resync_mode = false;
-
-    // Initialize binary protocol state
-    ubx_state = 0;
-    ubx_length = ubx_count = 0;
-    rtcm_length = rtcm_count = 0;
+    gps_sentence_available = false;
+    gps_buffer_resync_mode = false;
+    gps_sentence_started = false;
+    gps_sentence_length = 0;
 
     // Configure UART1 for GPS communication
     // PPS configuration for UART1 RX/TX
@@ -113,7 +107,7 @@ void gps_init(void) {
     U1CON2 = 0x00; // Reset UART1
 
     // Set baud rate based on system configuration
-    uint32_t baud_rate = baud_rate_from_index(system_config.gps_baud_index);
+    uint32_t baud_rate = system_config.gps_baud;
     uint32_t baud_div = (_XTAL_FREQ / (4 * baud_rate)) - 1U;
 
     U1BRGL = (uint8_t)(baud_div & 0xFFU);
@@ -125,15 +119,28 @@ void gps_init(void) {
     U1CON0bits.TXEN = 1;   // Enable transmitter
 
     // Configure parity and stop bits based on system config
-    if (system_config.gps_parity == PARITY_E) {
-        U1CON0bits.MODE = 0x1; // 8-bit with even parity
-    } else if (system_config.gps_parity == PARITY_O) {
-        U1CON0bits.MODE = 0x3; // 8-bit with odd parity
-    } else {
-        U1CON0bits.MODE = 0x0; // 8-bit no parity
+    switch (system_config.gps_parity) {
+        case PARITY_N:
+            U1CON0bits.MODE = 0x0; // 8-bit no parity
+            break;
+        case PARITY_E:
+            U1CON0bits.MODE = 0x1; // 8-bit with even parity
+            break;
+        case PARITY_O:
+            U1CON0bits.MODE = 0x3; // 8-bit with odd parity
+            break;
+        case PARITY_M:
+            U1CON0bits.MODE = 0x5; // 8-bit with mark parity
+            break;
+        case PARITY_S:
+            U1CON0bits.MODE = 0x7; // 8-bit with space parity
+            break;
+        default:
+            U1CON0bits.MODE = 0x0; // 8-bit no parity
+            break;
     }
 
-    // Note: Stop bits are typically handled by baud rate generator on this chip
+    U1CON2bits.STP = (system_config.gps_stop_bits == 2) ? 1 : 0; // 1 or 2 stop bits
 
     // Enable UART receive interrupt
     PIR4bits.U1RXIF = 0; // Clear interrupt flag
@@ -157,74 +164,6 @@ void gps_init(void) {
     gps_set_protocol((gps_protocol_t)system_config.gps_protocol);
 }
 
-/*
- * Send a command to the GPS module
- */
-void gps_send_command(const char* cmd) {
-    const char* ptr = cmd;
-    while (*ptr) {
-        while (U1FIFObits.TXBF) // Wait for transmit buffer space
-            ;                   // Wait for transmit buffer space
-        U1TXB = *ptr++;
-    }
-}
-
-/*
- * Update GPS data (call from main loop)
- */
-void gps_update(void) {
-    static uint8_t sentence_pos = 0;
-
-    // Only process if we have data available or a sentence ready to be processed
-    if (!gps_sentence_ready() && rx_head == rx_tail) {
-        return; // No data and no complete sentences to process
-    }
-
-    // Process any complete sentences in the receive buffer
-    while (1) {
-        uint16_t head;
-        uint16_t tail;
-        char c;
-        uint8_t gie_saved;
-        uint8_t giel_saved;
-
-        // Take an atomic snapshot of the buffer indices and consume one byte if available
-        CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
-        head = rx_head;
-        tail = rx_tail;
-        if (head == tail) {
-            CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
-            break; // no data
-        }
-        c = rx_buffer[tail];
-        rx_tail = (uint16_t)((tail + 1U) % GPS_BUFFER_SIZE);
-        CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
-
-        if (c == '$') {
-            // Start of new sentence
-            sentence_pos = 0;
-            sentence_buffer[sentence_pos++] = c;
-        } else if (c == '\n' || c == '\r') {
-            // End of sentence
-            if (sentence_pos > 6) { // Minimum valid sentence length
-                sentence_buffer[sentence_pos] = '\0';
-                gps_parse_sentence(sentence_buffer);
-                // Clear the sentence ready flag after processing
-                CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
-                sentence_available = false;
-                CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
-            }
-            sentence_pos = 0;
-        } else if (sentence_pos < (GPS_MAX_SENTENCE - 1)) {
-            // Add character to sentence
-            sentence_buffer[sentence_pos++] = c;
-        } else {
-            // Sentence too long/noisy—drop it and wait for next '$'
-            sentence_pos = 0;
-        }
-    }
-}
-
 /**
  * Check if GPS has a valid fix
  */
@@ -233,48 +172,11 @@ bool gps_has_valid_fix(void) {
 }
 
 /*
- * Check if new GPS data is available
+ * Parse a complete NMEA, UBX, or RTCM sentence
  */
-bool gps_has_new_data(void) {
-    uint8_t gie_saved;
-    uint8_t giel_saved;
-    CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
-    bool result = gps_data_available;
-    gps_data_available = false;
-    CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
-    return result;
-}
-
-/*
- * Check if a complete sentence is available for processing
- */
-bool gps_sentence_ready(void) {
-    uint8_t gie_saved;
-    uint8_t giel_saved;
-    CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
-    bool result = sentence_available;
-    CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
-    return result;
-}
-
-/*
- * Get current GPS data
- */
-void gps_get_data(gps_data_t* data) {
-    // Copy current GPS data (atomic read)
-    uint8_t gie_saved;
-    uint8_t giel_saved;
-    CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
-    memcpy(data, (void*)&gps_data, sizeof(gps_data_t));
-    CRITICAL_SECTION_EXIT(gie_saved, giel_saved);
-}
-
-/*
- * Parse a complete NMEA sentence
- */
-void gps_parse_sentence(const char* sentence) {
+void gps_parse_sentence() {
     // Basic checksum validation
-    const char* checksum_pos = strrchr(sentence, '*');
+    const char* checksum_pos = strrchr((void*)gps_sentence, '*');
     if (!checksum_pos)
         return;
 
@@ -283,7 +185,7 @@ void gps_parse_sentence(const char* sentence) {
         return; // incomplete checksum
     }
     uint8_t calc = 0;
-    for (const char* p = sentence + 1; p < checksum_pos; p++) {
+    for (char* p = (char*)(gps_sentence + 1); p < checksum_pos; p++) {
         calc ^= (uint8_t)(*p);
     }
     char chkbuf[3];
@@ -296,17 +198,17 @@ void gps_parse_sentence(const char* sentence) {
     }
 
     // Split sentence into fields
-    const char* fields[20];
-    uint8_t field_count = gps_split_sentence(sentence, fields, 20);
+    char* fields[20];
+    uint8_t field_count = gps_split_sentence((const char*)gps_sentence, (const char**)fields, 20);
 
     if (field_count < 2)
         return;
 
     // Parse based on sentence type
     if (strncmp(fields[0], "$GPRMC", 6) == 0) {
-        gps_parse_gprmc(fields, field_count);
+        gps_parse_gprmc((const char**)fields, field_count);
     } else if (strncmp(fields[0], "$GPGGA", 6) == 0) {
-        gps_parse_gpgga(fields, field_count);
+        gps_parse_gpgga((const char**)fields, field_count);
     }
 }
 
@@ -562,162 +464,159 @@ void gps_set_protocol(gps_protocol_t protocol) {
 }
 
 /*
- * Put character into GPS receive buffer (called from ISR)
- * Enhanced to handle buffer overflow by resetting and resyncing
+ * Put character into GPS receive buffer (called from ISR).
+ *
+ * This function handles different protocols and manages buffer overflow.
+ * It supports NMEA, UBX, and RTCM protocols, which have different start
+ * and end sequences.  Since the routine only "sees" one character at a
+ * time, it has to accumulate enough data to determine when a complete
+ * message has been received.  Once it recognizes a complete message, it
+ * copies it to a separate buffer for processing and sets a flag that a
+ * gps sentence is available.
+ *
+ * Processing of the GPS sentence is done in the main loop to avoid doing
+ * complex parsing in the ISR context.  If the receive buffer overflows, the
+ * buffer is reset and the routine enters a resync mode where it looks for
+ * the start of the next valid message before resuming normal operation.
+ *
+ * An NMEA message starts with '$' and ends with CR/LF.
+ * A UBX message starts with 0xB5 0x62 and has a length field.
+ * An RTCM message starts with 0xD3 and has a length field.
+ *
+ * This code uses a circular buffer to store incoming characters.  The
+ * start of any message detected is indicated by the rx_head position. The
+ * rx_tail position indicates where the current end of the accumulated data
+ * is located.  All new characters are added to the buffer at rx_tail and
+ * rx_tail is incremented (or wrapped) until a stop sequence has been found.
+ *
+ * When a complete message is detected, it is copied from the circular buffer
+ * (starting at rx_head up to but excluding rx_tail) to the gps_sentence
+ * buffer for processing.  rx_head is then advanced to rx_tail to prepare
+ * for the next message.
  */
 void gps_buffer_put_char(char c) {
-    uint16_t next_head = (rx_head + 1) % GPS_BUFFER_SIZE;
+    uint16_t next_tail = (uint16_t)((gps_rx_tail + 1U) % GPS_BUFFER_SIZE);
 
-    // Check for buffer overflow
-    if (next_head == rx_tail) {
-        // Buffer is full - reset and enter resync mode
-        rx_head = rx_tail = 0;
-        buffer_resync_mode = true;
-        sentence_available = false;
-        // Reset protocol state machines
-        ubx_state = 0;
-        ubx_length = ubx_count = 0;
-        rtcm_length = rtcm_count = 0;
-        // Continue processing this character to check for start sequence
-    }
-
-    // If in resync mode, only store characters after finding start-of-sentence
-    if (buffer_resync_mode) {
-        bool is_start_sequence = false;
-        bool allow_character = false;
-
-        // Check for protocol start sequences based on current protocol
-        switch (gps_data.current_protocol) {
-            case GPS_PROTOCOL_NMEA:
-                is_start_sequence = (c == '$');
-                // Also allow CR/LF characters through for proper sentence termination
-                allow_character = is_start_sequence || (c == '\n') || (c == '\r');
-                break;
-
-            case GPS_PROTOCOL_UBX:
-                is_start_sequence = (c == 0xB5); // UBX sync char 1
-                allow_character = is_start_sequence;
-                break;
-
-            case GPS_PROTOCOL_RTCM:
-                is_start_sequence = (c == 0xD3); // RTCM preamble
-                allow_character = is_start_sequence;
-                break;
-
-            default:
-                // Unknown protocol, try NMEA as fallback
-                is_start_sequence = (c == '$');
-                allow_character = is_start_sequence || (c == '\n') || (c == '\r');
-                break;
-        }
-
-        if (is_start_sequence) {
-            // Found start of sentence - exit resync mode
-            buffer_resync_mode = false;
-            // Reset protocol state for new message
-            ubx_state = (gps_data.current_protocol == GPS_PROTOCOL_UBX) ? 1 : 0;
-            ubx_length = ubx_count = 0;
-            rtcm_length = rtcm_count = 0;
-        } else if (!allow_character) {
-            // Still looking for start and this character isn't allowed - discard
+    /*
+     * If we have not found a start of a sentence yet, keep hunting until
+     * we do moving head and tail in the buffer as we examine each
+     * character.  If we find the start of a sentence, set the flag and
+     * stop moving the head pointer so we can start accumulating the
+     * sentence.
+     */
+    gps_rx_buffer[gps_rx_tail] = c;
+    if (!gps_sentence_started) {
+        gps_rx_head = gps_rx_tail;
+        if (c == '$' || c == 0xB5 || c == 0xD3) {
+            // Found start of sentence
+            gps_sentence_started = true;
             return;
         }
-        // If allow_character is true but not start_sequence, continue processing (for CR/LF)
-    }
+    } else {
+        /*
+         * Now, make sure we havent wrapped around and overrun the head
+         * pointer.  If we have, we have a buffer overflow, so reset
+         * the buffer and start looking for the start of the next sentence.
+         */
+        if (next_tail == gps_rx_head) {
+            // Buffer overflow
+            reset_buffer();
+            return;
+        }
 
-    // Store character in buffer
-    rx_buffer[rx_head] = c;
-    rx_head = (rx_head + 1) % GPS_BUFFER_SIZE;
-
-    // Handle end-of-message detection based on protocol
-    switch (gps_data.current_protocol) {
-        case GPS_PROTOCOL_NMEA:
-            // NMEA uses CR/LF as end-of-sentence markers
-            if (c == '\n' || c == '\r') {
-                sentence_available = true;
-            }
-            break;
-
-        case GPS_PROTOCOL_UBX:
-            // UBX protocol state machine
-            switch (ubx_state) {
-                case 0: // Looking for sync char 1 (0xB5)
-                    if ((uint8_t)c == 0xB5) {
-                        ubx_state = 1;
-                        ubx_count = 1;
-                    }
-                    break;
-                case 1: // Looking for sync char 2 (0x62)
-                    if ((uint8_t)c == 0x62) {
-                        ubx_state = 2;
-                        ubx_count = 2;
-                    } else {
-                        ubx_state = 0;
-                        ubx_count = 0;
-                    }
-                    break;
-                case 2: // Class byte
-                    ubx_state = 3;
-                    ubx_count = 3;
-                    break;
-                case 3: // ID byte
-                    ubx_state = 4;
-                    ubx_count = 4;
-                    break;
-                case 4: // Length low byte
-                    ubx_length = (uint8_t)c;
-                    ubx_state = 5;
-                    ubx_count = 5;
-                    break;
-                case 5: // Length high byte
-                    ubx_length |= ((uint16_t)(uint8_t)c) << 8;
-                    ubx_state = 6;
-                    ubx_count = 6;
-                    break;
-                case 6: // Payload + checksum bytes
-                    ubx_count++;
-                    // Total message = 6 header + length + 2 checksum = 8 + length
-                    if (ubx_count >= (8 + ubx_length)) {
-                        sentence_available = true;
-                        ubx_state = 0;
-                        ubx_count = 0;
-                    }
-                    break;
-            }
-            break;
-
-        case GPS_PROTOCOL_RTCM:
-            // RTCM protocol message detection
-            if (rtcm_count == 0 && (uint8_t)c == 0xD3) {
-                // Start of RTCM message
-                rtcm_count = 1;
-            } else if (rtcm_count == 1) {
-                // Second byte contains length bits [15:8] & reserved bits
-                rtcm_length = ((uint16_t)(uint8_t)c & 0x03) << 8;
-                rtcm_count = 2;
-            } else if (rtcm_count == 2) {
-                // Third byte contains length bits [7:0]
-                rtcm_length |= (uint8_t)c;
-                rtcm_count = 3;
-            } else if (rtcm_count > 2) {
-                // Data + CRC bytes
-                rtcm_count++;
-                // Total RTCM message = 3 header + length + 3 CRC = 6 + length
-                if (rtcm_count >= (6 + rtcm_length)) {
-                    sentence_available = true;
-                    rtcm_count = 0;
+        /*
+         * Now look for an end-of-sentence based on protocol.  For NMEA this
+         * is CR/LF, for UBX it is based on length field, and for RTCM it
+         * is also based on length field.  So, for RTCM and UBX we have to
+         * accumulate enough characters to determine the length of the
+         * sentence, then wait until we have received that many characters.
+         */
+        int length = (int)gps_rx_tail - (int)gps_rx_head;
+        if (length < 0) {
+            length += GPS_BUFFER_SIZE; // It wrapped
+        }
+        /*
+         * Check to see if we have accumulated enough data for the UBX or
+         * RTCM message to have received it's length field.
+         * For UBX, this is 6 bytes (sync chars + class + id + length low + length high)
+         * For RTCM, this is 3 bytes (preamble + length high + length low)
+         */
+        switch (length) {
+            case 3: // Possible RTCM length field
+                if (gps_data.current_protocol == GPS_PROTOCOL_RTCM) {
+                    // Extract length from bytes 1 and 2
+                    uint16_t rtcm_length =
+                        ((uint16_t)(uint8_t)gps_rx_buffer[(gps_rx_head + 1U) % GPS_BUFFER_SIZE] & 0x03U) << 8;
+                    rtcm_length |= (uint8_t)gps_rx_buffer[(gps_rx_head + 2U) % GPS_BUFFER_SIZE];
+                    // Total RTCM message length = header + length + CRC
+                    gps_sentence_length = 6 + rtcm_length;
                 }
-            } else {
-                // Invalid RTCM data - reset
-                rtcm_count = 0;
+                break;
+            case 6: // Possible UBX length field
+                if (gps_data.current_protocol == GPS_PROTOCOL_UBX) {
+                    // Extract length from bytes 4 and 5
+                    uint16_t ubx_length = (uint8_t)gps_rx_buffer[(gps_rx_head + 4U) % GPS_BUFFER_SIZE];
+                    ubx_length |= ((uint16_t)(uint8_t)gps_rx_buffer[(gps_rx_head + 5U) % GPS_BUFFER_SIZE]) << 8;
+                    // Total UBX message length = header + length + checksum
+                    gps_sentence_length = 8 + ubx_length;
+                }
+                break;
+        }
+        // Check for end of sentence based on protocol
+        bool sentence_complete = false;
+        if (gps_data.current_protocol == GPS_PROTOCOL_NMEA) {
+            // NMEA ends with CR/LF
+            if (c == '\n' && length >= 2 &&
+                gps_rx_buffer[(gps_rx_tail - 1U + GPS_BUFFER_SIZE) % GPS_BUFFER_SIZE] == '\r') {
+                sentence_complete = true;
+                gps_sentence_length = (uint16_t)(length + 1);
             }
-            break;
+        } else if (gps_data.current_protocol == GPS_PROTOCOL_UBX || gps_data.current_protocol == GPS_PROTOCOL_RTCM) {
+            if (gps_sentence_length > 0 && length + 1 >= gps_sentence_length) {
+                sentence_complete = true;
+            }
+        }
 
-        default:
-            // Unknown protocol, assume NMEA behavior
-            if (c == '\n' || c == '\r') {
-                sentence_available = true;
-            }
-            break;
+        if (sentence_complete) {
+            // Snapshot the complete sentence for processing
+            snapshot_sentence();
+            reset_buffer();
+            return;
+        }
+
+        gps_rx_tail = next_tail; // Advance tail pointer
     }
+}
+
+/*
+ * We need to reset the buffer and start over.
+ */
+static void reset_buffer() {
+    gps_rx_head = gps_rx_tail = 0;
+    gps_sentence_started = false;
+    gps_sentence_length = 0;
+}
+
+/**
+ * Snapshot the current sentence from the circular buffer to the
+ * gps_sentence buffer for processing in the main loop.
+ */
+static void snapshot_sentence(void) {
+    // Copy from circular buffer to gps_sentence
+    uint16_t index = gps_rx_head;
+    uint16_t count = 0;
+    uint8_t gieh_save = 0;
+    uint8_t giel_save = 0;
+
+    CRITICAL_SECTION_ENTER(gieh_save, giel_save);
+    while (index != gps_rx_tail && count < GPS_MAX_SENTENCE - 1) {
+        gps_sentence[count++] = gps_rx_buffer[index];
+        index = (index + 1) % GPS_BUFFER_SIZE;
+    }
+    gps_sentence[count] = '\0'; // Null-terminate
+
+    // Advance head to tail for next message
+    gps_rx_head = gps_rx_tail;
+    gps_sentence_available = true;
+    CRITICAL_SECTION_EXIT(gieh_save, giel_save);
 }

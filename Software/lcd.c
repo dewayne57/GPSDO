@@ -301,48 +301,6 @@ void lcdWriteInstruction(uint8_t data) {
     (void)_lcdWaitReady(LCD_BUSY_MAX_POLLS);
 }
 
-/**
- * Write a character to the LCD.
- *
- * @param data The byte to write.
- *
- */
-void lcdWriteChar(uint8_t data) {
-    if (_lcdWriteByte(false, data) != I2C_SUCCESS) {
-        return;
-    }
-
-    (void)_lcdWaitReady(LCD_BUSY_MAX_POLLS);
-}
-
-/**
- * Read a data byte from the LCD at the current address.
- */
-uint8_t lcdReadData(void) {
-    uint8_t byte = 0;
-    (void)_lcdReadByte(false, &byte);
-
-    return byte;
-}
-
-/**
- * Read the busy flag from the LCD and return TRUE if busy, FALSE if ready.
- *
- * This function must write a command to the LCD with the RS =0 and RW=1 to read
- * the busy flag (D7).  In order to read the busy flag, we need to turn the PB4..PB7
- * pins of the MCP23017 to inputs temporarily.
- *
- * @return TRUE if the LCD is busy, FALSE if ready.
- *
- */
-bool isLcdBusy(void) {
-    uint8_t byte = 0;
-    if (_lcdReadByte(true, &byte) != I2C_SUCCESS) {
-        return true;
-    }
-    return (byte & 0x80) ? true : false;
-}
-
 static uint8_t _lcdWaitReady(uint16_t maxPolls) {
     while (maxPolls--) {
         uint8_t byte = 0;

@@ -75,10 +75,7 @@ void lcdReturnHome(void);
 void lcdClearDisplay(void); 
 void lcdWriteBuffer(uint8_t address, char* data);
 void lcdWriteString(char * data);
-void lcdWriteChar(uint8_t data);
 void lcdWriteInstruction(uint8_t data);
-uint8_t lcdReadData(void);
-bool isLcdBusy(void);
 void lcdInitialize(void);
 void lcdSelfTest(void);
 

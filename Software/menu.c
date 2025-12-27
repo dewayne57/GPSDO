@@ -9,11 +9,11 @@
 
 #include "menu.h"
 #include "config.h"
+#include "date.h"
 #include "encoder.h"
 #include "gps.h"
 #include "lcd.h"
 #include "serial.h"
-#include "date.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -23,91 +23,38 @@
  * Menu item definition
  */
 typedef struct menu_item {
-    const char* text;
+    const char* text;                /* Display text */
     const struct menu_item* submenu; /* NULL if leaf item */
 } menu_item_t;
 
-static const menu_item_t calibrate_menu[] = {
-    {"VCO", NULL}, 
-    {"DAC", NULL}, 
-    {"Back", NULL}, 
-    {NULL, NULL}};
+static const menu_item_t calibrate_menu[] = {{"VCO", NULL}, {"DAC", NULL}, {"Back", NULL}, {NULL, NULL}};
 
 static const menu_item_t gps_protocol_menu[] = {
-    {"NMEA", NULL}, 
-    {"UBX", NULL}, 
-    {"RTCM", NULL}, 
-    {"Back", NULL}, 
-    {NULL, NULL}};
+    {"NMEA", NULL}, {"UBX", NULL}, {"RTCM", NULL}, {"Back", NULL}, {NULL, NULL}};
 
-static const menu_item_t stopbits_menu[] = {
-    {"0", NULL}, 
-    {"1", NULL}, 
-    {"2", NULL}, 
-    {"Back", NULL}, 
-    {NULL, NULL}};
+static const menu_item_t stopbits_menu[] = {{"0", NULL}, {"1", NULL}, {"2", NULL}, {"Back", NULL}, {NULL, NULL}};
 
-static const menu_item_t parity_menu[] = {
-    {"None", NULL}, 
-    {"Even", NULL}, 
-    {"Odd", NULL}, 
-    {"Mark", NULL}, 
-    {"Space", NULL},
-    {"Back", NULL}, 
-    {NULL, NULL}};
+static const menu_item_t parity_menu[] = {{"None", NULL},  {"Even", NULL}, {"Odd", NULL}, {"Mark", NULL},
+                                          {"Space", NULL}, {"Back", NULL}, {NULL, NULL}};
+static const menu_item_t baud_menu[] = {{"300", NULL},   {"600", NULL},    {"1200", NULL},   {"2400", NULL},
+                                        {"4800", NULL},  {"9600", NULL},   {"19200", NULL},  {"38400", NULL},
+                                        {"57600", NULL}, {"115200", NULL}, {"230400", NULL}, {"460800", NULL},
+                                        {"Back", NULL},  {NULL, NULL}};
 
-static const menu_item_t baud_menu[] = {
-    {"4800", NULL},  
-    {"9600", NULL},   
-    {"19200", NULL},  
-    {"38400", NULL},
-    {"57600", NULL}, 
-    {"115200", NULL}, 
-    {"230400", NULL}, 
-    {"460800", NULL},
-    {"Back", NULL},  
-    {NULL, NULL}};
+static const menu_item_t serial_menu[] = {{"Ext Baud", NULL}, {"Ext Parity", NULL}, {"Back", NULL}, {NULL, NULL}};
 
-static const menu_item_t serial_menu[] = {
-    {"Ext Baud", NULL}, 
-    {"Ext Parity", NULL}, 
-    {"Back", NULL}, 
-    {NULL, NULL}};
+static const menu_item_t gps_menu[] = {{"GPS Baud Rate", NULL}, {"GPS Stop bits", NULL}, {"GPS Parity", NULL},
+                                       {"GPS Protocol", NULL},  {"Back", NULL},          {NULL, NULL}};
 
-static const menu_item_t gps_menu[] = {
-    {"GPS Baud Rate", baud_menu},
-    {"GPS Stop bits", stopbits_menu},
-    {"GPS Parity", parity_menu},
-    {"GPS Protocol", gps_protocol_menu},
-    {"Back", NULL},
-    {NULL, NULL}};
+static const menu_item_t vref_menu[] = {{"DAC", NULL}, {"Internal", NULL}, {"Back", NULL}, {NULL, NULL}};
 
-static const menu_item_t vref_menu[] = {
-    {"DAC", NULL}, 
-    {"Internal", NULL}, 
-    {"Back", NULL}, 
-    {NULL, NULL}};
+static const menu_item_t date_menu[] = {{"TZ Mode", NULL}, {"TZ Offset", NULL}, {"Back", NULL}, {NULL, NULL}};
 
-static const menu_item_t date_menu[] = { 
-    {"TZ Mode", NULL}, 
-    {"TZ Offset", NULL}, 
-    {"Back", NULL}, 
-    {NULL, NULL} };
-
-static const menu_item_t settings_menu[] = {
-    {"VRef", vref_menu}, 
-    {"Date/Time", date_menu}, 
-    {"GPS", gps_menu}, 
-    {"Serial", serial_menu}, 
-    {"Back", NULL}, 
-    {NULL, NULL}};
+static const menu_item_t settings_menu[] = {{"VRef", vref_menu},     {"Date/Time", date_menu}, {"GPS", gps_menu},
+                                            {"Serial", serial_menu}, {"Back", NULL},           {NULL, NULL}};
 
 static const menu_item_t main_menu[] = {
-    {"Status", NULL}, 
-    {"Settings...", settings_menu}, 
-    {"Calibrate...", calibrate_menu}, 
-    {"Close", NULL}, 
-    {NULL, NULL}};
+    {"Status", NULL}, {"Settings...", settings_menu}, {"Calibrate...", calibrate_menu}, {"Close", NULL}, {NULL, NULL}};
 
 /*
  * Menu runtime state
@@ -115,19 +62,19 @@ static const menu_item_t main_menu[] = {
 #define MENU_MAX_DEPTH 4
 typedef struct {
     const menu_item_t* stack[MENU_MAX_DEPTH];
-    uint8_t selection[MENU_MAX_DEPTH];  // current selection index at each depth
-    uint8_t depth;                      // current depth in menu stack
-    uint8_t active;                     // 0 = closed, 1 = open 
-    uint8_t last_encoder_pos;           // last encoder position
-    uint8_t last_button;                // last encoder button state
-    uint16_t notify_ticks;              // temporary message duration in ticks (~10ms)
-    char notify_msg[21];                // temporary message text
-    uint8_t editing;                    // 0 = not editing, otherwise EDIT_*
-    uint8_t edit_value;                 // current temporary value while editing
+    uint8_t selection[MENU_MAX_DEPTH]; // current selection index at each depth
+    uint8_t depth;                     // current depth in menu stack
+    uint8_t active;                    // 0 = closed, 1 = open
+    uint8_t last_encoder_pos;          // last encoder position
+    uint8_t last_button;               // last encoder button state
+    uint16_t notify_ticks;             // temporary message duration in ticks (~10ms)
+    char notify_msg[21];               // temporary message text
+    uint8_t editing;                   // 0 = not editing, otherwise EDIT_*
+    uint8_t edit_value;                // current temporary value while editing
 } menu_t;
 
 // Global menu state
-static menu_t menu;                     
+static menu_t menu;
 
 /*
  * Edit field identifiers
@@ -403,7 +350,7 @@ void menu_process(void) {
                     switch (sel) {
                         case 0: /* GPS Baud */
                             menu.editing = EDIT_GPS_BAUD;
-                            menu.edit_value = system_config.gps_baud_index;
+                            menu.edit_value = baud_rate_index(system_config.gps_baud);
                             break;
                         case 1: /* GPS Stop bits */
                             menu.editing = EDIT_STOPBITS;
@@ -472,7 +419,7 @@ void menu_process(void) {
                     switch (sel) {
                         case 0: /* External Baud Rate */
                             menu.editing = EDIT_EXT_BAUD;
-                            menu.edit_value = system_config.ext_baud_index;
+                            menu.edit_value = baud_rate_index(system_config.ext_baud);
                             break;
                         case 1: /* External Parity */
                             menu.editing = EDIT_EXT_PARITY;
@@ -539,7 +486,8 @@ void menu_process(void) {
                                 break;
                             case EDIT_TZ_MODE:
                                 memcpy(buf, "TZ Mode:", 8);
-                                memcpy(&buf[9], tz_mode_options[menu.edit_value], strlen(tz_mode_options[menu.edit_value]));
+                                memcpy(&buf[9], tz_mode_options[menu.edit_value],
+                                       strlen(tz_mode_options[menu.edit_value]));
                                 break;
                             case EDIT_TZ_OFFSET: {
                                 char ofs[8];
@@ -585,7 +533,7 @@ void menu_process(void) {
                 system_config.vref_source = menu.edit_value;
                 break;
             case EDIT_GPS_BAUD:
-                system_config.gps_baud_index = menu.edit_value;
+                system_config.gps_baud = menu.edit_value;
                 break;
             case EDIT_STOPBITS:
                 system_config.gps_stop_bits = menu.edit_value;
@@ -598,7 +546,7 @@ void menu_process(void) {
                 gps_set_protocol((gps_protocol_t)menu.edit_value);
                 break;
             case EDIT_EXT_BAUD:
-                system_config.ext_baud_index = menu.edit_value;
+                system_config.ext_baud = menu.edit_value;
                 serial_reconfigure(); // Apply new settings immediately
                 break;
             case EDIT_EXT_PARITY:

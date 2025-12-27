@@ -29,11 +29,11 @@
  *
  */
 
-#include <xc.h>
-#include <stdint.h>
 #include "control.h"
-#include "dac.h"
 #include "config.h"
+#include "dac.h"
+#include <stdint.h>
+#include <xc.h>
 
 /* Tunable parameters for PI controller */
 /* Gains are Q8 fixed point (actual_gain = GAIN_Q / 256.0) */
@@ -66,18 +66,16 @@ static uint16_t filtered_output = DAC_MIDPOINT;
 /*
  * Initialize the control module.
  */
-void control_init(void)
-{
+void control_init(void) {
     integral = 0;
-    filtered_output = (uint16_t)DAC_MIDPOINT;
+    filtered_output = DAC_MIDPOINT;
     dac_set_raw(filtered_output);
 }
 
 /*
  * Update the control loop with a new error value.
  */
-void control_update(int32_t error)
-{
+void control_update(int32_t error) {
     // PI controller terms (Q8 math)
     int32_t p = (KP_Q * error) >> 8;
 
@@ -90,30 +88,30 @@ void control_update(int32_t error)
     int32_t delta = pi_output / PI_TO_DAC_SCALE;
 
     // Apply rate limiting
-    if (delta > MAX_STEP)
-        delta = MAX_STEP;
-    else if (delta < -((int32_t)MAX_STEP))
-        delta = -((int32_t)MAX_STEP);
+    if (delta > (int32_t)MAX_STEP)
+        delta = (int32_t)MAX_STEP;
+    else if (delta < -(int32_t)MAX_STEP)
+        delta = -(int32_t)MAX_STEP;
 
     // Compute raw new value
     int32_t raw_new = (int32_t)filtered_output + delta;
 
     // Clamp to DAC range
-    if (raw_new < 0)
-        raw_new = 0;
-    if (raw_new > (int32_t)(DAC_RESOLUTION - 1))
-        raw_new = (int32_t)(DAC_RESOLUTION - 1);
+    if (raw_new < 0L)
+        raw_new = 0L;
+    if (raw_new > (int32_t)(DAC_RESOLUTION - 1U))
+        raw_new = (int32_t)(DAC_RESOLUTION - 1U);
 
     // Low-pass filter: filtered = alpha*new + (1-alpha)*old, using Q8
     int32_t alpha = LPF_ALPHA_Q;
-    int32_t old = filtered_output;
-    int32_t filtered = ((alpha * raw_new) + ((256 - alpha) * old)) >> 8;
+    int32_t old = (int32_t)filtered_output;
+    int32_t filtered = ((alpha * raw_new) + ((256L - alpha) * old)) >> 8;
 
     // Final clamp and write
-    if (filtered < 0)
-        filtered = 0;
-    if (filtered > (int32_t)(DAC_RESOLUTION - 1))
-        filtered = (int32_t)(DAC_RESOLUTION - 1);
+    if (filtered < 0L)
+        filtered = 0L;
+    if (filtered > (int32_t)(DAC_RESOLUTION - 1U))
+        filtered = (int32_t)(DAC_RESOLUTION - 1U);
 
     filtered_output = (uint16_t)filtered;
     dac_set_raw(filtered_output);

@@ -67,6 +67,7 @@ extern IOPortA_t ioporta;
 extern uint8_t buffer[128];
 extern volatile encoder_state_t encoder_state;
 extern bool system_initialized;
+extern volatile bool gps_sentence_available;
 
 /************************************************************************
  * Main program loop
@@ -117,8 +118,8 @@ void main(int argc, char** argv) {
         menu_process();
 
         // Only process GPS data when complete sentences are available
-        if (gps_sentence_ready()) {
-            gps_update();
+        if (gps_sentence_available) {
+            gps_parse_sentence();
         }
 
         /*
