@@ -72,6 +72,9 @@ void serial_disable_rx_interrupt(void);
 /* Internal buffer management (for ISR) */
 void serial_buffer_put_char(char c);
 
+/* Printf redirection function */
+void putch(char c);
+
 #ifdef __cplusplus
 }
 #endif

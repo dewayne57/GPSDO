@@ -298,3 +298,12 @@ void serial_send_csv_data(float timestamp, float value1, float value2, float val
     sprintf(csv_buffer, "%.3f,%.6f,%.6f,%.6f\r\n", timestamp, value1, value2, value3);
     serial_send_string(csv_buffer);
 }
+
+/*
+ * Printf redirection function
+ * This function is called by the XC8 compiler's printf implementation
+ * to output characters to UART2 for debugging
+ */
+void putch(char c) {
+    serial_send_char(c);
+}
