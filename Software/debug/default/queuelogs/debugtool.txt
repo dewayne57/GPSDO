@@ -1,16 +1,1039 @@
+330 1766956881826 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 FirmwareInfo: Values:
+330 1766956881826 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 FirmwareInfo: boot = false, bootVer = 00.00.68, apVer = 02.05.47, fpgaVer = ff.ff.ff, scriptVer = 00.10.08, macAddress = 0504883548174844851484953485250, devID = a1020e01, devID1 = 2, devSN0 = ffffffff, devSN1 = ffffffff, serialNumber = 020026702RYN005992, appCommitID = null, scriptCommitID = f91823efd7, PCB_ID = 2
+330 1766956881826 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return End
+330 1766956881830 XXXX 1766956881830, Thread 330: XXXX 1766956881830, Entering Thread 330: Commands::runScriptWithUpload with script contents. contents[0] = 0x5e, ...  
+330 1766956881832 XXXX 1766956881832, Thread 330: XXXX 1766956881832, Entering Thread 330: ToolCommUsb::readTransfer, sideData is 0xd bytes long, transferDataLength is 0x4 bytes long  
+330 1766956881836 XXXX 1766956881836, Thread 330: XXXX 1766956881836, Exiting Thread 330: ToolCommUsb::readTransfer,  cr.status = 0x0  
+330 1766956881836 XXXX 1766956881836, Thread 330: XXXX 1766956881836, Exiting Thread 330: Commands::runScriptWithUpload  
+330 1766956881836 GEN4_CONNECT_DIAGNOSTICS:ENTERING: com.microchip.mplab.mdbcore.RI4Tool.ConnectionHandler.CheckForFWUpdates()
+330 1766956881840 GEN4_CONNECT_DIAGNOSTICS:Created FirmwareUpdateHandler com.microchip.mplab.mdbcore.PK5Tool.PK5FirmwareUpdateHandler@35e3b0c7
+330 1766956881840 GEN4_CONNECT_DIAGNOSTICS:ENTERING: com.microchip.mplab.mdbcore.RI4Tool.FirmwareUpdateHandler.GetUpdateInfo()
+330 1766956881841 GEN4_CONNECT_DIAGNOSTICS:Parsing file  for firmware updates
+330 1766956881841 GEN4_CONNECT_DIAGNOSTICS:ENTERING: com.microchip.mplab.mdbcore.RI4Tool.FirmwareUpdateHandler.ri4ParseSelectedVersionsFromJamFile()
+330 1766956881842 GEN4_CONNECT_DIAGNOSTICS:Jame file line = app.hex,020547
+330 1766956881842 GEN4_CONNECT_DIAGNOSTICS:Jame file line = boot.hex,000068
+330 1766956881842 GEN4_CONNECT_DIAGNOSTICS:Jame file line = scripts.xml,001008
+330 1766956881842 GEN4_CONNECT_DIAGNOSTICS:Selected firmware version for Boot = 00.00.68
+330 1766956881842 GEN4_CONNECT_DIAGNOSTICS:Selected firmware version for ap = 02.05.47
+330 1766956881842 GEN4_CONNECT_DIAGNOSTICS:EXITING: com.microchip.mplab.mdbcore.RI4Tool.FirmwareUpdateHandler.ri4ParseSelectedVersionsFromJamFile()
+330 1766956881842 GEN4_CONNECT_DIAGNOSTICS:EXITING: com.microchip.mplab.mdbcore.RI4Tool.FirmwareUpdateHandler.GetUpdateInfo()
+330 1766956881842 GEN4_CONNECT_DIAGNOSTICS:ENTERING: com.microchip.mplab.mdbcore.RI4Tool.FirmwareUpdateHandler.updateRI4ToolsFirmware(FirmwareInfo, UpdateMessage)
+330 1766956881851 GEN4_CONNECT_DIAGNOSTICS:appNeedsUpdate returned false
+330 1766956881851 GEN4_CONNECT_DIAGNOSTICS:EXITING: com.microchip.mplab.mdbcore.RI4Tool.FirmwareUpdateHandler.updateRI4ToolsFirmware(FirmwareInfo, UpdateMessage)
+330 1766956881851 GEN4_CONNECT_DIAGNOSTICS:EXITING: com.microchip.mplab.mdbcore.RI4Tool.ConnectionHandler.CheckForFWUpdates()
 
-37 1766956128775 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Pre:GetPC
-37 1766956128775 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload
-37 1766956128775 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 null
-37 1766956128775 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload End
-37 1766956128775 XXXX 1766956128775, Thread 37: XXXX 1766956128775, Entering Thread 37: Commands::runScriptBasic, script name = GetPC, timeOut = -1 ms  
-37 1766956128776 XXXX 1766956128776, Thread 37: com.Send returned false 
-37 1766956128776 XXXX 1766956128776, Thread 37: transfer: exception after writeHeaderAndGetResult null 
-37 1766956128776 XXXX 1766956128776, Thread 37: XXXX 1766956128776, Entering Thread 37: ToolCommUsb::recoverFromProtocolError, type = NO_SCRIPT  
-37 1766956128776 XXXX 1766956128776, Thread 37: Send Abort Script Engine Command 
-37 1766956128776 XXXX 1766956128776, Thread 37: XXXX 1766956128776, Entering Thread 37: ToolCommUsb::killScriptEngine  
-37 1766956128777 XXXX 1766956128777, Thread 37: com.Send returned false 
-37 1766956128777 XXXX 1766956128777, Thread 37: Failed sending Abort Script Engine Command. Set nuclear option = true 
-37 1766956128777 XXXX 1766956128777, Thread 37: About to nuke 
-37 1766956128777 XXXX 1766956128777, Thread 37: XXXX 1766956128777, Entering Thread 37: ToolCommUsb::nuclearOption  
-37 1766956128777 XXXX 1766956128777, Thread 37: com.Send returned false 
+330 1766956881853 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Pre:SetPowerInfo
+330 1766956881853 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload
+330 1766956881853 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 PowerInfo: Values:
+330 1766956881853 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 PowerInfo: shotDownSystem = false, isToolPower = false, voltage = 5.000000, useVppFirst = false, useLowVoltageProgramming = false, useMaintainActivePower = false
+330 1766956881853 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload End
+330 1766956881853 XXXX 1766956881853, Thread 330: XXXX 1766956881853, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0x39, ...  
+330 1766956881855 XXXX 1766956881855, Thread 330: XXXX 1766956881855, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956881855 XXXX 1766956881855, Thread 330: XXXX 1766956881855, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0x46, ...  
+330 1766956881856 XXXX 1766956881856, Thread 330: XXXX 1766956881856, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956881856 XXXX 1766956881856, Thread 330: XXXX 1766956881856, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0x44, ...  
+330 1766956881868 XXXX 1766956881868, Thread 330: XXXX 1766956881868, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956881868 XXXX 1766956881868, Thread 330: XXXX 1766956881868, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xef, ...  
+330 1766956881880 XXXX 1766956881880, Thread 330: XXXX 1766956881880, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956881880 XXXX 1766956881880, Thread 330: XXXX 1766956881880, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0x40, ...  
+330 1766956882281 XXXX 1766956882281, Thread 330: XXXX 1766956882281, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882281 XXXX 1766956882281, Thread 330: XXXX 1766956882281, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0x47, ...  
+330 1766956882286 XXXX 1766956882286, Thread 330: XXXX 1766956882286, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882286 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Post:SetPowerInfo
+330 1766956882286 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return Value
+330 1766956882286 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 none
+330 1766956882286 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return End
+
+330 1766956882286 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Pre:SetLEDBrightness
+330 1766956882286 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload
+330 1766956882286 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 5
+330 1766956882286 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload End
+330 1766956882286 XXXX 1766956882286, Thread 330: XXXX 1766956882286, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xcf, ...  
+330 1766956882288 XXXX 1766956882288, Thread 330: XXXX 1766956882288, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882288 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Post:SetLEDBrightness
+330 1766956882288 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return Value
+330 1766956882288 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 none
+330 1766956882288 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return End
+
+330 1766956882288 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Pre:SetToolInfo
+330 1766956882288 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload
+330 1766956882288 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 ToolInfo: Values:
+330 1766956882288 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 ToolInfo: speedLevel = 1, PGCResistance = 4700, PGDResistance = 4700, PGCPullDir = PullDown, PGDPullDir = PullDown, ICSPSelected = Wire2
+330 1766956882288 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload End
+330 1766956882289 XXXX 1766956882289, Thread 330: XXXX 1766956882289, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0x27, ...  
+330 1766956882290 XXXX 1766956882290, Thread 330: XXXX 1766956882290, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882290 XXXX 1766956882290, Thread 330: XXXX 1766956882290, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956882291 XXXX 1766956882291, Thread 330: XXXX 1766956882291, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882291 XXXX 1766956882291, Thread 330: XXXX 1766956882291, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956882292 XXXX 1766956882292, Thread 330: XXXX 1766956882292, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882292 XXXX 1766956882292, Thread 330: XXXX 1766956882292, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956882293 XXXX 1766956882293, Thread 330: XXXX 1766956882293, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882293 XXXX 1766956882293, Thread 330: XXXX 1766956882293, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xd4, ...  
+330 1766956882294 XXXX 1766956882294, Thread 330: XXXX 1766956882294, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882294 XXXX 1766956882294, Thread 330: XXXX 1766956882294, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xcd, ...  
+330 1766956882295 XXXX 1766956882295, Thread 330: XXXX 1766956882295, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882295 XXXX 1766956882295, Thread 330: XXXX 1766956882295, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xce, ...  
+330 1766956882296 XXXX 1766956882296, Thread 330: XXXX 1766956882296, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882296 XXXX 1766956882296, Thread 330: XXXX 1766956882296, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xcd, ...  
+330 1766956882297 XXXX 1766956882297, Thread 330: XXXX 1766956882297, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882297 XXXX 1766956882297, Thread 330: XXXX 1766956882297, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xce, ...  
+330 1766956882298 XXXX 1766956882298, Thread 330: XXXX 1766956882298, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882298 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Post:SetToolInfo
+330 1766956882298 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return Value
+330 1766956882298 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 none
+330 1766956882298 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return End
+
+330 1766956882302 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Pre:SendOperation
+330 1766956882302 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload
+330 1766956882302 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 OperationInfo: Values:
+330 1766956882302 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 OperationInfo: Type = read, Mask = 00000000, Erase = false, Production Mode = true
+330 1766956882302 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 300003, End = 300003, Buffer Length = 1, Type = Cfg, Mask = 00000000
+330 1766956882302 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload End
+330 1766956882302 XXXX 1766956882302, Thread 330: XXXX 1766956882302, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956882303 XXXX 1766956882303, Thread 330: XXXX 1766956882303, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882303 XXXX 1766956882303, Thread 330: XXXX 1766956882303, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956882304 XXXX 1766956882304, Thread 330: XXXX 1766956882304, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882304 XXXX 1766956882304, Thread 330: XXXX 1766956882304, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956882305 XXXX 1766956882305, Thread 330: XXXX 1766956882305, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882305 XXXX 1766956882305, Thread 330: XXXX 1766956882305, Entering Thread 330: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+330 1766956882336 XXXX 1766956882336, Thread 330: XXXX 1766956882336, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882337 XXXX 1766956882337, Thread 330: XXXX 1766956882337, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956882338 XXXX 1766956882338, Thread 330: XXXX 1766956882338, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882338 XXXX 1766956882338, Thread 330: XXXX 1766956882338, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956882339 XXXX 1766956882339, Thread 330: XXXX 1766956882339, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882339 XXXX 1766956882339, Thread 330: XXXX 1766956882339, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956882340 XXXX 1766956882340, Thread 330: XXXX 1766956882340, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882340 XXXX 1766956882340, Thread 330: XXXX 1766956882340, Entering Thread 330: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+330 1766956882369 XXXX 1766956882369, Thread 330: XXXX 1766956882369, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882369 XXXX 1766956882369, Thread 330: XXXX 1766956882369, Entering Thread 330: Commands::runScriptWithUpload, script name = ReadConfigmem  
+330 1766956882369 XXXX 1766956882369, Thread 330: XXXX 1766956882369, Entering Thread 330: ToolCommUsb::readTransfer, sideData is 0x37 bytes long, transferDataLength is 0x2 bytes long  
+330 1766956882419 XXXX 1766956882419, Thread 330: XXXX 1766956882419, Exiting Thread 330: ToolCommUsb::readTransfer,  cr.status = 0x0  
+330 1766956882419 XXXX 1766956882419, Thread 330: XXXX 1766956882419, Exiting Thread 330: Commands::runScriptWithUpload  
+330 1766956882419 XXXX 1766956882419, Thread 330: XXXX 1766956882419, Entering Thread 330: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+330 1766956882421 XXXX 1766956882421, Thread 330: XXXX 1766956882421, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882421 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Post:SendOperation
+330 1766956882421 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return Value
+330 1766956882421 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 None
+330 1766956882421 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return End
+
+330 1766956882422 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Pre:GetTargetIDInfo
+330 1766956882422 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload
+330 1766956882422 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 null
+330 1766956882422 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload End
+330 1766956882424 XXXX 1766956882424, Thread 330: XXXX 1766956882424, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956882425 XXXX 1766956882425, Thread 330: XXXX 1766956882425, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882425 XXXX 1766956882425, Thread 330: XXXX 1766956882425, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956882426 XXXX 1766956882426, Thread 330: XXXX 1766956882426, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882426 XXXX 1766956882426, Thread 330: XXXX 1766956882426, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956882427 XXXX 1766956882427, Thread 330: XXXX 1766956882427, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882427 XXXX 1766956882427, Thread 330: XXXX 1766956882427, Entering Thread 330: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+330 1766956882458 XXXX 1766956882458, Thread 330: XXXX 1766956882458, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882458 XXXX 1766956882458, Thread 330: XXXX 1766956882458, Entering Thread 330: Commands::runScriptBasic, script name = GetDeviceID, timeOut = -1 ms  
+330 1766956882459 XXXX 1766956882459, Thread 330: XXXX 1766956882459, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882459 XXXX 1766956882459, Thread 330: XXXX 1766956882459, Entering Thread 330: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+330 1766956882461 XXXX 1766956882461, Thread 330: XXXX 1766956882461, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882461 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Post:GetTargetIDInfo
+330 1766956882461 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return Value
+330 1766956882461 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 TargetIDInfo: Values:
+330 1766956882461 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 TargetIDInfo: DeviceID = ffffffffa0437480
+330 1766956882461 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return End
+
+330 1766956882510 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Pre:SendOperation
+330 1766956882510 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload
+330 1766956882510 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 OperationInfo: Values:
+330 1766956882510 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 OperationInfo: Type = erase, Mask = 00000000, Erase = false, Production Mode = true
+330 1766956882510 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 0, End = 1ffff, Buffer Length = 0, Type = Pgm, Mask = 00000000
+330 1766956882510 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 300000, End = 300011, Buffer Length = 0, Type = Cfg, Mask = 00000000
+330 1766956882510 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 380000, End = 3803ff, Buffer Length = 0, Type = EEData, Mask = 00000000
+330 1766956882510 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 200000, End = 20003f, Buffer Length = 0, Type = UserID, Mask = 00000000
+330 1766956882510 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload End
+330 1766956882511 XXXX 1766956882511, Thread 330: XXXX 1766956882511, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956882512 XXXX 1766956882512, Thread 330: XXXX 1766956882512, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882512 XXXX 1766956882512, Thread 330: XXXX 1766956882512, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956882513 XXXX 1766956882513, Thread 330: XXXX 1766956882513, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882513 XXXX 1766956882513, Thread 330: XXXX 1766956882513, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956882514 XXXX 1766956882514, Thread 330: XXXX 1766956882514, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882514 XXXX 1766956882514, Thread 330: XXXX 1766956882514, Entering Thread 330: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+330 1766956882543 XXXX 1766956882543, Thread 330: XXXX 1766956882543, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882543 XXXX 1766956882543, Thread 330: XXXX 1766956882543, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956882545 XXXX 1766956882545, Thread 330: XXXX 1766956882545, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882545 XXXX 1766956882545, Thread 330: XXXX 1766956882545, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956882546 XXXX 1766956882546, Thread 330: XXXX 1766956882546, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882546 XXXX 1766956882546, Thread 330: XXXX 1766956882546, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956882547 XXXX 1766956882547, Thread 330: XXXX 1766956882547, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882547 XXXX 1766956882547, Thread 330: XXXX 1766956882547, Entering Thread 330: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+330 1766956882578 XXXX 1766956882578, Thread 330: XXXX 1766956882578, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882578 XXXX 1766956882578, Thread 330: XXXX 1766956882578, Entering Thread 330: Commands::runScriptBasic, script name = EraseChip, timeOut = 30000 ms  
+330 1766956882591 XXXX 1766956882591, Thread 330: XXXX 1766956882591, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882591 XXXX 1766956882591, Thread 330: XXXX 1766956882591, Entering Thread 330: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+330 1766956882593 XXXX 1766956882593, Thread 330: XXXX 1766956882593, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882593 XXXX 1766956882593, Thread 330: XXXX 1766956882593, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956882594 XXXX 1766956882594, Thread 330: XXXX 1766956882594, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882594 XXXX 1766956882594, Thread 330: XXXX 1766956882594, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956882595 XXXX 1766956882595, Thread 330: XXXX 1766956882595, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882595 XXXX 1766956882595, Thread 330: XXXX 1766956882595, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956882596 XXXX 1766956882596, Thread 330: XXXX 1766956882596, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882596 XXXX 1766956882596, Thread 330: XXXX 1766956882596, Entering Thread 330: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+330 1766956882625 XXXX 1766956882625, Thread 330: XXXX 1766956882625, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882625 XXXX 1766956882625, Thread 330: XXXX 1766956882625, Entering Thread 330: Commands::runScriptBasic, script name = EraseDataEEmem, timeOut = 30000 ms  
+330 1766956882637 XXXX 1766956882637, Thread 330: XXXX 1766956882637, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882637 XXXX 1766956882637, Thread 330: XXXX 1766956882637, Entering Thread 330: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+330 1766956882639 XXXX 1766956882639, Thread 330: XXXX 1766956882639, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882639 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Post:SendOperation
+330 1766956882639 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return Value
+330 1766956882639 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 None
+330 1766956882639 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return End
+
+330 1766956882651 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Pre:SendOperation
+330 1766956882651 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload
+330 1766956882651 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 OperationInfo: Values:
+330 1766956882651 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 OperationInfo: Type = write, Mask = 00000000, Erase = false, Production Mode = true
+330 1766956882651 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 0, End = 17f, Buffer Length = 384, Type = Pgm, Mask = 00000000
+330 1766956882651 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = fb00, End = 1dcff, Buffer Length = 57856, Type = Pgm, Mask = 00000000
+330 1766956882651 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 300000, End = 300011, Buffer Length = 18, Type = Cfg, Mask = 00000000
+330 1766956882651 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 200000, End = 20003f, Buffer Length = 64, Type = UserID, Mask = 00000000
+330 1766956882651 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload End
+330 1766956882651 XXXX 1766956882651, Thread 330: XXXX 1766956882651, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956882653 XXXX 1766956882653, Thread 330: XXXX 1766956882653, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882653 XXXX 1766956882653, Thread 330: XXXX 1766956882653, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956882654 XXXX 1766956882654, Thread 330: XXXX 1766956882654, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882654 XXXX 1766956882654, Thread 330: XXXX 1766956882654, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956882655 XXXX 1766956882655, Thread 330: XXXX 1766956882655, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882655 XXXX 1766956882655, Thread 330: XXXX 1766956882655, Entering Thread 330: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+330 1766956882686 XXXX 1766956882686, Thread 330: XXXX 1766956882686, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882687 XXXX 1766956882687, Thread 330: XXXX 1766956882687, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956882688 XXXX 1766956882688, Thread 330: XXXX 1766956882688, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882688 XXXX 1766956882688, Thread 330: XXXX 1766956882688, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956882689 XXXX 1766956882689, Thread 330: XXXX 1766956882689, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882689 XXXX 1766956882689, Thread 330: XXXX 1766956882689, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956882690 XXXX 1766956882690, Thread 330: XXXX 1766956882690, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882690 XXXX 1766956882690, Thread 330: XXXX 1766956882690, Entering Thread 330: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+330 1766956882719 XXXX 1766956882719, Thread 330: XXXX 1766956882719, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882719 XXXX 1766956882719, Thread 330: XXXX 1766956882719, Entering Thread 330: Commands::runScriptWithDownload, script name = WriteProgmem  
+330 1766956882745 XXXX 1766956882745, Thread 330: XXXX 1766956882745, Exiting Thread 330: Commands::runScriptWithDownload(WriteProgmem)  
+330 1766956882745 XXXX 1766956882745, Thread 330: XXXX 1766956882745, Entering Thread 330: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+330 1766956882747 XXXX 1766956882747, Thread 330: XXXX 1766956882747, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882747 XXXX 1766956882747, Thread 330: XXXX 1766956882747, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956882749 XXXX 1766956882749, Thread 330: XXXX 1766956882749, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882749 XXXX 1766956882749, Thread 330: XXXX 1766956882749, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956882750 XXXX 1766956882750, Thread 330: XXXX 1766956882750, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882750 XXXX 1766956882750, Thread 330: XXXX 1766956882750, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956882751 XXXX 1766956882751, Thread 330: XXXX 1766956882751, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882751 XXXX 1766956882751, Thread 330: XXXX 1766956882751, Entering Thread 330: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+330 1766956882782 XXXX 1766956882782, Thread 330: XXXX 1766956882782, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882783 XXXX 1766956882783, Thread 330: XXXX 1766956882782, Entering Thread 330: Commands::runScriptWithUpload, script name = ReadProgmem  
+330 1766956882783 XXXX 1766956882783, Thread 330: XXXX 1766956882783, Entering Thread 330: ToolCommUsb::readTransfer, sideData is 0x3b bytes long, transferDataLength is 0x180 bytes long  
+330 1766956882793 XXXX 1766956882793, Thread 330: XXXX 1766956882793, Exiting Thread 330: ToolCommUsb::readTransfer,  cr.status = 0x0  
+330 1766956882793 XXXX 1766956882793, Thread 330: XXXX 1766956882793, Exiting Thread 330: Commands::runScriptWithUpload  
+330 1766956882793 XXXX 1766956882793, Thread 330: XXXX 1766956882793, Entering Thread 330: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+330 1766956882795 XXXX 1766956882795, Thread 330: XXXX 1766956882795, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882795 XXXX 1766956882795, Thread 330: XXXX 1766956882795, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956882797 XXXX 1766956882797, Thread 330: XXXX 1766956882797, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882797 XXXX 1766956882797, Thread 330: XXXX 1766956882797, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956882798 XXXX 1766956882798, Thread 330: XXXX 1766956882798, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882798 XXXX 1766956882798, Thread 330: XXXX 1766956882798, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956882799 XXXX 1766956882799, Thread 330: XXXX 1766956882799, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882799 XXXX 1766956882799, Thread 330: XXXX 1766956882799, Entering Thread 330: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+330 1766956882828 XXXX 1766956882828, Thread 330: XXXX 1766956882828, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956882828 XXXX 1766956882828, Thread 330: XXXX 1766956882828, Entering Thread 330: Commands::runScriptWithDownload, script name = WriteProgmem  
+330 1766956886093 XXXX 1766956886093, Thread 330: XXXX 1766956886093, Exiting Thread 330: Commands::runScriptWithDownload(WriteProgmem)  
+330 1766956886093 XXXX 1766956886093, Thread 330: XXXX 1766956886093, Entering Thread 330: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+330 1766956886095 XXXX 1766956886095, Thread 330: XXXX 1766956886095, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956886095 XXXX 1766956886095, Thread 330: XXXX 1766956886095, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956886096 XXXX 1766956886096, Thread 330: XXXX 1766956886096, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956886096 XXXX 1766956886096, Thread 330: XXXX 1766956886096, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956886097 XXXX 1766956886097, Thread 330: XXXX 1766956886097, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956886097 XXXX 1766956886097, Thread 330: XXXX 1766956886097, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956886098 XXXX 1766956886098, Thread 330: XXXX 1766956886098, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956886098 XXXX 1766956886098, Thread 330: XXXX 1766956886098, Entering Thread 330: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+330 1766956886129 XXXX 1766956886129, Thread 330: XXXX 1766956886129, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956886130 XXXX 1766956886130, Thread 330: XXXX 1766956886130, Entering Thread 330: Commands::runScriptWithUpload, script name = ReadProgmem  
+330 1766956886130 XXXX 1766956886130, Thread 330: XXXX 1766956886130, Entering Thread 330: ToolCommUsb::readTransfer, sideData is 0x3b bytes long, transferDataLength is 0xe200 bytes long  
+330 1766956887244 XXXX 1766956887244, Thread 330: XXXX 1766956887244, Exiting Thread 330: ToolCommUsb::readTransfer,  cr.status = 0x0  
+330 1766956887244 XXXX 1766956887244, Thread 330: XXXX 1766956887244, Exiting Thread 330: Commands::runScriptWithUpload  
+330 1766956887244 XXXX 1766956887244, Thread 330: XXXX 1766956887244, Entering Thread 330: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+330 1766956887246 XXXX 1766956887246, Thread 330: XXXX 1766956887246, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887246 XXXX 1766956887246, Thread 330: XXXX 1766956887246, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956887247 XXXX 1766956887247, Thread 330: XXXX 1766956887247, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887247 XXXX 1766956887247, Thread 330: XXXX 1766956887247, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956887248 XXXX 1766956887248, Thread 330: XXXX 1766956887248, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887248 XXXX 1766956887248, Thread 330: XXXX 1766956887248, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956887249 XXXX 1766956887249, Thread 330: XXXX 1766956887249, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887249 XXXX 1766956887249, Thread 330: XXXX 1766956887249, Entering Thread 330: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+330 1766956887278 XXXX 1766956887278, Thread 330: XXXX 1766956887278, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887278 XXXX 1766956887278, Thread 330: XXXX 1766956887278, Entering Thread 330: Commands::runScriptWithDownload, script name = WriteIDmem  
+330 1766956887284 XXXX 1766956887284, Thread 330: XXXX 1766956887284, Exiting Thread 330: Commands::runScriptWithDownload(WriteIDmem)  
+330 1766956887284 XXXX 1766956887284, Thread 330: XXXX 1766956887284, Entering Thread 330: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+330 1766956887286 XXXX 1766956887286, Thread 330: XXXX 1766956887286, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887286 XXXX 1766956887286, Thread 330: XXXX 1766956887286, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956887287 XXXX 1766956887287, Thread 330: XXXX 1766956887287, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887287 XXXX 1766956887287, Thread 330: XXXX 1766956887287, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956887288 XXXX 1766956887288, Thread 330: XXXX 1766956887288, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887288 XXXX 1766956887288, Thread 330: XXXX 1766956887288, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956887289 XXXX 1766956887289, Thread 330: XXXX 1766956887289, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887289 XXXX 1766956887289, Thread 330: XXXX 1766956887289, Entering Thread 330: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+330 1766956887321 XXXX 1766956887321, Thread 330: XXXX 1766956887321, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887321 XXXX 1766956887321, Thread 330: XXXX 1766956887321, Entering Thread 330: Commands::runScriptWithUpload, script name = ReadIDmem  
+330 1766956887321 XXXX 1766956887321, Thread 330: XXXX 1766956887321, Entering Thread 330: ToolCommUsb::readTransfer, sideData is 0x3b bytes long, transferDataLength is 0x40 bytes long  
+330 1766956887323 XXXX 1766956887323, Thread 330: XXXX 1766956887323, Exiting Thread 330: ToolCommUsb::readTransfer,  cr.status = 0x0  
+330 1766956887323 XXXX 1766956887323, Thread 330: XXXX 1766956887323, Exiting Thread 330: Commands::runScriptWithUpload  
+330 1766956887323 XXXX 1766956887323, Thread 330: XXXX 1766956887323, Entering Thread 330: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+330 1766956887325 XXXX 1766956887325, Thread 330: XXXX 1766956887325, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887325 XXXX 1766956887325, Thread 330: XXXX 1766956887325, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956887326 XXXX 1766956887326, Thread 330: XXXX 1766956887326, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887326 XXXX 1766956887326, Thread 330: XXXX 1766956887326, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956887327 XXXX 1766956887327, Thread 330: XXXX 1766956887327, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887327 XXXX 1766956887327, Thread 330: XXXX 1766956887327, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956887328 XXXX 1766956887328, Thread 330: XXXX 1766956887328, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887328 XXXX 1766956887328, Thread 330: XXXX 1766956887328, Entering Thread 330: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+330 1766956887357 XXXX 1766956887357, Thread 330: XXXX 1766956887357, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887357 XXXX 1766956887357, Thread 330: XXXX 1766956887357, Entering Thread 330: Commands::runScriptWithDownload, script name = WriteConfigmem  
+330 1766956887558 XXXX 1766956887558, Thread 330: XXXX 1766956887558, Exiting Thread 330: Commands::runScriptWithDownload(WriteConfigmem)  
+330 1766956887558 XXXX 1766956887558, Thread 330: XXXX 1766956887558, Entering Thread 330: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+330 1766956887560 XXXX 1766956887560, Thread 330: XXXX 1766956887560, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887560 XXXX 1766956887560, Thread 330: XXXX 1766956887560, Entering Thread 330: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+330 1766956887561 XXXX 1766956887561, Thread 330: XXXX 1766956887561, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887561 XXXX 1766956887561, Thread 330: XXXX 1766956887561, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+330 1766956887562 XXXX 1766956887562, Thread 330: XXXX 1766956887562, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887562 XXXX 1766956887562, Thread 330: XXXX 1766956887562, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+330 1766956887563 XXXX 1766956887563, Thread 330: XXXX 1766956887563, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887563 XXXX 1766956887563, Thread 330: XXXX 1766956887563, Entering Thread 330: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+330 1766956887595 XXXX 1766956887595, Thread 330: XXXX 1766956887595, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887595 XXXX 1766956887595, Thread 330: XXXX 1766956887595, Entering Thread 330: Commands::runScriptWithUpload, script name = ReadConfigmem  
+330 1766956887595 XXXX 1766956887595, Thread 330: XXXX 1766956887595, Entering Thread 330: ToolCommUsb::readTransfer, sideData is 0x37 bytes long, transferDataLength is 0x12 bytes long  
+330 1766956887597 XXXX 1766956887597, Thread 330: XXXX 1766956887597, Exiting Thread 330: ToolCommUsb::readTransfer,  cr.status = 0x0  
+330 1766956887597 XXXX 1766956887597, Thread 330: XXXX 1766956887597, Exiting Thread 330: Commands::runScriptWithUpload  
+330 1766956887597 XXXX 1766956887597, Thread 330: XXXX 1766956887597, Entering Thread 330: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+330 1766956887599 XXXX 1766956887599, Thread 330: XXXX 1766956887599, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887599 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Post:SendOperation
+330 1766956887599 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return Value
+330 1766956887599 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 None
+330 1766956887599 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return End
+
+330 1766956887599 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Pre:endOfOperations
+330 1766956887599 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload
+330 1766956887599 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 null
+330 1766956887599 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload End
+330 1766956887600 XXXX 1766956887599, Thread 330: XXXX 1766956887599, Entering Thread 330: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+330 1766956887601 XXXX 1766956887601, Thread 330: XXXX 1766956887601, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887601 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Post:endOfOperations
+330 1766956887601 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return Value
+330 1766956887601 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 None
+330 1766956887601 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return End
+
+330 1766956887607 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Pre:SendOperation
+330 1766956887607 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload
+330 1766956887607 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 OperationInfo: Values:
+330 1766956887607 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 OperationInfo: Type = releasefromreset, Mask = 00000000, Erase = false, Production Mode = true
+330 1766956887607 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload End
+330 1766956887607 XXXX 1766956887607, Thread 330: XXXX 1766956887607, Entering Thread 330: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+330 1766956887609 XXXX 1766956887609, Thread 330: XXXX 1766956887609, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887609 XXXX 1766956887609, Thread 330: XXXX 1766956887609, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0x42, ...  
+330 1766956887610 XXXX 1766956887610, Thread 330: XXXX 1766956887610, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887610 XXXX 1766956887610, Thread 330: XXXX 1766956887610, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0xef, ...  
+330 1766956887621 XXXX 1766956887621, Thread 330: XXXX 1766956887621, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887621 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Post:SendOperation
+330 1766956887621 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return Value
+330 1766956887621 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 None
+330 1766956887621 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return End
+330 1766956887623 GEN4_CONNECT_DIAGNOSTICS:MPLABCommTool is null
+
+330 1766956887623 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Pre:GetFirmwareInfo
+330 1766956887623 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload
+330 1766956887623 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 null
+330 1766956887623 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload End
+330 1766956887631 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Post:GetFirmwareInfo
+330 1766956887631 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return Value
+330 1766956887631 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 FirmwareInfo: Values:
+330 1766956887631 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 FirmwareInfo: boot = false, bootVer = 00.00.68, apVer = 02.05.47, fpgaVer = ff.ff.ff, scriptVer = 00.10.08, macAddress = 0504883548174844851484953485250, devID = a1020e01, devID1 = 2, devSN0 = ffffffff, devSN1 = ffffffff, serialNumber = 020026702RYN005992, appCommitID = null, scriptCommitID = f91823efd7, PCB_ID = 2
+330 1766956887631 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return End
+
+330 1766956887631 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Pre:SetPowerInfo
+330 1766956887631 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload
+330 1766956887631 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 PowerInfo: Values:
+330 1766956887631 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 PowerInfo: shotDownSystem = true, isToolPower = false, voltage = 0.000000, useVppFirst = false, useLowVoltageProgramming = false, useMaintainActivePower = false
+330 1766956887631 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload End
+330 1766956887632 XXXX 1766956887632, Thread 330: XXXX 1766956887632, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0x39, ...  
+330 1766956887632 XXXX 1766956887632, Thread 330: XXXX 1766956887632, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887632 XXXX 1766956887632, Thread 330: XXXX 1766956887632, Entering Thread 330: Commands::runScriptBasic with script contents. contents[0] = 0x44, ...  
+330 1766956887645 XXXX 1766956887645, Thread 330: XXXX 1766956887645, Exiting Thread 330: Commands::runScriptBasic  
+330 1766956887645 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Post:SetPowerInfo
+330 1766956887645 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return Value
+330 1766956887645 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 none
+330 1766956887645 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return End
+330 1766956887645 GEN4_CONNECT_DIAGNOSTICS:Removing plug and play observer com.microchip.mplab.mdbcore.RI4Tool.RI4ToolBase$RI4PlugNPlayObserver@5a1d6d03
+330 1766956887645 GEN4_CONNECT_DIAGNOSTICS:Begin PlugNPlayObservers list dump:
+330 1766956887645 GEN4_CONNECT_DIAGNOSTICS:End PlugNPlayObservers list dump:
+330 1766956887696 GEN4_CONNECT_DIAGNOSTICS:Calling RIDbgToolCom.Disconnect
+330 1766956887696 GEN4_CONNECT_DIAGNOSTICS:Calling MPLABCommTool.Detach to remove tool from plug and play list
+330 1766956887697 GEN4_CONNECT_DIAGNOSTICS:Calling RIDbgToolCom.DisconnectFromMPlabComm
+330 1766956887697 GEN4_CONNECT_DIAGNOSTICS:Calling MPLABCommTool.Disconnect
+354 1766956978459 GEN4_CONNECT_DIAGNOSTICS:MPLABCommTool is NOT null
+354 1766956978459 GEN4_CONNECT_DIAGNOSTICS:AttachedToolPID = 9036, AttachedToolVID = 4d8
+354 1766956978459 GEN4_CONNECT_DIAGNOSTICS:transport type = USB
+354 1766956978459 GEN4_CONNECT_DIAGNOSTICS:AttachedToolPID = 9036, AttachedToolVID = 4d8
+354 1766956978464 com.microchip.mplab.mdbcore.RealICETool.RIDbgToolCom
+354 1766956978464 GEN4_CONNECT_DIAGNOSTICS:Before MPLABCommTool.Connect()
+354 1766956978464 GEN4_CONNECT_DIAGNOSTICS:After MPLABCommTool.Connect()
+354 1766956978464 GEN4_CONNECT_DIAGNOSTICS:MPLABCommTool.Connect() returned MPLABCOMM_NO_ERROR
+354 1766956978464 GEN4_CONNECT_DIAGNOSTICS:Attaching to MPLABCommTool plugnplay
+354 1766956978465 GEN4_CONNECT_DIAGNOSTICS:Adding new plug and play observer com.microchip.mplab.mdbcore.RI4Tool.RI4ToolBase$RI4PlugNPlayObserver@4134ee1
+354 1766956978465 GEN4_CONNECT_DIAGNOSTICS:Begin PlugNPlayObservers list dump:
+354 1766956978465 GEN4_CONNECT_DIAGNOSTICS:com.microchip.mplab.mdbcore.RI4Tool.RI4ToolBase$RI4PlugNPlayObserver@4134ee1
+354 1766956978465 GEN4_CONNECT_DIAGNOSTICS:End PlugNPlayObservers list dump:
+354 1766956978465 GEN4_CONNECT_DIAGNOSTICS:Registering for alternate PNP notifications. CommPnPCriteria.cPIDList = [9035], CommPnPCriteria.cSerialNumber = 020026702ryn005992
+
+354 1766956978641 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Pre:init
+354 1766956978641 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Payload
+354 1766956978641 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: Values:
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: pcAddress = 000004f9, Vpp = 9.00, useRowEraseIfVoltageIsLow = true, voltageBelowWhichUseRowErase = 2.10, deviceName = PIC18F27Q43, programmerType = PIC18ENH_V2
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: MemInfo values:
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = ffff, exists = true, startAddr = 00000000, endAddr = 0001ffff, rowSize = 0080, rowEraseSize = 0080, addrInc = 0002, widthProgram = 0002
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 00ff, exists = true, startAddr = 00300000, endAddr = 00300011, rowSize = 0001, rowEraseSize = 0000, addrInc = 0001, widthProgram = 0001
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 0000, exists = false, startAddr = 00000000, endAddr = 00000000, rowSize = 0000, rowEraseSize = 0080, addrInc = 0000, widthProgram = 0000
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 00ff, exists = true, startAddr = 00380000, endAddr = 003803ff, rowSize = 0001, rowEraseSize = 0000, addrInc = 0001, widthProgram = 0001
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = ffff, exists = true, startAddr = 00200000, endAddr = 0020003f, rowSize = 0001, rowEraseSize = 0000, addrInc = 0002, widthProgram = 0002
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = ffff, exists = true, startAddr = 00200000, endAddr = 002403ff, rowSize = 0080, rowEraseSize = 0080, addrInc = 0002, widthProgram = 0002
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 0000, exists = false, startAddr = 00000000, endAddr = 00000000, rowSize = 0000, rowEraseSize = 0000, addrInc = 0001, widthProgram = 0001
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 0000, exists = false, startAddr = 00000000, endAddr = 00000000, rowSize = 0000, rowEraseSize = 0000, addrInc = 0000, widthProgram = 0000
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 0000, exists = false, startAddr = 00000000, endAddr = 00000000, rowSize = 0000, rowEraseSize = 0000, addrInc = 0000, widthProgram = 0000
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 0000, exists = false, startAddr = 00000000, endAddr = 00000000, rowSize = 0000, rowEraseSize = 0000, addrInc = 0000, widthProgram = 0000
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 0000, exists = false, startAddr = 00000000, endAddr = 00000000, rowSize = 0000, rowEraseSize = 0000, addrInc = 0001, widthProgram = 0001
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 0000, exists = false, startAddr = 00000000, endAddr = 00000000, rowSize = 0000, rowEraseSize = 0000, addrInc = 0001, widthProgram = 0001
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 0000, exists = false, startAddr = 00000000, endAddr = 00000000, rowSize = 0000, rowEraseSize = 0000, addrInc = 0000, widthProgram = 0000
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 0000, exists = false, startAddr = 00000000, endAddr = 00000000, rowSize = 0000, rowEraseSize = 0000, addrInc = 0000, widthProgram = 0000
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 0000, exists = false, startAddr = 00000000, endAddr = 00000000, rowSize = 0000, rowEraseSize = 0000, addrInc = 0000, widthProgram = 0000
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 0000, exists = false, startAddr = 00000000, endAddr = 00000000, rowSize = 0000, rowEraseSize = 0000, addrInc = 0000, widthProgram = 0000
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 7fffffff, exists = true, startAddr = 003ffffe, endAddr = 003fffff, rowSize = 0001, rowEraseSize = 0000, addrInc = 0001, widthProgram = 0001
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 0000, exists = false, startAddr = 00000000, endAddr = 00000000, rowSize = 0000, rowEraseSize = 0000, addrInc = 0000, widthProgram = 0000
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = ffff, exists = true, startAddr = 003c0000, endAddr = 003c00ff, rowSize = 0080, rowEraseSize = 0000, addrInc = 0002, widthProgram = 0002
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = ffff, exists = true, startAddr = 002c0000, endAddr = 002c00ff, rowSize = 0080, rowEraseSize = 0000, addrInc = 0002, widthProgram = 0002
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 0000, exists = false, startAddr = 00000000, endAddr = 00000000, rowSize = 0000, rowEraseSize = 0000, addrInc = 0000, widthProgram = 0000
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 0000, exists = false, startAddr = 00000000, endAddr = 00000000, rowSize = 0000, rowEraseSize = 0000, addrInc = 0000, widthProgram = 0000
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: mask = 0000, exists = false, startAddr = 00000000, endAddr = 00000000, rowSize = 0000, rowEraseSize = 0000, addrInc = 0000, widthProgram = 0000
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 DeviceInfo: CfgRequiredBitsMask Values:
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Address = 00300000, Mask = 00000077
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Address = 00300001, Mask = 0000002b
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Address = 00300002, Mask = 000000ff
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Address = 00300003, Mask = 000000bf
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Address = 00300004, Mask = 0000007f
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Address = 00300005, Mask = 0000003f
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Address = 00300006, Mask = 0000001f
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Address = 00300007, Mask = 0000008f
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Address = 00300009, Mask = 00000001
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 BasicInfo: Values:
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 BasicInfo: InputStream = com.microchip.mplab.libs.toolpacksupport.EquatableFileInputStream@71694141, ToolFlavor = PIC32C
+354 1766956978642 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Payload End
+354 1766956978644 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Post:init
+354 1766956978644 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Return Value
+354 1766956978644 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 none
+354 1766956978644 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956978644 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Pre:GetInterfaceProvider
+354 1766956978644 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Payload
+354 1766956978644 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 RI4DebugInterface
+354 1766956978644 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Payload End
+354 1766956978644 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Post:GetInterfaceProvider
+354 1766956978644 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Return Value
+354 1766956978644 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 com.microchip.mplab.libs.RI4ToolsController.implementations.RI4DebugInterfaceImpl@62b498d1
+354 1766956978644 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956978645 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Pre:GetInterfaceProvider
+354 1766956978645 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Payload
+354 1766956978645 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 RI4ProgramInterface
+354 1766956978645 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Payload End
+354 1766956978645 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Post:GetInterfaceProvider
+354 1766956978645 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Return Value
+354 1766956978645 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 com.microchip.mplab.libs.RI4ToolsController.implementations.RI4ProgramInterfaceImpl@4d92f7c9
+354 1766956978645 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Pre:GetInterfaceProvider
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Payload
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 RI4ConnectInterface
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Payload End
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Post:GetInterfaceProvider
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Return Value
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 com.microchip.mplab.libs.PK4ToolsController.PK4ConnectInterfaceImpl@5368ccdc
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Pre:GetInterfaceProvider
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Payload
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 RI4ControllerDiagnosticsInterface
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Payload End
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Post:GetInterfaceProvider
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Return Value
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 com.microchip.mplab.libs.RI4ToolsController.implementations.RI4ControllerDiagnosticsInterfaceImpl@1900fbb4
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Pre:GetInterfaceProvider
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Payload
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 ProgrammerToGo
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Payload End
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Post:GetInterfaceProvider
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Return Value
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 com.microchip.mplab.libs.RI4ToolsController.implementations.ProgrammerToGoImpl@5fb49a55
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Pre:GetInterfaceProvider
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Payload
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Status
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Payload End
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Post:GetInterfaceProvider
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Return Value
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 null
+354 1766956978646 GEN4_TO_CONTROLLER_LOG:GEN4_INIT_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956978664 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Pre:SetDebugExec
+354 1766956978664 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload
+354 1766956978664 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Test
+354 1766956978664 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 240000
+354 1766956978664 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Length = 870
+354 1766956978664 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload End
+354 1766956978666 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Post:SetDebugExec
+354 1766956978666 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return Value
+354 1766956978666 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 true
+354 1766956978666 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956978667 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Pre:EstablishCommunincations
+354 1766956978667 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload
+354 1766956978667 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 com.microchip.mplab.mdbcore.PK5Tool.PK5Com@79b0f414
+354 1766956978667 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload End
+354 1766956978667 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Post:EstablishCommunincations
+354 1766956978667 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return Value
+354 1766956978667 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 true
+354 1766956978667 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956978667 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Pre:GetFirmwareInfo
+354 1766956978667 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload
+354 1766956978667 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 null
+354 1766956978667 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload End
+354 1766956978675 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Post:GetFirmwareInfo
+354 1766956978675 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return Value
+354 1766956978675 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 FirmwareInfo: Values:
+354 1766956978675 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 FirmwareInfo: boot = false, bootVer = 00.00.68, apVer = 02.05.47, fpgaVer = ff.ff.ff, scriptVer = 00.10.08, macAddress = 0504883548174844851484953485250, devID = a1020e01, devID1 = 2, devSN0 = ffffffff, devSN1 = ffffffff, serialNumber = 020026702RYN005992, appCommitID = null, scriptCommitID = f91823efd7, PCB_ID = 2
+354 1766956978675 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return End
+354 1766956978676 XXXX 1766956978676, Thread 354: XXXX 1766956978676, Entering Thread 354: Commands::runScriptWithUpload with script contents. contents[0] = 0x5e, ...  
+354 1766956978676 XXXX 1766956978676, Thread 354: XXXX 1766956978676, Entering Thread 354: ToolCommUsb::readTransfer, sideData is 0xd bytes long, transferDataLength is 0x4 bytes long  
+354 1766956978679 XXXX 1766956978679, Thread 354: XXXX 1766956978679, Exiting Thread 354: ToolCommUsb::readTransfer,  cr.status = 0x0  
+354 1766956978679 XXXX 1766956978679, Thread 354: XXXX 1766956978679, Exiting Thread 354: Commands::runScriptWithUpload  
+354 1766956978679 GEN4_CONNECT_DIAGNOSTICS:ENTERING: com.microchip.mplab.mdbcore.RI4Tool.ConnectionHandler.CheckForFWUpdates()
+354 1766956978679 GEN4_CONNECT_DIAGNOSTICS:Created FirmwareUpdateHandler com.microchip.mplab.mdbcore.PK5Tool.PK5FirmwareUpdateHandler@28e346f2
+354 1766956978679 GEN4_CONNECT_DIAGNOSTICS:ENTERING: com.microchip.mplab.mdbcore.RI4Tool.FirmwareUpdateHandler.GetUpdateInfo()
+354 1766956978680 GEN4_CONNECT_DIAGNOSTICS:Parsing file  for firmware updates
+354 1766956978680 GEN4_CONNECT_DIAGNOSTICS:ENTERING: com.microchip.mplab.mdbcore.RI4Tool.FirmwareUpdateHandler.ri4ParseSelectedVersionsFromJamFile()
+354 1766956978680 GEN4_CONNECT_DIAGNOSTICS:Jame file line = app.hex,020547
+354 1766956978680 GEN4_CONNECT_DIAGNOSTICS:Jame file line = boot.hex,000068
+354 1766956978680 GEN4_CONNECT_DIAGNOSTICS:Jame file line = scripts.xml,001008
+354 1766956978680 GEN4_CONNECT_DIAGNOSTICS:Selected firmware version for Boot = 00.00.68
+354 1766956978680 GEN4_CONNECT_DIAGNOSTICS:Selected firmware version for ap = 02.05.47
+354 1766956978680 GEN4_CONNECT_DIAGNOSTICS:EXITING: com.microchip.mplab.mdbcore.RI4Tool.FirmwareUpdateHandler.ri4ParseSelectedVersionsFromJamFile()
+354 1766956978680 GEN4_CONNECT_DIAGNOSTICS:EXITING: com.microchip.mplab.mdbcore.RI4Tool.FirmwareUpdateHandler.GetUpdateInfo()
+354 1766956978680 GEN4_CONNECT_DIAGNOSTICS:ENTERING: com.microchip.mplab.mdbcore.RI4Tool.FirmwareUpdateHandler.updateRI4ToolsFirmware(FirmwareInfo, UpdateMessage)
+354 1766956978687 GEN4_CONNECT_DIAGNOSTICS:appNeedsUpdate returned false
+354 1766956978687 GEN4_CONNECT_DIAGNOSTICS:EXITING: com.microchip.mplab.mdbcore.RI4Tool.FirmwareUpdateHandler.updateRI4ToolsFirmware(FirmwareInfo, UpdateMessage)
+354 1766956978687 GEN4_CONNECT_DIAGNOSTICS:EXITING: com.microchip.mplab.mdbcore.RI4Tool.ConnectionHandler.CheckForFWUpdates()
+
+354 1766956978687 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Pre:SetPowerInfo
+354 1766956978687 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload
+354 1766956978687 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 PowerInfo: Values:
+354 1766956978688 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 PowerInfo: shotDownSystem = false, isToolPower = false, voltage = 5.000000, useVppFirst = false, useLowVoltageProgramming = false, useMaintainActivePower = false
+354 1766956978688 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload End
+354 1766956978688 XXXX 1766956978688, Thread 354: XXXX 1766956978688, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0x39, ...  
+354 1766956978689 XXXX 1766956978689, Thread 354: XXXX 1766956978689, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956978689 XXXX 1766956978689, Thread 354: XXXX 1766956978689, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0x46, ...  
+354 1766956978690 XXXX 1766956978690, Thread 354: XXXX 1766956978690, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956978690 XXXX 1766956978690, Thread 354: XXXX 1766956978690, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0x44, ...  
+354 1766956978702 XXXX 1766956978702, Thread 354: XXXX 1766956978702, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956978702 XXXX 1766956978702, Thread 354: XXXX 1766956978702, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xef, ...  
+354 1766956978713 XXXX 1766956978713, Thread 354: XXXX 1766956978713, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956978713 XXXX 1766956978713, Thread 354: XXXX 1766956978713, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0x40, ...  
+354 1766956979114 XXXX 1766956979114, Thread 354: XXXX 1766956979114, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979114 XXXX 1766956979114, Thread 354: XXXX 1766956979114, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0x47, ...  
+354 1766956979119 XXXX 1766956979119, Thread 354: XXXX 1766956979119, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979119 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Post:SetPowerInfo
+354 1766956979119 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return Value
+354 1766956979119 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 none
+354 1766956979119 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956979119 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Pre:SetLEDBrightness
+354 1766956979119 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload
+354 1766956979119 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 5
+354 1766956979119 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload End
+354 1766956979119 XXXX 1766956979119, Thread 354: XXXX 1766956979119, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xcf, ...  
+354 1766956979120 XXXX 1766956979120, Thread 354: XXXX 1766956979120, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979120 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Post:SetLEDBrightness
+354 1766956979120 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return Value
+354 1766956979120 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 none
+354 1766956979120 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956979120 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Pre:SetToolInfo
+354 1766956979120 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload
+354 1766956979120 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 ToolInfo: Values:
+354 1766956979120 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 ToolInfo: speedLevel = 1, PGCResistance = 4700, PGDResistance = 4700, PGCPullDir = PullDown, PGDPullDir = PullDown, ICSPSelected = Wire2
+354 1766956979120 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload End
+354 1766956979120 XXXX 1766956979120, Thread 354: XXXX 1766956979120, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0x27, ...  
+354 1766956979121 XXXX 1766956979121, Thread 354: XXXX 1766956979121, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979121 XXXX 1766956979121, Thread 354: XXXX 1766956979121, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956979122 XXXX 1766956979122, Thread 354: XXXX 1766956979122, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979122 XXXX 1766956979122, Thread 354: XXXX 1766956979122, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956979123 XXXX 1766956979123, Thread 354: XXXX 1766956979123, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979123 XXXX 1766956979123, Thread 354: XXXX 1766956979123, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956979124 XXXX 1766956979124, Thread 354: XXXX 1766956979124, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979124 XXXX 1766956979124, Thread 354: XXXX 1766956979124, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xd4, ...  
+354 1766956979125 XXXX 1766956979125, Thread 354: XXXX 1766956979125, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979125 XXXX 1766956979125, Thread 354: XXXX 1766956979125, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xcd, ...  
+354 1766956979126 XXXX 1766956979126, Thread 354: XXXX 1766956979126, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979126 XXXX 1766956979126, Thread 354: XXXX 1766956979126, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xce, ...  
+354 1766956979127 XXXX 1766956979127, Thread 354: XXXX 1766956979127, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979127 XXXX 1766956979127, Thread 354: XXXX 1766956979127, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xcd, ...  
+354 1766956979128 XXXX 1766956979128, Thread 354: XXXX 1766956979128, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979128 XXXX 1766956979128, Thread 354: XXXX 1766956979128, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xce, ...  
+354 1766956979129 XXXX 1766956979129, Thread 354: XXXX 1766956979129, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979129 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Post:SetToolInfo
+354 1766956979129 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return Value
+354 1766956979129 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 none
+354 1766956979129 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956979131 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Pre:SendOperation
+354 1766956979131 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload
+354 1766956979131 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 OperationInfo: Values:
+354 1766956979131 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 OperationInfo: Type = read, Mask = 00000000, Erase = false, Production Mode = true
+354 1766956979131 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 300003, End = 300003, Buffer Length = 1, Type = Cfg, Mask = 00000000
+354 1766956979131 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload End
+354 1766956979131 XXXX 1766956979131, Thread 354: XXXX 1766956979131, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956979132 XXXX 1766956979132, Thread 354: XXXX 1766956979132, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979132 XXXX 1766956979132, Thread 354: XXXX 1766956979132, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956979133 XXXX 1766956979133, Thread 354: XXXX 1766956979133, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979133 XXXX 1766956979133, Thread 354: XXXX 1766956979133, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956979134 XXXX 1766956979134, Thread 354: XXXX 1766956979134, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979134 XXXX 1766956979134, Thread 354: XXXX 1766956979134, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956979210 XXXX 1766956979210, Thread 354: XXXX 1766956979210, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979210 XXXX 1766956979210, Thread 354: XXXX 1766956979210, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956979212 XXXX 1766956979212, Thread 354: XXXX 1766956979212, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979212 XXXX 1766956979212, Thread 354: XXXX 1766956979212, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956979213 XXXX 1766956979213, Thread 354: XXXX 1766956979213, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979213 XXXX 1766956979213, Thread 354: XXXX 1766956979213, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956979214 XXXX 1766956979214, Thread 354: XXXX 1766956979214, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979214 XXXX 1766956979214, Thread 354: XXXX 1766956979214, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956979245 XXXX 1766956979245, Thread 354: XXXX 1766956979245, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979245 XXXX 1766956979245, Thread 354: XXXX 1766956979245, Entering Thread 354: Commands::runScriptWithUpload, script name = ReadConfigmem  
+354 1766956979245 XXXX 1766956979245, Thread 354: XXXX 1766956979245, Entering Thread 354: ToolCommUsb::readTransfer, sideData is 0x37 bytes long, transferDataLength is 0x2 bytes long  
+354 1766956979249 XXXX 1766956979249, Thread 354: XXXX 1766956979249, Exiting Thread 354: ToolCommUsb::readTransfer,  cr.status = 0x0  
+354 1766956979249 XXXX 1766956979249, Thread 354: XXXX 1766956979249, Exiting Thread 354: Commands::runScriptWithUpload  
+354 1766956979249 XXXX 1766956979249, Thread 354: XXXX 1766956979249, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956979251 XXXX 1766956979251, Thread 354: XXXX 1766956979251, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979251 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Post:SendOperation
+354 1766956979251 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return Value
+354 1766956979251 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 None
+354 1766956979251 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956979251 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Pre:GetTargetIDInfo
+354 1766956979251 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload
+354 1766956979251 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 null
+354 1766956979251 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Payload End
+354 1766956979253 XXXX 1766956979253, Thread 354: XXXX 1766956979253, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956979254 XXXX 1766956979254, Thread 354: XXXX 1766956979254, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979254 XXXX 1766956979254, Thread 354: XXXX 1766956979254, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956979255 XXXX 1766956979255, Thread 354: XXXX 1766956979255, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979255 XXXX 1766956979255, Thread 354: XXXX 1766956979255, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956979256 XXXX 1766956979256, Thread 354: XXXX 1766956979256, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979256 XXXX 1766956979256, Thread 354: XXXX 1766956979256, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956979285 XXXX 1766956979285, Thread 354: XXXX 1766956979285, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979285 XXXX 1766956979285, Thread 354: XXXX 1766956979285, Entering Thread 354: Commands::runScriptBasic, script name = GetDeviceID, timeOut = -1 ms  
+354 1766956979286 XXXX 1766956979286, Thread 354: XXXX 1766956979286, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979286 XXXX 1766956979286, Thread 354: XXXX 1766956979286, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956979288 XXXX 1766956979288, Thread 354: XXXX 1766956979288, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979288 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Post:GetTargetIDInfo
+354 1766956979288 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return Value
+354 1766956979288 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 TargetIDInfo: Values:
+354 1766956979288 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 TargetIDInfo: DeviceID = ffffffffa0437480
+354 1766956979288 GEN4_TO_CONTROLLER_LOG:GEN4_CONNECT_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956979315 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Pre:SendOperation
+354 1766956979315 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload
+354 1766956979315 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 OperationInfo: Values:
+354 1766956979315 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 OperationInfo: Type = erase, Mask = 00000000, Erase = false, Production Mode = false
+354 1766956979315 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 0, End = 1ffff, Buffer Length = 0, Type = Pgm, Mask = 00000000
+354 1766956979315 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 300000, End = 300011, Buffer Length = 0, Type = Cfg, Mask = 00000000
+354 1766956979315 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 380000, End = 3803ff, Buffer Length = 0, Type = EEData, Mask = 00000000
+354 1766956979315 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 200000, End = 20003f, Buffer Length = 0, Type = UserID, Mask = 00000000
+354 1766956979315 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload End
+354 1766956979315 XXXX 1766956979315, Thread 354: XXXX 1766956979315, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956979316 XXXX 1766956979316, Thread 354: XXXX 1766956979316, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979316 XXXX 1766956979316, Thread 354: XXXX 1766956979316, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956979317 XXXX 1766956979317, Thread 354: XXXX 1766956979317, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979317 XXXX 1766956979317, Thread 354: XXXX 1766956979317, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956979318 XXXX 1766956979318, Thread 354: XXXX 1766956979318, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979318 XXXX 1766956979318, Thread 354: XXXX 1766956979318, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956979372 XXXX 1766956979372, Thread 354: XXXX 1766956979372, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979372 XXXX 1766956979372, Thread 354: XXXX 1766956979372, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956979373 XXXX 1766956979373, Thread 354: XXXX 1766956979373, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979373 XXXX 1766956979373, Thread 354: XXXX 1766956979373, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956979374 XXXX 1766956979374, Thread 354: XXXX 1766956979374, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979374 XXXX 1766956979374, Thread 354: XXXX 1766956979374, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956979375 XXXX 1766956979375, Thread 354: XXXX 1766956979375, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979375 XXXX 1766956979375, Thread 354: XXXX 1766956979375, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956979404 XXXX 1766956979404, Thread 354: XXXX 1766956979404, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979404 XXXX 1766956979404, Thread 354: XXXX 1766956979404, Entering Thread 354: Commands::runScriptBasic, script name = EraseChip, timeOut = 30000 ms  
+354 1766956979416 XXXX 1766956979416, Thread 354: XXXX 1766956979416, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979416 XXXX 1766956979416, Thread 354: XXXX 1766956979416, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956979418 XXXX 1766956979418, Thread 354: XXXX 1766956979418, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979418 XXXX 1766956979418, Thread 354: XXXX 1766956979418, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956979419 XXXX 1766956979419, Thread 354: XXXX 1766956979419, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979419 XXXX 1766956979419, Thread 354: XXXX 1766956979419, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956979420 XXXX 1766956979420, Thread 354: XXXX 1766956979420, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979420 XXXX 1766956979420, Thread 354: XXXX 1766956979420, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956979421 XXXX 1766956979421, Thread 354: XXXX 1766956979421, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979421 XXXX 1766956979421, Thread 354: XXXX 1766956979421, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956979452 XXXX 1766956979452, Thread 354: XXXX 1766956979452, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979452 XXXX 1766956979452, Thread 354: XXXX 1766956979452, Entering Thread 354: Commands::runScriptBasic, script name = EraseDataEEmem, timeOut = 30000 ms  
+354 1766956979464 XXXX 1766956979464, Thread 354: XXXX 1766956979464, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979464 XXXX 1766956979464, Thread 354: XXXX 1766956979464, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956979466 XXXX 1766956979466, Thread 354: XXXX 1766956979466, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979466 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Post:SendOperation
+354 1766956979466 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return Value
+354 1766956979466 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 None
+354 1766956979466 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956979470 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Pre:SendOperation
+354 1766956979470 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload
+354 1766956979470 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 OperationInfo: Values:
+354 1766956979470 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 OperationInfo: Type = write, Mask = 00000000, Erase = false, Production Mode = false
+354 1766956979470 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 0, End = 17f, Buffer Length = 384, Type = Pgm, Mask = 00000000
+354 1766956979470 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = fb00, End = 1dcff, Buffer Length = 57856, Type = Pgm, Mask = 00000000
+354 1766956979470 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 300000, End = 300011, Buffer Length = 18, Type = Cfg, Mask = 00000000
+354 1766956979470 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 TransferInfo: Start = 200000, End = 20003f, Buffer Length = 64, Type = UserID, Mask = 00000000
+354 1766956979470 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload End
+354 1766956979470 XXXX 1766956979470, Thread 354: XXXX 1766956979470, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956979471 XXXX 1766956979471, Thread 354: XXXX 1766956979471, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979471 XXXX 1766956979471, Thread 354: XXXX 1766956979471, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956979472 XXXX 1766956979472, Thread 354: XXXX 1766956979472, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979472 XXXX 1766956979472, Thread 354: XXXX 1766956979472, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956979473 XXXX 1766956979473, Thread 354: XXXX 1766956979473, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979473 XXXX 1766956979473, Thread 354: XXXX 1766956979473, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956979502 XXXX 1766956979502, Thread 354: XXXX 1766956979502, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979502 XXXX 1766956979502, Thread 354: XXXX 1766956979502, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956979503 XXXX 1766956979503, Thread 354: XXXX 1766956979503, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979503 XXXX 1766956979503, Thread 354: XXXX 1766956979503, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956979504 XXXX 1766956979504, Thread 354: XXXX 1766956979504, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979504 XXXX 1766956979504, Thread 354: XXXX 1766956979504, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956979505 XXXX 1766956979505, Thread 354: XXXX 1766956979505, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979505 XXXX 1766956979505, Thread 354: XXXX 1766956979505, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956979536 XXXX 1766956979536, Thread 354: XXXX 1766956979536, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979536 XXXX 1766956979536, Thread 354: XXXX 1766956979536, Entering Thread 354: Commands::runScriptWithDownload, script name = WriteProgmem  
+354 1766956979560 XXXX 1766956979560, Thread 354: XXXX 1766956979560, Exiting Thread 354: Commands::runScriptWithDownload(WriteProgmem)  
+354 1766956979560 XXXX 1766956979560, Thread 354: XXXX 1766956979560, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956979562 XXXX 1766956979562, Thread 354: XXXX 1766956979562, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979562 XXXX 1766956979562, Thread 354: XXXX 1766956979562, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956979563 XXXX 1766956979563, Thread 354: XXXX 1766956979563, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979563 XXXX 1766956979563, Thread 354: XXXX 1766956979563, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956979564 XXXX 1766956979564, Thread 354: XXXX 1766956979564, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979564 XXXX 1766956979564, Thread 354: XXXX 1766956979564, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956979565 XXXX 1766956979565, Thread 354: XXXX 1766956979565, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979565 XXXX 1766956979565, Thread 354: XXXX 1766956979565, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956979594 XXXX 1766956979594, Thread 354: XXXX 1766956979594, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979594 XXXX 1766956979594, Thread 354: XXXX 1766956979594, Entering Thread 354: Commands::runScriptWithUpload, script name = ReadProgmem  
+354 1766956979594 XXXX 1766956979594, Thread 354: XXXX 1766956979594, Entering Thread 354: ToolCommUsb::readTransfer, sideData is 0x3b bytes long, transferDataLength is 0x180 bytes long  
+354 1766956979604 XXXX 1766956979604, Thread 354: XXXX 1766956979604, Exiting Thread 354: ToolCommUsb::readTransfer,  cr.status = 0x0  
+354 1766956979604 XXXX 1766956979604, Thread 354: XXXX 1766956979604, Exiting Thread 354: Commands::runScriptWithUpload  
+354 1766956979604 XXXX 1766956979604, Thread 354: XXXX 1766956979604, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956979606 XXXX 1766956979606, Thread 354: XXXX 1766956979606, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979606 XXXX 1766956979606, Thread 354: XXXX 1766956979606, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956979607 XXXX 1766956979607, Thread 354: XXXX 1766956979607, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979607 XXXX 1766956979607, Thread 354: XXXX 1766956979607, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956979608 XXXX 1766956979608, Thread 354: XXXX 1766956979608, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979608 XXXX 1766956979608, Thread 354: XXXX 1766956979608, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956979609 XXXX 1766956979609, Thread 354: XXXX 1766956979609, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979609 XXXX 1766956979609, Thread 354: XXXX 1766956979609, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956979640 XXXX 1766956979640, Thread 354: XXXX 1766956979640, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956979640 XXXX 1766956979640, Thread 354: XXXX 1766956979640, Entering Thread 354: Commands::runScriptWithDownload, script name = WriteProgmem  
+354 1766956982902 XXXX 1766956982902, Thread 354: XXXX 1766956982902, Exiting Thread 354: Commands::runScriptWithDownload(WriteProgmem)  
+354 1766956982902 XXXX 1766956982902, Thread 354: XXXX 1766956982902, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956982904 XXXX 1766956982904, Thread 354: XXXX 1766956982904, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956982904 XXXX 1766956982904, Thread 354: XXXX 1766956982904, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956982905 XXXX 1766956982905, Thread 354: XXXX 1766956982905, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956982905 XXXX 1766956982905, Thread 354: XXXX 1766956982905, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956982906 XXXX 1766956982906, Thread 354: XXXX 1766956982906, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956982906 XXXX 1766956982906, Thread 354: XXXX 1766956982906, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956982907 XXXX 1766956982907, Thread 354: XXXX 1766956982907, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956982907 XXXX 1766956982907, Thread 354: XXXX 1766956982907, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956982936 XXXX 1766956982936, Thread 354: XXXX 1766956982936, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956982936 XXXX 1766956982936, Thread 354: XXXX 1766956982936, Entering Thread 354: Commands::runScriptWithUpload, script name = ReadProgmem  
+354 1766956982936 XXXX 1766956982936, Thread 354: XXXX 1766956982936, Entering Thread 354: ToolCommUsb::readTransfer, sideData is 0x3b bytes long, transferDataLength is 0xe200 bytes long  
+354 1766956984050 XXXX 1766956984050, Thread 354: XXXX 1766956984050, Exiting Thread 354: ToolCommUsb::readTransfer,  cr.status = 0x0  
+354 1766956984050 XXXX 1766956984050, Thread 354: XXXX 1766956984050, Exiting Thread 354: Commands::runScriptWithUpload  
+354 1766956984050 XXXX 1766956984050, Thread 354: XXXX 1766956984050, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956984052 XXXX 1766956984052, Thread 354: XXXX 1766956984052, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984053 XXXX 1766956984053, Thread 354: XXXX 1766956984053, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956984053 XXXX 1766956984053, Thread 354: XXXX 1766956984053, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984053 XXXX 1766956984053, Thread 354: XXXX 1766956984053, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956984054 XXXX 1766956984054, Thread 354: XXXX 1766956984054, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984054 XXXX 1766956984054, Thread 354: XXXX 1766956984054, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956984055 XXXX 1766956984055, Thread 354: XXXX 1766956984055, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984055 XXXX 1766956984055, Thread 354: XXXX 1766956984055, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956984086 XXXX 1766956984086, Thread 354: XXXX 1766956984086, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984086 XXXX 1766956984086, Thread 354: XXXX 1766956984086, Entering Thread 354: Commands::runScriptWithDownload, script name = WriteIDmem  
+354 1766956984092 XXXX 1766956984092, Thread 354: XXXX 1766956984092, Exiting Thread 354: Commands::runScriptWithDownload(WriteIDmem)  
+354 1766956984092 XXXX 1766956984092, Thread 354: XXXX 1766956984092, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956984094 XXXX 1766956984094, Thread 354: XXXX 1766956984094, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984094 XXXX 1766956984094, Thread 354: XXXX 1766956984094, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956984095 XXXX 1766956984095, Thread 354: XXXX 1766956984095, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984095 XXXX 1766956984095, Thread 354: XXXX 1766956984095, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956984096 XXXX 1766956984096, Thread 354: XXXX 1766956984096, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984096 XXXX 1766956984096, Thread 354: XXXX 1766956984096, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956984097 XXXX 1766956984097, Thread 354: XXXX 1766956984097, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984097 XXXX 1766956984097, Thread 354: XXXX 1766956984097, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956984126 XXXX 1766956984126, Thread 354: XXXX 1766956984126, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984126 XXXX 1766956984126, Thread 354: XXXX 1766956984126, Entering Thread 354: Commands::runScriptWithUpload, script name = ReadIDmem  
+354 1766956984127 XXXX 1766956984127, Thread 354: XXXX 1766956984127, Entering Thread 354: ToolCommUsb::readTransfer, sideData is 0x3b bytes long, transferDataLength is 0x40 bytes long  
+354 1766956984129 XXXX 1766956984129, Thread 354: XXXX 1766956984129, Exiting Thread 354: ToolCommUsb::readTransfer,  cr.status = 0x0  
+354 1766956984130 XXXX 1766956984130, Thread 354: XXXX 1766956984129, Exiting Thread 354: Commands::runScriptWithUpload  
+354 1766956984130 XXXX 1766956984130, Thread 354: XXXX 1766956984130, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956984131 XXXX 1766956984131, Thread 354: XXXX 1766956984131, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984131 XXXX 1766956984131, Thread 354: XXXX 1766956984131, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956984132 XXXX 1766956984132, Thread 354: XXXX 1766956984132, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984132 XXXX 1766956984132, Thread 354: XXXX 1766956984132, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956984133 XXXX 1766956984133, Thread 354: XXXX 1766956984133, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984133 XXXX 1766956984133, Thread 354: XXXX 1766956984133, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956984134 XXXX 1766956984134, Thread 354: XXXX 1766956984134, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984134 XXXX 1766956984134, Thread 354: XXXX 1766956984134, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956984166 XXXX 1766956984166, Thread 354: XXXX 1766956984166, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984166 XXXX 1766956984166, Thread 354: XXXX 1766956984166, Entering Thread 354: Commands::runScriptWithDownload, script name = WriteConfigmem  
+354 1766956984366 XXXX 1766956984366, Thread 354: XXXX 1766956984366, Exiting Thread 354: Commands::runScriptWithDownload(WriteConfigmem)  
+354 1766956984366 XXXX 1766956984366, Thread 354: XXXX 1766956984366, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956984368 XXXX 1766956984368, Thread 354: XXXX 1766956984368, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984368 XXXX 1766956984368, Thread 354: XXXX 1766956984368, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956984369 XXXX 1766956984369, Thread 354: XXXX 1766956984369, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984369 XXXX 1766956984369, Thread 354: XXXX 1766956984369, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956984370 XXXX 1766956984370, Thread 354: XXXX 1766956984370, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984370 XXXX 1766956984370, Thread 354: XXXX 1766956984370, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956984371 XXXX 1766956984371, Thread 354: XXXX 1766956984371, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984371 XXXX 1766956984371, Thread 354: XXXX 1766956984371, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956984400 XXXX 1766956984400, Thread 354: XXXX 1766956984400, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984400 XXXX 1766956984400, Thread 354: XXXX 1766956984400, Entering Thread 354: Commands::runScriptWithUpload, script name = ReadConfigmem  
+354 1766956984401 XXXX 1766956984401, Thread 354: XXXX 1766956984401, Entering Thread 354: ToolCommUsb::readTransfer, sideData is 0x37 bytes long, transferDataLength is 0x12 bytes long  
+354 1766956984403 XXXX 1766956984403, Thread 354: XXXX 1766956984403, Exiting Thread 354: ToolCommUsb::readTransfer,  cr.status = 0x0  
+354 1766956984403 XXXX 1766956984403, Thread 354: XXXX 1766956984403, Exiting Thread 354: Commands::runScriptWithUpload  
+354 1766956984403 XXXX 1766956984403, Thread 354: XXXX 1766956984403, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956984405 XXXX 1766956984405, Thread 354: XXXX 1766956984405, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984405 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Post:SendOperation
+354 1766956984405 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return Value
+354 1766956984405 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 None
+354 1766956984405 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956984405 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Pre:endOfOperations
+354 1766956984405 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload
+354 1766956984405 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 null
+354 1766956984405 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Payload End
+354 1766956984405 XXXX 1766956984405, Thread 354: XXXX 1766956984405, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956984407 XXXX 1766956984407, Thread 354: XXXX 1766956984407, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984407 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Post:endOfOperations
+354 1766956984407 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return Value
+354 1766956984407 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 None
+354 1766956984407 GEN4_TO_CONTROLLER_LOG:GEN4_PROGRAM_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956984407 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Pre:InitDebugSession
+354 1766956984407 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload
+354 1766956984407 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 null
+354 1766956984407 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload End
+354 1766956984408 XXXX 1766956984408, Thread 354: XXXX 1766956984408, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956984408 XXXX 1766956984408, Thread 354: XXXX 1766956984408, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984408 XXXX 1766956984408, Thread 354: XXXX 1766956984408, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956984409 XXXX 1766956984409, Thread 354: XXXX 1766956984409, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984409 XXXX 1766956984409, Thread 354: XXXX 1766956984409, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956984410 XXXX 1766956984410, Thread 354: XXXX 1766956984410, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984410 XXXX 1766956984410, Thread 354: XXXX 1766956984410, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956984442 XXXX 1766956984442, Thread 354: XXXX 1766956984442, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984442 XXXX 1766956984442, Thread 354: XXXX 1766956984442, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956984443 XXXX 1766956984443, Thread 354: XXXX 1766956984443, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984443 XXXX 1766956984443, Thread 354: XXXX 1766956984443, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956984444 XXXX 1766956984444, Thread 354: XXXX 1766956984444, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984444 XXXX 1766956984444, Thread 354: XXXX 1766956984444, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956984445 XXXX 1766956984445, Thread 354: XXXX 1766956984445, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984445 XXXX 1766956984445, Thread 354: XXXX 1766956984445, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956984474 XXXX 1766956984474, Thread 354: XXXX 1766956984474, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984474 XXXX 1766956984474, Thread 354: XXXX 1766956984474, Entering Thread 354: Commands::runScriptBasic, script name = EraseTestmemRange, timeOut = 30000 ms  
+354 1766956984520 XXXX 1766956984520, Thread 354: XXXX 1766956984520, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984520 XXXX 1766956984520, Thread 354: XXXX 1766956984520, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956984522 XXXX 1766956984522, Thread 354: XXXX 1766956984522, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984523 XXXX 1766956984523, Thread 354: XXXX 1766956984523, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956984523 XXXX 1766956984523, Thread 354: XXXX 1766956984523, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984523 XXXX 1766956984523, Thread 354: XXXX 1766956984523, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956984524 XXXX 1766956984524, Thread 354: XXXX 1766956984524, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984524 XXXX 1766956984524, Thread 354: XXXX 1766956984524, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956984525 XXXX 1766956984525, Thread 354: XXXX 1766956984525, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984525 XXXX 1766956984525, Thread 354: XXXX 1766956984525, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956984557 XXXX 1766956984557, Thread 354: XXXX 1766956984557, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956984557 XXXX 1766956984557, Thread 354: XXXX 1766956984557, Entering Thread 354: Commands::runScriptWithDownload, script name = WriteTestmem  
+354 1766956985969 XXXX 1766956985969, Thread 354: XXXX 1766956985969, Exiting Thread 354: Commands::runScriptWithDownload(WriteTestmem)  
+354 1766956985969 XXXX 1766956985969, Thread 354: XXXX 1766956985969, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956985972 XXXX 1766956985972, Thread 354: XXXX 1766956985972, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956985972 XXXX 1766956985972, Thread 354: XXXX 1766956985972, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956985972 XXXX 1766956985972, Thread 354: XXXX 1766956985972, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956985972 XXXX 1766956985972, Thread 354: XXXX 1766956985972, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956985973 XXXX 1766956985973, Thread 354: XXXX 1766956985973, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956985974 XXXX 1766956985974, Thread 354: XXXX 1766956985974, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956985974 XXXX 1766956985974, Thread 354: XXXX 1766956985974, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956985975 XXXX 1766956985975, Thread 354: XXXX 1766956985975, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956986004 XXXX 1766956986004, Thread 354: XXXX 1766956986004, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956986004 XXXX 1766956986004, Thread 354: XXXX 1766956986004, Entering Thread 354: Commands::runScriptWithUpload, script name = ReadTestmem  
+354 1766956986004 XXXX 1766956986004, Thread 354: XXXX 1766956986004, Entering Thread 354: ToolCommUsb::readTransfer, sideData is 0x3b bytes long, transferDataLength is 0x380 bytes long  
+354 1766956986023 XXXX 1766956986023, Thread 354: XXXX 1766956986023, Exiting Thread 354: ToolCommUsb::readTransfer,  cr.status = 0x0  
+354 1766956986023 XXXX 1766956986023, Thread 354: XXXX 1766956986023, Exiting Thread 354: Commands::runScriptWithUpload  
+354 1766956986023 XXXX 1766956986023, Thread 354: XXXX 1766956986023, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956986036 XXXX 1766956986036, Thread 354: XXXX 1766956986036, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956986036 XXXX 1766956986036, Thread 354: XXXX 1766956986036, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956986037 XXXX 1766956986037, Thread 354: XXXX 1766956986037, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956986037 XXXX 1766956986037, Thread 354: XXXX 1766956986037, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0x42, ...  
+354 1766956986038 XXXX 1766956986038, Thread 354: XXXX 1766956986038, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956986038 XXXX 1766956986038, Thread 354: XXXX 1766956986038, Entering Thread 354: Commands::runScriptBasic, script name = EnterDebugMode, timeOut = 10000 ms  
+354 1766956986488 XXXX 1766956986488, Thread 354: XXXX 1766956986488, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956986488 XXXX 1766956986488, Thread 354: XXXX 1766956986488, Entering Thread 354: Commands::runScriptBasic, script name = GetVersionDE, timeOut = -1 ms  
+354 1766956986490 XXXX 1766956986490, Thread 354: XXXX 1766956986490, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956986490 XXXX 1766956986490, Thread 354: XXXX 1766956986490, Entering Thread 354: Commands::runScriptBasic, script name = SetSpeedFromDevice, timeOut = -1 ms  
+354 1766956986490 XXXX 1766956986490, Thread 354: XXXX 1766956986490, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956986491 XXXX 1766956986490, Thread 354: XXXX 1766956986490, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xed, ...  
+354 1766956986491 XXXX 1766956986491, Thread 354: XXXX 1766956986491, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956986492 XXXX 1766956986492, Thread 354: XXXX 1766956986492, Entering Thread 354: Commands::runScriptBasic with script contents. contents[0] = 0xec, ...  
+354 1766956986492 XXXX 1766956986492, Thread 354: XXXX 1766956986492, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956986492 XXXX 1766956986492, Thread 354: XXXX 1766956986492, Entering Thread 354: Commands::runScriptBasic, script name = EnterTMOD_HV, timeOut = -1 ms  
+354 1766956986522 XXXX 1766956986522, Thread 354: XXXX 1766956986522, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956986522 XXXX 1766956986522, Thread 354: XXXX 1766956986522, Entering Thread 354: Commands::runScriptBasic, script name = ExitTMOD, timeOut = -1 ms  
+354 1766956986524 XXXX 1766956986524, Thread 354: XXXX 1766956986524, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956986524 XXXX 1766956986524, Thread 354: XXXX 1766956986524, Entering Thread 354: Commands::runScriptBasic, script name = EnterDebugMode, timeOut = -1 ms  
+354 1766956986973 XXXX 1766956986973, Thread 354: XXXX 1766956986973, Exiting Thread 354: Commands::runScriptBasic  
+354 1766956986973 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Post:InitDebugSession
+354 1766956986973 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return Value
+354 1766956986973 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 none
+354 1766956986973 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956986974 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Pre:DebugReadTargetMemory
+354 1766956986974 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload
+354 1766956986974 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 FileRegs
+354 1766956986974 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 ffffffffffffffff
+354 1766956986974 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 14
+354 1766956986974 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Length = 22
+354 1766956986974 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload End
+354 1766956986974 XXXX 1766956986974, Thread 354: XXXX 1766956986974, Entering Thread 354: Commands::runScriptWithUpload, script name = ReadRAM  
+354 1766956986974 XXXX 1766956986974, Thread 354: XXXX 1766956986974, Entering Thread 354: ToolCommUsb::readTransfer, sideData is 0x25 bytes long, transferDataLength is 0x16 bytes long  
+354 1766956986978 XXXX 1766956986978, Thread 354: XXXX 1766956986978, Exiting Thread 354: ToolCommUsb::readTransfer,  cr.status = 0x0  
+354 1766956986978 XXXX 1766956986978, Thread 354: XXXX 1766956986978, Exiting Thread 354: Commands::runScriptWithUpload  
+354 1766956986978 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Post:DebugReadTargetMemory
+354 1766956986978 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return Value
+354 1766956986978 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 true
+354 1766956986978 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956986978 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Pre:DebugWriteTargetMemory
+354 1766956986978 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload
+354 1766956986978 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 FileRegs
+354 1766956986978 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 153500
+354 1766956986978 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 153523
+354 1766956986978 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Length = 36
+354 1766956986978 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload End
+354 1766956986978 XXXX 1766956986978, Thread 354: XXXX 1766956986978, Entering Thread 354: Commands::runScriptWithDownload, script name = WriteRAM  
+354 1766956986983 XXXX 1766956986983, Thread 354: XXXX 1766956986983, Exiting Thread 354: Commands::runScriptWithDownload(WriteRAM)  
+354 1766956986983 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Post:DebugWriteTargetMemory
+354 1766956986983 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return Value
+354 1766956986983 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 true
+354 1766956986983 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return End
+
+354 1766956986983 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Pre:SetFreezePerihperalInfo
+354 1766956986983 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload
+354 1766956986983 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 BitSetInfo: Values:
+354 1766956986983 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 BitSetInfo: Address = 20, Mask = 40, SetVal = 40, Type = Emulation
+354 1766956986983 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload End
+354 1766956986983 XXXX 1766956986983, Thread 354: XXXX 1766956986983, Entering Thread 354: Commands::runScriptWithUpload, script name = ReadRAM  
+354 1766956986983 XXXX 1766956986983, Thread 354: XXXX 1766956986983, Entering Thread 354: ToolCommUsb::readTransfer, sideData is 0x25 bytes long, transferDataLength is 0x1 bytes long  
+354 1766956986987 XXXX 1766956986987, Thread 354: XXXX 1766956986987, Exiting Thread 354: ToolCommUsb::readTransfer,  cr.status = 0x0  
+354 1766956986987 XXXX 1766956986987, Thread 354: XXXX 1766956986987, Exiting Thread 354: Commands::runScriptWithUpload  
+354 1766956986987 XXXX 1766956986987, Thread 354: XXXX 1766956986987, Entering Thread 354: Commands::runScriptWithDownload, script name = WriteRAM  
+354 1766956986991 XXXX 1766956986991, Thread 354: XXXX 1766956986991, Exiting Thread 354: Commands::runScriptWithDownload(WriteRAM)  
+354 1766956986991 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Post:SetFreezePerihperalInfo
+354 1766956986991 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return Value
+354 1766956986991 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 none
+354 1766956986991 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return End
+
+375 1766956987054 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Pre:setTraceDescriptor
+375 1766956987054 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload
+375 1766956987054 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 com.microchip.mplab.libs.RI4ToolsController.DataClasses.TraceDescriptor@e94f90e
+375 1766956987054 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload End
+375 1766956987054 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Post:setTraceDescriptor
+375 1766956987054 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return Value
+375 1766956987054 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 none
+375 1766956987054 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return End
+
+375 1766956987056 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Pre:DebugWriteTargetMemory
+375 1766956987056 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload
+375 1766956987056 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Emulation
+375 1766956987056 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 26
+375 1766956987056 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 37
+375 1766956987056 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Length = 18
+375 1766956987056 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload End
+375 1766956987056 XXXX 1766956987056, Thread 375: XXXX 1766956987056, Entering Thread 375: Commands::runScriptWithDownload, script name = WriteEmu  
+375 1766956987058 XXXX 1766956987058, Thread 375: XXXX 1766956987058, Exiting Thread 375: Commands::runScriptWithDownload(WriteEmu)  
+375 1766956987058 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Post:DebugWriteTargetMemory
+375 1766956987058 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return Value
+375 1766956987058 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 true
+375 1766956987058 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return End
+
+375 1766956987059 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Pre:SetFreezePerihperalInfo
+375 1766956987059 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload
+375 1766956987059 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 BitSetInfo: Values:
+375 1766956987059 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 BitSetInfo: Address = 20, Mask = 40, SetVal = 40, Type = Emulation
+375 1766956987059 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload End
+375 1766956987059 XXXX 1766956987059, Thread 375: XXXX 1766956987059, Entering Thread 375: Commands::runScriptWithUpload, script name = ReadRAM  
+375 1766956987059 XXXX 1766956987059, Thread 375: XXXX 1766956987059, Entering Thread 375: ToolCommUsb::readTransfer, sideData is 0x25 bytes long, transferDataLength is 0x1 bytes long  
+375 1766956987062 XXXX 1766956987062, Thread 375: XXXX 1766956987062, Exiting Thread 375: ToolCommUsb::readTransfer,  cr.status = 0x0  
+375 1766956987062 XXXX 1766956987062, Thread 375: XXXX 1766956987062, Exiting Thread 375: Commands::runScriptWithUpload  
+375 1766956987063 XXXX 1766956987063, Thread 375: XXXX 1766956987063, Entering Thread 375: Commands::runScriptWithDownload, script name = WriteRAM  
+375 1766956987065 XXXX 1766956987065, Thread 375: XXXX 1766956987065, Exiting Thread 375: Commands::runScriptWithDownload(WriteRAM)  
+375 1766956987065 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Post:SetFreezePerihperalInfo
+375 1766956987065 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return Value
+375 1766956987065 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 none
+375 1766956987065 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return End
+
+375 1766956987066 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Pre:GetPC
+375 1766956987066 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload
+375 1766956987066 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 null
+375 1766956987066 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload End
+375 1766956987066 XXXX 1766956987066, Thread 375: XXXX 1766956987066, Entering Thread 375: Commands::runScriptBasic, script name = GetPC, timeOut = -1 ms  
+375 1766956987067 XXXX 1766956987067, Thread 375: XXXX 1766956987067, Exiting Thread 375: Commands::runScriptBasic  
+375 1766956987068 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Post:GetPC
+375 1766956987068 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return Value
+375 1766956987068 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 0
+375 1766956987068 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return End
+
+375 1766956987070 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Pre:RunTarget
+375 1766956987070 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload
+375 1766956987070 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 com.microchip.mplab.mdbcore.RI4Tool.DebugHandler@32b11f98
+375 1766956987070 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload End
+375 1766956987071 XXXX 1766956987071, Thread 375: XXXX 1766956987071, Entering Thread 375: Commands::runScriptBasic, script name = Run, timeOut = -1 ms  
+375 1766956987172 XXXX 1766956987172, Thread 375: XXXX 1766956987172, Exiting Thread 375: Commands::runScriptBasic  
+375 1766956987172 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Post:RunTarget
+375 1766956987172 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return Value
+375 1766956987172 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 true
+375 1766956987172 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Return End
+
+375 1766956987173 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Pre:DebugReadTargetMemory
+375 1766956987173 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload
+375 1766956987173 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 FileRegs
+375 1766956987173 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 153500
+375 1766956987173 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 153523
+375 1766956987173 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Length = 36
+375 1766956987173 GEN4_TO_CONTROLLER_LOG:GEN4_DEBUG_INT_LOG_PIC18F27Q43 Payload End
+375 1766956987174 XXXX 1766956987174, Thread 375: XXXX 1766956987173, Entering Thread 375: Commands::runScriptWithUpload, script name = ReadRAM  
+375 1766956987174 XXXX 1766956987174, Thread 375: XXXX 1766956987174, Entering Thread 375: ToolCommUsb::readTransfer, sideData is 0x25 bytes long, transferDataLength is 0x24 bytes long  
+375 1766957028313 XXXX 1766957028313, Thread 375: com.Send returned false 
+380 1766957028313 XXXX 1766957028313, Thread 380: ToolCommUsb::read, com.Received returned -1 
+380 1766957028316 XXXX 1766957028316, Thread 380: ToolCommUsb::DataReader::run, fatal RI4ControllerException: {null} 
+375 1766957028575 XXXX 1766957028575, Thread 375: XXXX 1766957028575, Entering Thread 375: Commands::runScriptBasic, script name = GetHaltStatus, timeOut = -1 ms  
+375 1766957028577 XXXX 1766957028577, Thread 375: com.Send returned false 
+375 1766957028577 XXXX 1766957028577, Thread 375: transfer: exception after writeHeaderAndGetResult null 
+375 1766957028578 XXXX 1766957028578, Thread 375: XXXX 1766957028578, Entering Thread 375: ToolCommUsb::recoverFromProtocolError, type = NO_SCRIPT  
+375 1766957028579 XXXX 1766957028579, Thread 375: Send Abort Script Engine Command 
+375 1766957028579 XXXX 1766957028579, Thread 375: XXXX 1766957028579, Entering Thread 375: ToolCommUsb::killScriptEngine  
+375 1766957028580 XXXX 1766957028580, Thread 375: com.Send returned false 
+375 1766957028580 XXXX 1766957028580, Thread 375: Failed sending Abort Script Engine Command. Set nuclear option = true 
+375 1766957028580 XXXX 1766957028580, Thread 375: About to nuke 
+375 1766957028580 XXXX 1766957028580, Thread 375: XXXX 1766957028580, Entering Thread 375: ToolCommUsb::nuclearOption  
+375 1766957028581 XXXX 1766957028581, Thread 375: com.Send returned false 

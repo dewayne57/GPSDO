@@ -109,7 +109,7 @@ void main(int argc, char** argv) {
     // Initialize the system
     initialize();
     updateDisplay();
-    printf("GPSDO System Started\r\n");
+//    printf("GPSDO System Started\r\n");
 
     /**
      * Main processing loop.

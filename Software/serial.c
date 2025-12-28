@@ -44,21 +44,6 @@ static void serial_send_char(char c) {
 }
 
 /*
- * Set UART2 baud rate (static - only used internally)
- */
-static void serial_set_baud_rate(uint8_t baud_index) {
-    if (baud_index >= BAUD_RATES_COUNT) {
-        return; // Invalid baud rate index
-    }
-
-    uint32_t baud_rate = baud_rate_from_index(baud_index);
-    uint32_t baud_div = (_XTAL_FREQ / (4 * baud_rate)) - 1U;
-
-    U2BRGL = (uint8_t)(baud_div & 0xFFU);
-    U2BRGH = (uint8_t)((baud_div >> 8) & 0xFFU);
-}
-
-/*
  * Initialize external serial communication using UART2
  * Configures RB3 as TxD and RB4 as RxD for RS-232 interface
  */
@@ -73,29 +58,31 @@ void serial_init(void) {
     U2CON2 = 0x04; // BRGS=1 for high-speed baud (4x clock in divisor)
 
     // Set initial baud rate to 9600 (index from system config ext_baud_index)
-    uint8_t baud_index = baud_rate_index(system_config.ext_baud);
-    if (baud_index >= BAUD_RATES_COUNT) {
-        baud_index = SERIAL_BAUD_9600; // Default to 9600 if invalid
-    }
-    serial_set_baud_rate(baud_index);
+    uint32_t baud_rate = system_config.ext_baud;
+    uint32_t baud_div = _XTAL_FREQ / (16 * (baud_rate + 1U));
+
+    U2BRGL = (uint8_t)(baud_div & 0xFFU);
+    U2BRGH = (uint8_t)((baud_div >> 8) & 0xFFU);
 
     // Configure UART2 mode
-    U2CON0bits.MODE = 0x0; // Asynchronous 8-bit UART mode
-    U2CON0bits.RXEN = 1;   // Enable receiver (for future bootloader)
-    U2CON0bits.TXEN = 1;   // Enable transmitter
-
-    // Configure parity and stop bits based on system config (only N/E/O supported)
-    uint8_t parity = system_config.ext_parity;
-    if (parity >= PARITY_OPTIONS_COUNT) {
-        parity = PARITY_N;
+    // Configure parity and stop bits based on system config
+    switch (system_config.ext_parity) {
+        case PARITY_N:
+            U2CON0bits.MODE = 0x00; // 8-bit no parity
+            break;
+        case PARITY_E:
+            U2CON0bits.MODE = 0x03; // 8-bit with even parity
+            break;
+        case PARITY_O:
+            U2CON0bits.MODE = 0x02; // 8-bit with odd parity
+            break;
+        default:
+            U2CON0bits.MODE = 0x0; // 8-bit no parity
+            break;
     }
-    if (parity == PARITY_E) {
-        U2CON0bits.MODE = 0x1; // 8-bit with even parity
-    } else if (parity == PARITY_O) {
-        U2CON0bits.MODE = 0x3; // 8-bit with odd parity
-    } else {
-        U2CON0bits.MODE = 0x0; // 8-bit no parity
-    }
+    // Configure UART1 mode
+    U2CON0bits.RXEN = 1; // Enable receiver
+    U2CON0bits.TXEN = 1; // Enable transmitter
 
     // Note: Stop bits configuration not directly available in this UART module
     // The PIC18F27Q43 UART2 uses 1 stop bit by default in asynchronous mode
@@ -115,29 +102,7 @@ void serial_init(void) {
 void serial_reconfigure(void) {
     // Disable UART2 briefly to change settings
     U2CON1bits.ON = 0;
-
-    // Set baud rate from config
-    uint8_t baud_index = baud_rate_index(system_config.ext_baud);
-    if (baud_index >= BAUD_RATES_COUNT) {
-        baud_index = SERIAL_BAUD_9600; // Default to 9600 if invalid
-    }
-    serial_set_baud_rate(baud_index);
-
-    // Configure parity from config (only N/E/O supported)
-    uint8_t parity = system_config.ext_parity;
-    if (parity >= PARITY_OPTIONS_COUNT) {
-        parity = PARITY_N;
-    }
-    if (parity == PARITY_E) {
-        U2CON0bits.MODE = 0x1; // 8-bit with even parity
-    } else if (parity == PARITY_O) {
-        U2CON0bits.MODE = 0x3; // 8-bit with odd parity
-    } else {
-        U2CON0bits.MODE = 0x0; // 8-bit no parity
-    }
-
-    // Re-enable UART2
-    U2CON1bits.ON = 1;
+    serial_init(); 
 }
 
 /*
