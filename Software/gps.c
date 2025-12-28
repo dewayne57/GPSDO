@@ -2,7 +2,7 @@
  * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
  *
  * GPS module implementation for ublox M8M GPS receiver.
- * Handles UART communication and NMEA message parsing.
+ * Handles UART communication and NMEA, UBX, and RTCM message parsing.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ volatile gps_data_t gps_data;                 // Global GPS data
 volatile bool gps_data_available;             // Flag for new GPS data available
 volatile bool gps_sentence_available;         // Flag for new GPS sentence available
 volatile char gps_sentence[GPS_MAX_SENTENCE]; // Current GPS sentence buffer
+static volatile uint16_t gps_sentence_length;        // Length of current GPS sentence
 
 /* Forward declaration of internal functions */
 static void gps_update_led(void);
@@ -40,21 +41,21 @@ static void reset_buffer(void);
 static void snapshot_sentence(void);
 
 /*
- *  NMEA Protocol Configuration Commands
+ *  Protocol Configuration Commands to change the M8M UBlox chip to NMEA protocol.
  */
 static const uint8_t ubx_cfg_nmea[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00,
                                        0xD0, 0x08, 0x00, 0x00, 0x80, 0x25, 0x00, 0x00, 0x07, 0x00,
                                        0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xA9};
 
 /*
- * UBX Protocol Configuration Commands
+ * Protocol Configuration Commands to change the M8M UBlox chip to UBX protocol.
  */
 static const uint8_t ubx_cfg_ubx[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00,
                                       0xD0, 0x08, 0x00, 0x00, 0x80, 0x25, 0x00, 0x00, 0x01, 0x00,
                                       0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x9A, 0x79};
 
 /*
- * RTCM Protocol Configuration Commands
+ * Protocol Configuration Commands to change the M8M UBlox chip to RTCM protocol.
  */
 static const uint8_t ubx_cfg_rtcm[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00,
                                        0xD0, 0x08, 0x00, 0x00, 0x80, 0x25, 0x00, 0x00, 0x20, 0x00,
@@ -64,9 +65,7 @@ static const uint8_t ubx_cfg_rtcm[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01,
 static char gps_rx_buffer[GPS_BUFFER_SIZE];
 static volatile uint16_t gps_rx_head = 0;
 static volatile uint16_t gps_rx_tail = 0;
-static volatile bool gps_buffer_resync_mode = false; // True when looking for start-of-sentence
 static volatile bool gps_sentence_started = false;   // True when we have seen start of sentence
-static volatile uint16_t gps_sentence_length = 0;    // Current sentence length for UBX and RTCM
 
 /*
  * Initialize GPS UART communication
@@ -82,7 +81,6 @@ void gps_init(void) {
     gps_rx_head = gps_rx_tail = 0;
     gps_data_available = false;
     gps_sentence_available = false;
-    gps_buffer_resync_mode = false;
     gps_sentence_started = false;
     gps_sentence_length = 0;
 
@@ -173,42 +171,102 @@ bool gps_has_valid_fix(void) {
 
 /*
  * Parse a complete NMEA, UBX, or RTCM sentence
+ * 
+ * This function handles all three GPS protocols:
+ * - NMEA: Text-based sentences starting with '$', validated with XOR checksum
+ * - UBX: Binary messages starting with 0xB5 0x62, validated with Fletcher-8 checksum
+ * - RTCM: Binary correction messages starting with 0xD3, validated with CRC-24Q
+ * 
+ * The protocol is auto-detected based on the first byte of the message.
  */
 void gps_parse_sentence() {
-    // Basic checksum validation
-    const char* checksum_pos = strrchr((void*)gps_sentence, '*');
-    if (!checksum_pos)
-        return;
+    // Determine protocol based on first byte
+    uint8_t first_byte = (uint8_t)gps_sentence[0];
 
-    // Verify checksum (XOR of chars between '$' and '*')
-    if (checksum_pos[1] == '\0' || checksum_pos[2] == '\0') {
-        return; // incomplete checksum
-    }
-    uint8_t calc = 0;
-    for (char* p = (char*)(gps_sentence + 1); p < checksum_pos; p++) {
-        calc ^= (uint8_t)(*p);
-    }
-    char chkbuf[3];
-    chkbuf[0] = checksum_pos[1];
-    chkbuf[1] = checksum_pos[2];
-    chkbuf[2] = '\0';
-    uint8_t expected = (uint8_t)strtoul(chkbuf, NULL, 16);
-    if (calc != expected) {
-        return; // checksum mismatch
-    }
+    if (first_byte == '$') {
+        // NMEA message - validate checksum
+        const char* checksum_pos = strrchr((void*)gps_sentence, '*');
+        if (!checksum_pos)
+            return;
 
-    // Split sentence into fields
-    char* fields[20];
-    uint8_t field_count = gps_split_sentence((const char*)gps_sentence, (const char**)fields, 20);
+        // Verify checksum (XOR of chars between '$' and '*')
+        if (checksum_pos[1] == '\0' || checksum_pos[2] == '\0') {
+            return; // incomplete checksum
+        }
+        uint8_t calc = 0;
+        for (char* p = (char*)(gps_sentence + 1); p < checksum_pos; p++) {
+            calc ^= (uint8_t)(*p);
+        }
+        char chkbuf[3];
+        chkbuf[0] = checksum_pos[1];
+        chkbuf[1] = checksum_pos[2];
+        chkbuf[2] = '\0';
+        uint8_t expected = (uint8_t)strtoul(chkbuf, NULL, 16);
+        if (calc != expected) {
+            return; // checksum mismatch
+        }
 
-    if (field_count < 2)
-        return;
+        // Split sentence into fields
+        char* fields[20];
+        uint8_t field_count = gps_split_sentence((const char*)gps_sentence, (const char**)fields, 20);
 
-    // Parse based on sentence type
-    if (strncmp(fields[0], "$GPRMC", 6) == 0) {
-        gps_parse_gprmc((const char**)fields, field_count);
-    } else if (strncmp(fields[0], "$GPGGA", 6) == 0) {
-        gps_parse_gpgga((const char**)fields, field_count);
+        if (field_count < 2)
+            return;
+
+        // Parse based on sentence type
+        if (strncmp(fields[0], "$GPRMC", 6) == 0) {
+            gps_parse_gprmc((const char**)fields, field_count);
+        } else if (strncmp(fields[0], "$GPGGA", 6) == 0) {
+            gps_parse_gpgga((const char**)fields, field_count);
+        }
+    } else if (first_byte == 0xB5) {
+        // UBX message - validate sync chars and checksum
+        if (gps_sentence_length < 8)
+            return; // Too short for UBX
+
+        if ((uint8_t)gps_sentence[1] != 0x62)
+            return; // Invalid sync char
+
+        // Calculate checksum (Fletcher-8 algorithm)
+        uint8_t ck_a = 0;
+        uint8_t ck_b = 0;
+        for (uint16_t i = 2; i < gps_sentence_length - 2; i++) {
+            ck_a = (uint8_t)(ck_a + (uint8_t)gps_sentence[i]);
+            ck_b = (uint8_t)(ck_b + ck_a);
+        }
+
+        if (ck_a != (uint8_t)gps_sentence[gps_sentence_length - 2] ||
+            ck_b != (uint8_t)gps_sentence[gps_sentence_length - 1]) {
+            return; // Checksum mismatch
+        }
+
+        // Parse UBX message
+        gps_parse_ubx_message((const uint8_t*)gps_sentence, gps_sentence_length);
+    } else if (first_byte == 0xD3) {
+        // RTCM message - validate and parse
+        if (gps_sentence_length < 6)
+            return; // Too short for RTCM
+
+        // Calculate CRC-24Q checksum
+        uint32_t crc = 0;
+        for (uint16_t i = 0; i < gps_sentence_length - 3; i++) {
+            crc = ((crc << 8) & 0xFFFFFF) ^ ((uint32_t)(uint8_t)gps_sentence[i] << 16);
+            for (uint8_t j = 0; j < 8; j++) {
+                crc = (crc << 1) ^ ((crc & 0x800000) ? 0x1864CFB : 0);
+            }
+        }
+        crc &= 0xFFFFFF;
+
+        uint32_t expected_crc = ((uint32_t)(uint8_t)gps_sentence[gps_sentence_length - 3] << 16) |
+                                ((uint32_t)(uint8_t)gps_sentence[gps_sentence_length - 2] << 8) |
+                                ((uint32_t)(uint8_t)gps_sentence[gps_sentence_length - 1]);
+
+        if (crc != expected_crc) {
+            return; // CRC mismatch
+        }
+
+        // Parse RTCM message
+        gps_parse_rtcm_message((const uint8_t*)gps_sentence, gps_sentence_length);
     }
 }
 
@@ -614,9 +672,160 @@ static void snapshot_sentence(void) {
         index = (index + 1) % GPS_BUFFER_SIZE;
     }
     gps_sentence[count] = '\0'; // Null-terminate
+    gps_sentence_length = count;
 
     // Advance head to tail for next message
     gps_rx_head = gps_rx_tail;
     gps_sentence_available = true;
     CRITICAL_SECTION_EXIT(gieh_save, giel_save);
+}
+
+/*
+ * Parse UBX message
+ * UBX message format:
+ * 0xB5 0x62 (sync chars) | Class | ID | Length (2 bytes) | Payload | CK_A | CK_B
+ */
+void gps_parse_ubx_message(const uint8_t* data, uint16_t length) {
+    if (data == NULL || length < 8)
+        return;
+
+    uint8_t msg_class = data[2];
+    uint8_t msg_id = data[3];
+    uint16_t payload_length = data[4] | ((uint16_t)data[5] << 8);
+
+    // Verify payload length matches message length
+    if (length != 8 + payload_length)
+        return;
+
+    const uint8_t* payload = &data[6];
+
+    // Parse based on message class and ID
+    if (msg_class == 0x01) { // NAV (Navigation) class
+        if (msg_id == 0x07) { // UBX-NAV-PVT (Position Velocity Time)
+            // This is a comprehensive message with time, position, and velocity
+            if (payload_length >= 92) {
+                // Extract time (bytes 4-9: year, month, day, hour, min, sec)
+                uint16_t year = payload[4] | ((uint16_t)payload[5] << 8);
+                gps_data.datetime.year = (uint8_t)(year - 2000);
+                gps_data.datetime.month = payload[6];
+                gps_data.datetime.day = payload[7];
+                gps_data.datetime.hour = payload[8];
+                gps_data.datetime.minute = payload[9];
+                gps_data.datetime.second = payload[10];
+
+                // Extract validity flags (byte 11)
+                uint8_t valid = payload[11];
+                gps_data.datetime.valid = (valid & 0x04) ? GPS_VALID : GPS_INVALID;
+
+                // Extract fix type (byte 20)
+                uint8_t fix_type = payload[20];
+                if (fix_type == 0x00) {
+                    gps_data.position.fix_type = GPS_NO_FIX;
+                } else if (fix_type == 0x02) {
+                    gps_data.position.fix_type = GPS_2D_FIX;
+                } else if (fix_type == 0x03) {
+                    gps_data.position.fix_type = GPS_3D_FIX;
+                } else {
+                    gps_data.position.fix_type = GPS_NO_FIX;
+                }
+
+                // Extract number of satellites (byte 23)
+                gps_data.position.satellites = payload[23];
+
+                // Extract longitude (bytes 24-27, scaled 1e-7 degrees)
+                int32_t lon = (int32_t)(payload[24] | ((uint32_t)payload[25] << 8) | ((uint32_t)payload[26] << 16) |
+                                        ((uint32_t)payload[27] << 24));
+                gps_data.position.longitude = (float)lon * 1e-7f;
+
+                // Extract latitude (bytes 28-31, scaled 1e-7 degrees)
+                int32_t lat = (int32_t)(payload[28] | ((uint32_t)payload[29] << 8) | ((uint32_t)payload[30] << 16) |
+                                        ((uint32_t)payload[31] << 24));
+                gps_data.position.latitude = (float)lat * 1e-7f;
+
+                // Extract altitude MSL (bytes 36-39, millimeters)
+                int32_t alt = (int32_t)(payload[36] | ((uint32_t)payload[37] << 8) | ((uint32_t)payload[38] << 16) |
+                                        ((uint32_t)payload[39] << 24));
+                gps_data.position.altitude = (float)alt * 0.001f;
+
+                // Update position validity based on fix type
+                gps_data.position.valid = (gps_data.position.fix_type != GPS_NO_FIX) ? GPS_VALID : GPS_INVALID;
+
+                gps_data_available = true;
+                gps_update_led();
+            }
+        } else if (msg_id == 0x21) { // UBX-NAV-TIMEUTC (UTC Time Solution)
+            if (payload_length >= 20) {
+                // Extract time validity (byte 19)
+                uint8_t valid = payload[19];
+                if (valid & 0x04) { // UTC time is valid
+                    uint16_t year = payload[12] | ((uint16_t)payload[13] << 8);
+                    gps_data.datetime.year = (uint8_t)(year - 2000);
+                    gps_data.datetime.month = payload[14];
+                    gps_data.datetime.day = payload[15];
+                    gps_data.datetime.hour = payload[16];
+                    gps_data.datetime.minute = payload[17];
+                    gps_data.datetime.second = payload[18];
+                    gps_data.datetime.valid = GPS_VALID;
+                    gps_data_available = true;
+                }
+            }
+        }
+    }
+}
+
+/*
+ * Parse RTCM message
+ * RTCM message format:
+ * 0xD3 (preamble) | Reserved + Length (2 bytes) | Message Type + Payload | CRC (3 bytes)
+ */
+void gps_parse_rtcm_message(const uint8_t* data, uint16_t length) {
+    if (data == NULL || length < 6)
+        return;
+
+    // Extract message length (10 bits from bytes 1-2)
+    uint16_t msg_length = (((uint16_t)data[1] & 0x03) << 8) | data[2];
+
+    // Verify message length matches
+    if (length != 6 + msg_length)
+        return;
+
+    // Extract message type (12 bits from bytes 3-4)
+    uint16_t msg_type = ((uint16_t)data[3] << 4) | ((data[4] >> 4) & 0x0F);
+
+    // RTCM messages are typically differential corrections and don't contain
+    // absolute position/time information. For a GPSDO application, RTCM is
+    // mainly useful for improving position accuracy when used with a base station.
+    // We'll implement basic parsing for common RTCM message types.
+
+    const uint8_t* payload = &data[3];
+
+    switch (msg_type) {
+        case 1005: // Stationary RTK reference station ARP
+            // This contains reference station position
+            // For GPSDO, we typically wouldn't use this directly
+            break;
+
+        case 1077: // GPS MSM7 (Multi-Signal Message)
+        case 1087: // GLONASS MSM7
+        case 1097: // Galileo MSM7
+        case 1127: // BeiDou MSM7
+            // These are high-precision observations
+            // For GPSDO, these improve timing accuracy but don't provide
+            // direct position/time data to parse
+            break;
+
+        case 1230: // GLONASS code-phase biases
+            // Used for high-precision positioning
+            break;
+
+        default:
+            // Unknown or unsupported RTCM message type
+            // For a GPSDO application, most RTCM messages are correction data
+            // that the GPS receiver uses internally to improve accuracy
+            break;
+    }
+
+    // Note: RTCM messages don't typically contain absolute time/position data
+    // They are differential corrections applied by the GPS receiver.
+    // The receiver will output corrected positions via NMEA or UBX messages.
 }
