@@ -129,6 +129,10 @@
 #define STOPBITS_2 2
 #define STOPBITS_OPTIONS_COUNT 3
 
+#define DEFAULT_BAUD_RATE   5
+#define DEFAULT_STOP_BITS   0
+#define DEFAULT_PARITY      0 
+
 /*
  * System configuration structure, saved in the external EEPROM
  */

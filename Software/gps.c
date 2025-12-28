@@ -19,6 +19,7 @@
 #include "config.h"
 #include "date.h"
 #include "i2c.h"
+#include "menu.h"
 #include "mcp23x17.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -105,40 +106,33 @@ void gps_init(void) {
     U1CON2 = 0x00; // Reset UART1
 
     // Set baud rate based on system configuration
-    uint32_t baud_rate = system_config.gps_baud;
-    uint32_t baud_div = (_XTAL_FREQ / (4 * baud_rate)) - 1U;
+    uint32_t baud_rate = system_config.gps_baud; 
+    uint32_t baud_div = _XTAL_FREQ / (16 * (baud_rate + 1U));
 
     U1BRGL = (uint8_t)(baud_div & 0xFFU);
     U1BRGH = (uint8_t)((baud_div >> 8) & 0xFFU);
 
-    // Configure UART1 mode
-    U1CON0bits.MODE = 0x0; // Asynchronous 8-bit UART mode
-    U1CON0bits.RXEN = 1;   // Enable receiver
-    U1CON0bits.TXEN = 1;   // Enable transmitter
 
     // Configure parity and stop bits based on system config
     switch (system_config.gps_parity) {
         case PARITY_N:
-            U1CON0bits.MODE = 0x0; // 8-bit no parity
+            U1CON0bits.MODE = 0x00; // 8-bit no parity
             break;
         case PARITY_E:
-            U1CON0bits.MODE = 0x1; // 8-bit with even parity
+            U1CON0bits.MODE = 0x03; // 8-bit with even parity
             break;
         case PARITY_O:
-            U1CON0bits.MODE = 0x3; // 8-bit with odd parity
-            break;
-        case PARITY_M:
-            U1CON0bits.MODE = 0x5; // 8-bit with mark parity
-            break;
-        case PARITY_S:
-            U1CON0bits.MODE = 0x7; // 8-bit with space parity
+            U1CON0bits.MODE = 0x02; // 8-bit with odd parity
             break;
         default:
             U1CON0bits.MODE = 0x0; // 8-bit no parity
             break;
     }
+    // Configure UART1 mode
+    U1CON0bits.RXEN = 1; // Enable receiver
+    U1CON0bits.TXEN = 1; // Enable transmitter
 
-    U1CON2bits.STP = (system_config.gps_stop_bits == 2) ? 1 : 0; // 1 or 2 stop bits
+    U1CON2bits.STP = system_config.gps_stop_bits; // 1, 1.5 or 2 stop bits
 
     // Enable UART receive interrupt
     PIR4bits.U1RXIF = 0; // Clear interrupt flag
@@ -562,13 +556,13 @@ void gps_buffer_put_char(char c) {
      * stop moving the head pointer so we can start accumulating the
      * sentence.
      */
-    gps_rx_buffer[gps_rx_tail] = c;
+    gps_rx_buffer[gps_rx_tail] = c; // Save the character at current tail position
+    // We'll advance the tail after we figure out what we have
     if (!gps_sentence_started) {
-        gps_rx_head = gps_rx_tail;
         if (c == '$' || c == 0xB5 || c == 0xD3) {
             // Found start of sentence
             gps_sentence_started = true;
-            return;
+            gps_rx_head = gps_rx_tail;  // Set the head to the start of the sentence
         }
     } else {
         /*
@@ -620,6 +614,7 @@ void gps_buffer_put_char(char c) {
                 }
                 break;
         }
+
         // Check for end of sentence based on protocol
         bool sentence_complete = false;
         if (gps_data.current_protocol == GPS_PROTOCOL_NMEA) {
@@ -641,9 +636,10 @@ void gps_buffer_put_char(char c) {
             reset_buffer();
             return;
         }
-
-        gps_rx_tail = next_tail; // Advance tail pointer
     }
+
+    // always advance the tail pointer
+    gps_rx_tail = next_tail; // Advance tail pointer
 }
 
 /*

@@ -46,14 +46,14 @@ extern volatile bool gps_data_available; // Flag for new GPS data available (def
 /*
  * Shared constant arrays used for menu display options, settings, etc.
  */
-const char* stop_options[] = {"0", "1", "2"};
+const char* stop_options[] = {"1", "1.5", "2"};
 const char* parity_options[] = {"None", "Even", "Odd", "Mark", "Space"};
 const char* baud_options[] = {"300", "600", "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200"};
 const char* vref_options[] = {"DAC", "Internal"};
 const char* protocol_options[] = {"NMEA", "UBX", "RTCM"};
 const char* tz_mode_options[] = {"UTC", "Local"};
 #define DEFAULT_GPS_BAUD 5      // Index into baud_options for default GPS baud rate (9600)
-#define DEFAULT_GPS_PARITY 0    // Index into parity_options for default GPS parity option
+#define DEFAULT_GPS_PARITY PARITY_N // Index into parity_options for default GPS parity option
 #define DEFAULT_GPS_STOP_BITS 1 // Index into stop_options for default GPS stop bits (1 stop bit)
 
 /*
@@ -505,11 +505,11 @@ void config_defaults(system_config_t* cfg) {
     cfg->magic = CONFIG_MAGIC;
     cfg->version = CONFIG_VERSION;
     cfg->vref_source = VREF_INTERNAL;
-    cfg->gps_baud = DEFAULT_GPS_BAUD;           /* default 9600 */
-    cfg->gps_stop_bits = DEFAULT_GPS_STOP_BITS; /* 1 stop bit */
-    cfg->gps_parity = DEFAULT_GPS_PARITY;       /* no parity for GPS */
+    cfg->gps_baud = 9600u;           /* default 9600 */
+    cfg->gps_stop_bits = 1; /* 1 stop bit */
+    cfg->gps_parity = PARITY_N;       /* no parity for GPS */
     cfg->gps_protocol = GPS_PROTOCOL_NMEA;      /* default NMEA */
-    cfg->ext_baud = 1;                          /* default 9600 for external port */
+    cfg->ext_baud = 9600;                          /* default 9600 for external port */
     cfg->ext_stop_bits = 1;                     /* 1 stop bit for external port */
     cfg->ext_parity = PARITY_N;                 /* no parity for external port */
     cfg->vco_dac = (uint16_t)DAC_MIDPOINT;
