@@ -51,8 +51,8 @@ void encoder_init(void)
     PIE0bits.IOCIE = 1; // enable IOC interrupt
 
     // Read initial quadrature state
-    uint8_t a = PORTC & PHASE_A ? 1 : 0;
-    uint8_t b = PORTC & PHASE_B ? 1 : 0;
+    unsigned char a = PORTC & PHASE_A ? 1 : 0;
+    unsigned char b = PORTC & PHASE_B ? 1 : 0;
     encoder_state.last_state = (uint8_t)((a << 1) | b);
 
     encoder_state.button_raw = PORTC & ENTER_N ? 1 : 0; // idle high
@@ -85,36 +85,35 @@ uint8_t encoder_button_state(void)
 void encoder_handle_ioc(void)
 {
     // Snapshot PORTC once to keep A/B/button sampling coherent during IOC handling
-    uint8_t portc = PORTC;
+    unsigned char portc = PORTC;
 
-    uint8_t a = (portc & PHASE_A) ? 1U : 0U;
-    uint8_t b = (portc & PHASE_B) ? 1U : 0U;
-    uint8_t cur = (uint8_t)((a << 1) | b);
-
-    uint8_t last = encoder_state.last_state;
+    unsigned char a = (portc & PHASE_A) ? 1U : 0U;
+    unsigned char b = (portc & PHASE_B) ? 1U : 0U;
+    unsigned char cur = (unsigned char)((a << 1) | b);
+    unsigned char last = encoder_state.last_state;
     if (cur != last)
     {
         if (((last + 1) & 3U) == cur)
         {
             if (encoder_state.position < 127U)
             {
-                encoder_state.position = (uint8_t)(encoder_state.position + 1U);
+                encoder_state.position = (unsigned char)(encoder_state.position + 1U);
             }
         }
         else if (((last + 3) & 3U) == cur)
         {
             if (encoder_state.position > 0U)
             {
-                encoder_state.position = (uint8_t)(encoder_state.position - 1U);
+                encoder_state.position = (unsigned char)(encoder_state.position - 1U);
             }
         }
         encoder_state.last_state = cur;
     }
 
-    uint8_t braw = (portc & ENTER_N) ? 1U : 0U; // active high when released
+    unsigned char braw = (portc & ENTER_N) ? 1U : 0U; // active high when released
     encoder_state.button_raw = braw;
     encoder_state.button_stable = braw; // no internal debounce
 
     // Clear IOC flags for the handled pins (write 0 to clear)
-    IOCCF &= (uint8_t)~(PHASE_A + PHASE_B + ENTER_N);
+    IOCCF &= (unsigned char)~(PHASE_A + PHASE_B + ENTER_N);
 }

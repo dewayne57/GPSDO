@@ -31,7 +31,7 @@ extern "C" {
  * Convert `utc` datetime to a new datetime adjusted by `offset_minutes`
  * (positive offsets are east of UTC). If `utc` is invalid, `out` is marked invalid.
  */
-void date_apply_offset(const gps_datetime_t *utc, gps_datetime_t *out, int16_t offset_minutes);
+void date_apply_offset(const gps_datetime_t *utc, gps_datetime_t *out, int offset_minutes);
 
 /* 
  * Format time (HH:MM) for display. Buffer should be at least 6 chars long.
@@ -43,7 +43,7 @@ void date_format_time_short(char *buf, const gps_datetime_t *dt);
  * Create an offset string in the form "+HH:MM" or "-HH:MM" for non-zero offsets.
  * For zero offset returns "+00:00". Buffer should be at least 7 bytes.
  */
-void tz_offset_to_string(int16_t offset_minutes, char *buf);
+void tz_offset_to_string(int offset_minutes, char *buf);
 
 #ifdef __cplusplus
 }

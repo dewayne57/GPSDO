@@ -34,60 +34,19 @@
 /**
  * Global variables and data areas.
  */
-bool system_initialized = false;     // Flag indicating system initialization complete
-uint8_t i2c_buffer[I2C_BUFFER_SIZE]; // General-purpose I2C buffer
-IOPortA_t ioporta = {.all = 0xF0};   // I/O expander Port A state shadow register
-system_config_t system_config;       // System configuration data
+bool system_initialized = false;                    // Flag indicating system initialization complete
+unsigned char i2c_buffer[I2C_BUFFER_SIZE];          // General-purpose I2C buffer
+IOPortA_t ioporta = {.all = 0xF0};                  // I/O expander Port A state shadow register
+system_config_t system_config;                      // System configuration data
 volatile encoder_state_t encoder_state = {
     .position = 0, .last_state = 0, .button_raw = 1, .button_stable = 0, .debounce_cnt = 0}; // Rotary encoder state
-extern volatile gps_data_t gps_data;     // Global GPS data (defined in gps.c)
-extern volatile bool gps_data_available; // Flag for new GPS data available (defined in gps.c)
-
-/*
- * Shared constant arrays used for menu display options, settings, etc.
- */
-const char* stop_options[] = {"1", "1.5", "2"};
-const char* parity_options[] = {"None", "Even", "Odd", "Mark", "Space"};
-const char* baud_options[] = {"300", "600", "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200"};
-const char* vref_options[] = {"DAC", "Internal"};
-const char* protocol_options[] = {"NMEA", "UBX", "RTCM"};
-const char* tz_mode_options[] = {"UTC", "Local"};
-#define DEFAULT_GPS_BAUD 5      // Index into baud_options for default GPS baud rate (9600)
-#define DEFAULT_GPS_PARITY PARITY_N // Index into parity_options for default GPS parity option
-#define DEFAULT_GPS_STOP_BITS 1 // Index into stop_options for default GPS stop bits (1 stop bit)
+extern volatile gps_data_t gps_data;                // Global GPS data (defined in gps.c)
+extern volatile bool gps_data_available;            // Flag for new GPS data available (defined in gps.c)
 
 /*
  * forward definitions
  */
 static void selfCheck(void);
-
-/*
- * Convert a baud rate option string to numeric baud value.
- */
-uint32_t baud_rate_from_index(uint8_t index) {
-    if (index >= BAUD_RATES_COUNT) {
-        return 9600U; /* default fallback */
-    }
-    const char* s = baud_options[index];
-    uint32_t r = 0U;
-    while (*s >= '0' && *s <= '9') {
-        r = r * 10U + (uint32_t)(*s - '0');
-        s++;
-    }
-    return r;
-}
-
-/*
- * Convert a numeric baud rate to its index in baud_options array.
- */
-uint8_t baud_rate_index(uint32_t baud_rate) {
-    for (uint8_t i = 0; i < BAUD_RATES_COUNT; i++) {
-        if (baud_rate_from_index(i) == baud_rate) {
-            return i;
-        }
-    }
-    return DEFAULT_GPS_BAUD; /* default to 9600 baud index */
-}
 
 /****************************************************************************/
 /*                                                                          */
@@ -388,7 +347,10 @@ void initialize(void) {
 
 /*
  * Perform a self-check by cycling the LEDs on the I/O expander and by initializing
- * and displaying a test pattern on the front panel display LCD.
+ * and displaying a test pattern on the front panel display LCD.  This provides a basic
+ * verification that the I/O expander, I2C bus, and LCD are functioning correctly.
+ *
+ * @return     None
  */
 static void selfCheck(void) {
     // Initialize LCD hardware and buffer system
@@ -445,21 +407,38 @@ static void selfCheck(void) {
 }
 
 /*
- * Compute simple 8-bit checksum
+ * Compute CRC-16-CCITT (polynomial 0x1021, initial value 0xFFFF)
+ * Standard CRC used in many communication protocols.
+ * 
+ * @param data  Pointer to data buffer
+ * @param len   Length of data buffer in bytes
+ * @return      Computed CRC-16 value
  */
-static uint8_t checksum(const uint8_t* data, uint8_t len) {
-    uint8_t s = 0;
-    for (uint8_t i = 0; i < len; ++i) {
-        s += data[i];
+static unsigned int crc16(const unsigned char* data, unsigned int len) {
+    unsigned int crc = 0xFFFF;
+    for (int i = 0; i < len; i++) {
+        crc ^= ((unsigned int)data[i] << 8);
+        for (int j = 0; j < 8; j++) {
+            if (crc & 0x8000) {
+                crc = (crc << 1) ^ 0x1021;
+            } else {
+                crc = crc << 1;
+            }
+        }
     }
-    return s;
+    return crc & 0xFFFF;
 }
 
 /*
- * Read config blob from EEPROM into buffer
+ * Read config blob from EEPROM into buffer.
+ *
+ * @param addr  Starting EEPROM address to read from
+ * @param buf   Buffer to read data into    
+ * @param len   Number of bytes to read
+ * @return      I2C_SUCCESS on success, error code otherwise
  */
-static uint8_t readEEProm(uint8_t addr, uint8_t* buf, uint8_t len) {
-    uint8_t a = addr;
+static unsigned char readEEProm(unsigned char addr, unsigned char* buf, unsigned char len) {
+    unsigned char a = addr;
     if (i2cWriteBuffer(EEPROM_ADDRESS, &a, 1) != I2C_SUCCESS)
         return I2C_ERROR;
     if (i2cReadBuffer(EEPROM_ADDRESS, buf, len) != I2C_SUCCESS)
@@ -468,17 +447,22 @@ static uint8_t readEEProm(uint8_t addr, uint8_t* buf, uint8_t len) {
 }
 
 /*
- * Write config blob to EEPROM a page at a time
+ * Write config blob to EEPROM a page at a time.
+ *
+ * @param addr  Starting EEPROM address to write to
+ * @param buf   Buffer containing data to write
+ * @param len   Number of bytes to write
+ * @return      I2C_SUCCESS on success, error code otherwise
  */
-static uint8_t writeEEProm(uint8_t addr, const uint8_t* buf, uint8_t len) {
-    uint8_t tmp[EEPROM_PAGE_SIZE + 1];
-    uint8_t remaining = len;
-    uint8_t offset = addr;
+static unsigned char writeEEProm(unsigned char addr, const unsigned char* buf, unsigned char len) {
+    unsigned char tmp[EEPROM_PAGE_SIZE + 1];
+    unsigned char remaining = len;
+    unsigned char offset = addr;
 
     while (remaining) {
-        uint8_t page_offset = offset % EEPROM_PAGE_SIZE;
-        uint8_t space = (uint8_t)(EEPROM_PAGE_SIZE - page_offset);
-        uint8_t write_len = remaining < space ? remaining : space;
+        unsigned char page_offset = offset % EEPROM_PAGE_SIZE;
+        unsigned char space = EEPROM_PAGE_SIZE - page_offset;
+        unsigned char write_len = remaining < space ? remaining : space;
 
         if ((write_len + 1) > sizeof(tmp))
             return I2C_INVALID_PARAM;
@@ -500,28 +484,33 @@ static uint8_t writeEEProm(uint8_t addr, const uint8_t* buf, uint8_t len) {
 
 /*
  * Initialize default configuration values
+ * 
+ * @param cfg  Pointer to configuration structure to initialize
+ * @return     None
  */
 void config_defaults(system_config_t* cfg) {
     cfg->magic = CONFIG_MAGIC;
     cfg->version = CONFIG_VERSION;
-    cfg->vref_source = VREF_INTERNAL;
-    cfg->gps_baud = 9600u;           /* default 9600 */
-    cfg->gps_stop_bits = 1; /* 1 stop bit */
-    cfg->gps_parity = PARITY_N;       /* no parity for GPS */
-    cfg->gps_protocol = GPS_PROTOCOL_NMEA;      /* default NMEA */
-    cfg->ext_baud = 9600;                          /* default 9600 for external port */
-    cfg->ext_stop_bits = 1;                     /* 1 stop bit for external port */
-    cfg->ext_parity = PARITY_N;                 /* no parity for external port */
+    cfg->vref_source = VREF_SRC_INTERNAL;
+    cfg->gps_baud = DEFAULT_GPS_BAUD;           
+    cfg->gps_stop_bits = DEFAULT_GPS_STOP_BITS; 
+    cfg->gps_parity = DEFAULT_GPS_PARITY;       
+    cfg->gps_protocol = GPS_PROTOCOL_NMEA;      
+    cfg->ext_baud = DEFAULT_EXT_BAUD;  
+    cfg->ext_stop_bits = DEFAULT_EXT_STOP_BITS;
+    cfg->ext_parity = DEFAULT_EXT_PARITY;      
     cfg->vco_dac = (uint16_t)DAC_MIDPOINT;
+    cfg->tz_mode = DEFAULT_TZ_MODE;       
+    cfg->tz_offset_min = DEFAULT_TZ_OFFSET_MIN; 
     memset(cfg->reserved, 0, sizeof(cfg->reserved));
-    cfg->tz_mode = 0;       /* default to UTC */
-    cfg->tz_offset_min = 0; /* zero offset */
-    cfg->crc = 0;
-    cfg->crc = (uint8_t)(~checksum((uint8_t*)cfg, sizeof(system_config_t) - 1));
+    cfg->crc = crc16((unsigned char*)cfg, sizeof(system_config_t) - sizeof(cfg->crc));
 }
 
 /*
  * Load persistent system configuration from EEPROM (falls back to defaults)
+ *
+ * @param cfg  Pointer to configuration structure to load into
+ * @return     None
  */
 void config_load(system_config_t* cfg) {
     uint8_t buf[sizeof(system_config_t)];
@@ -532,8 +521,8 @@ void config_load(system_config_t* cfg) {
     }
 
     memcpy(cfg, buf, sizeof(system_config_t));
-    uint8_t c = checksum((uint8_t*)cfg, sizeof(system_config_t) - 1);
-    if (cfg->magic != CONFIG_MAGIC || cfg->version != CONFIG_VERSION || (uint8_t)(~c) != cfg->crc) {
+    unsigned int c = crc16((uint8_t*)cfg, sizeof(system_config_t) - sizeof(cfg->crc));
+    if (cfg->magic != CONFIG_MAGIC || cfg->version != CONFIG_VERSION || c != cfg->crc) {
         config_defaults(cfg);
     }
     /* copy to global */
@@ -541,12 +530,15 @@ void config_load(system_config_t* cfg) {
 }
 
 /*
- * Save system configuration to EEPROM
+ * Save system configuration to EEPROM.
+ *
+ * @param cfg  Pointer to configuration structure to save
+ * @return     None
  */
 void config_save(const system_config_t* cfg) {
     system_config_t tmp;
     memcpy(&tmp, cfg, sizeof(system_config_t));
-    tmp.crc = (uint8_t)(~checksum((uint8_t*)&tmp, sizeof(system_config_t) - 1));
+    tmp.crc = crc16((uint8_t*)&tmp, sizeof(system_config_t) - sizeof(tmp.crc));
     (void)writeEEProm(0, (const uint8_t*)&tmp, sizeof(system_config_t));
     /* copy to global */
     memcpy((void*)&system_config, &tmp, sizeof(system_config_t));

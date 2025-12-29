@@ -73,17 +73,17 @@ void updateDisplay(void);
 void lcdSetBacklight(bool state);
 void lcdReturnHome(void); 
 void lcdClearDisplay(void); 
-void lcdWriteBuffer(uint8_t address, char* data);
+void lcdWriteBuffer(unsigned char address, char* data);
 void lcdWriteString(char * data);
-void lcdWriteInstruction(uint8_t data);
+void lcdWriteInstruction(unsigned char data);
 void lcdInitialize(void);
 void lcdSelfTest(void);
 
 /* LCD Buffer System Functions */
 void lcdBufferInit(void);
 void lcdBufferClear(void);
-void lcdBufferSetLine(uint8_t line, const char* text);
-void lcdBufferPrintf(uint8_t line, const char* format, ...);
+void lcdBufferSetLine(unsigned char line, const char* text);
+void lcdBufferPrintf(unsigned char line, const char* format, ...);
 void lcdBufferUpdate(void);
 
 #ifdef    __cplusplus

@@ -23,7 +23,7 @@
 #include <stdint.h>
 
 void dac_init(void);
-void dac_set_raw(uint16_t value); /* 12-bit value 0..4095 */
-uint16_t dac_get_raw(void);
+void dac_set_raw(unsigned int value); /* 12-bit value 0..4095 */
+unsigned int dac_get_raw(void);
 
 #endif // DAC_H

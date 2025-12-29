@@ -24,42 +24,12 @@
 #include <stdint.h>
 #include <xc.h>
 
-/* GPS protocol options */
-typedef enum { GPS_PROTOCOL_NMEA = 0, GPS_PROTOCOL_UBX = 1, GPS_PROTOCOL_RTCM = 2 } gps_protocol_t;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #define GPS_BUFFER_SIZE 1024
 #define GPS_MAX_SENTENCE 120
-
-/* GPS data validity states */
-typedef enum { GPS_INVALID = 0, GPS_VALID = 1 } gps_validity_t;
-
-/* GPS fix types */
-typedef enum { GPS_NO_FIX = 0, GPS_2D_FIX = 1, GPS_3D_FIX = 2 } gps_fix_t;
-
-/* GPS date/time structure */
-typedef struct {
-    uint8_t year;   // Years since 2000 (e.g., 25 for 2025)
-    uint8_t month;  // Month 1-12
-    uint8_t day;    // Day 1-31
-    uint8_t hour;   // Hour 0-23 (UTC)
-    uint8_t minute; // Minute 0-59
-    uint8_t second; // Second 0-59
-    gps_validity_t valid;
-} gps_datetime_t;
-
-/* GPS position structure */
-typedef struct {
-    float latitude;  // Decimal degrees, positive = North
-    float longitude; // Decimal degrees, positive = East
-    float altitude;  // Meters above sea level
-    gps_fix_t fix_type;
-    uint8_t satellites; // Number of satellites in view
-    gps_validity_t valid;
-} gps_position_t;
 
 /* Complete GPS data structure */
 typedef struct {
@@ -75,9 +45,9 @@ void gps_init(void);
 // determines if a valid GPS fix is available
 bool gps_has_valid_fix(void);
 // Update GPS data for positioning information
-void gps_format_position(char* buffer, size_t len, const gps_position_t* pos);
+void gps_format_position(char* buffer, int len, const gps_position_t* pos);
 // Update GPS data for date/time information
-void gps_format_date_time(char* buffer, size_t len, const gps_datetime_t* dt);
+void gps_format_date_time(char* buffer, int len, const gps_datetime_t* dt);
 // Set GPS protocol (NMEA, UBX, or RTCM)
 void gps_set_protocol(gps_protocol_t protocol);
 // Parse a complete NMEA, UBX, or RTCM sentence
@@ -85,16 +55,15 @@ void gps_parse_sentence(void);
 
 /* Internal functions (exposed for testing) */
 // Parses NMEA GPRMC sentence
-void gps_parse_gprmc(const char* fields[], uint8_t field_count);
+void gps_parse_gprmc(const char* fields[], unsigned char field_count);
 // Parses NMEA GPGGA sentence
-void gps_parse_gpgga(const char* fields[], uint8_t field_count);
+void gps_parse_gpgga(const char* fields[], unsigned char field_count);
 //  Parses UBX message
-void gps_parse_ubx_message(const uint8_t* data, uint16_t length);
+void gps_parse_ubx_message(const unsigned char* data, unsigned int length);
 //  Parses RTCM message
-void gps_parse_rtcm_message(const uint8_t* data, uint16_t length);
+void gps_parse_rtcm_message(const unsigned char* data, unsigned int length);
 // Splits a NMEA sentence into fields
-uint8_t gps_split_sentence(const char* sentence, const char* fields[], uint8_t max_fields);
-
+unsigned char gps_split_sentence(const char* sentence, const char* fields[], unsigned char max_fields);
 /* GPS buffer access functions for ISR */
 void gps_buffer_put_char(char c);
 

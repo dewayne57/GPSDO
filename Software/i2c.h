@@ -38,7 +38,7 @@
  * @param length The number of bytes to write
  * @return 0 on success, non-zero on failure
  */
-uint8_t i2cWriteBuffer(uint8_t address, uint8_t* data, uint8_t length);
+unsigned char i2cWriteBuffer(unsigned char address, unsigned char* data, unsigned char length);
 
 /**
  * @brief Write a single register on an I2C device
@@ -49,7 +49,7 @@ uint8_t i2cWriteBuffer(uint8_t address, uint8_t* data, uint8_t length);
  * @param data The data byte to write
  * @return 0 on success, non-zero on failure
  */
-uint8_t i2cWriteRegister(uint8_t address, uint8_t reg, uint8_t data);
+unsigned char i2cWriteRegister(unsigned char address, unsigned char reg, unsigned char data);
 
 /**
  * @brief Read data from an I2C device
@@ -66,7 +66,7 @@ uint8_t i2cWriteRegister(uint8_t address, uint8_t reg, uint8_t data);
  * @param length The number of bytes to read
  * @return 0 on success, non-zero on failure
  */
-uint8_t i2cReadBuffer(uint8_t address, uint8_t* data, uint8_t length);
+unsigned char i2cReadBuffer(unsigned char address, unsigned char* data, unsigned char length);
 
 /**
  * @brief Read a single register from an I2C device
@@ -77,6 +77,6 @@ uint8_t i2cReadBuffer(uint8_t address, uint8_t* data, uint8_t length);
  * @param data Pointer to store the read data byte
  * @return 0 on success, non-zero on failure
  */
-uint8_t i2cReadRegister(uint8_t address, uint8_t reg, uint8_t* data);
+unsigned char i2cReadRegister(unsigned char address, unsigned char reg, unsigned char* data);
 
 #endif

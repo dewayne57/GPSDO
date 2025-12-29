@@ -64,7 +64,7 @@ void updateDisplay(void);
  */
 extern system_config_t system_config;
 extern IOPortA_t ioporta;
-extern uint8_t buffer[128];
+extern unsigned char buffer[128];
 extern volatile encoder_state_t encoder_state;
 extern bool system_initialized;
 extern volatile bool gps_sentence_available;
@@ -127,8 +127,8 @@ void main(int argc, char** argv) {
          * been recorded by the SMT ISR. Clear the capture flag after handling.
          */
         if (smt_capture_available()) {
-            uint32_t c = smt_get_last_count();
-            int32_t err = smt_get_last_error();
+            unsigned long c = smt_get_last_count();
+            long err = smt_get_last_error();
             control_update(err);
 
             // Send debug data over serial
@@ -151,7 +151,7 @@ void main(int argc, char** argv) {
              * We avoid repeated writes by checking the stored config value first.
              */
             if (locked) {
-                uint16_t cur = dac_get_raw();
+                unsigned int cur = dac_get_raw();
                 if (system_config.vco_dac != cur) {
                     system_config.vco_dac = cur;
                     config_save((const system_config_t*)&system_config);

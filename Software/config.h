@@ -49,113 +49,171 @@
     } while (0)
 
 // Define the operating frequency of the microcontroller
-#define _XTAL_FREQ 64000000UL
+#define _XTAL_FREQ 64000000L
+
+// Use banked memory model for MCP23X17 I/O expander
 #define MCP23X17_BANKED
 
 // PIC 18F27Q43 Configuration Bit Settings
-
-#pragma config FEXTOSC = OFF           // Dont use the external oscillator
-#pragma config RSTOSC = HFINTOSC_64MHZ // Use internal 64mHz high frequency osc
-#pragma config CSWEN = OFF             // No clock switching allowed
-#pragma config FCMEN = OFF             // Fail-safe clock monitor is disabled
-#pragma config PR1WAY = 0              // PRLOCKED Set/Cleared repeatedly
-#pragma config CLKOUTEN = 0            // Clock out is enabled on RA6
-#pragma config BOREN = 3               // Brown-out reset is enabled
-#pragma config LPBOREN = OFF           // Low power brown-out reset is disabled
-#pragma config IVT1WAY = 0             // IVTLOCK Set/cleared repeatedly
-#pragma config MVECEN = 1              // Vectored interrupts enabled
-#pragma config PWRTS = 2               // Power up timer at 64mS
-#pragma config MCLRE = 1               // Master clear retains that function
-#pragma config XINST = OFF             // No extended instruction set
-#pragma config LVP = 1                 // Low voltage programming is enabled
-#pragma config STVREN = ON             // Stack over/under flow causes reset
-#pragma config PPS1WAY = 0             // PPSLOCK set/reset repeatedly
-#pragma config ZCD = 1                 // Zero-cross detection is disabled
-#pragma config BORV = 0                // Brown-out voltage is set to 2.85V
-#pragma config WDTE = OFF              // No watch dog timer
-#pragma config SAFEN = OFF             // Storage area flash is disabled
-#pragma config BBEN = OFF              // Boot block is disabled
-#pragma config WRTAPP = OFF            // Application block is NOT write protected
-#pragma config WRTSAF = OFF            // SAF area is not write protected
-#pragma config WRTC = OFF              // Configuration registers are NOT write protected
-#pragma config WRTB = OFF              // Boot block is not write protected
-#pragma config WRTD = OFF              // Data EEPROM is not write protected
-#pragma config CP = OFF                // Code is not protected
+#pragma config FEXTOSC = OFF            // Dont use the external oscillator
+#pragma config RSTOSC = HFINTOSC_64MHZ  // Use internal 64mHz high frequency osc
+#pragma config CSWEN = OFF              // No clock switching allowed
+#pragma config FCMEN = OFF              // Fail-safe clock monitor is disabled
+#pragma config PR1WAY = 0               // PRLOCKED Set/Cleared repeatedly
+#pragma config CLKOUTEN = 0             // Clock out is enabled on RA6
+#pragma config BOREN = 3                // Brown-out reset is enabled
+#pragma config LPBOREN = OFF            // Low power brown-out reset is disabled
+#pragma config IVT1WAY = 0              // IVTLOCK Set/cleared repeatedly
+#pragma config MVECEN = 1               // Vectored interrupts enabled
+#pragma config PWRTS = 2                // Power up timer at 64mS
+#pragma config MCLRE = 1                // Master clear retains that function
+#pragma config XINST = OFF              // No extended instruction set
+#pragma config LVP = 1                  // Low voltage programming is enabled
+#pragma config STVREN = ON              // Stack over/under flow causes reset
+#pragma config PPS1WAY = 0              // PPSLOCK set/reset repeatedly
+#pragma config ZCD = 1                  // Zero-cross detection is disabled
+#pragma config BORV = 0                 // Brown-out voltage is set to 2.85V
+#pragma config WDTE = OFF               // No watch dog timer
+#pragma config SAFEN = OFF              // Storage area flash is disabled
+#pragma config BBEN = OFF               // Boot block is disabled
+#pragma config WRTAPP = OFF             // Application block is NOT write protected
+#pragma config WRTSAF = OFF             // SAF area is not write protected
+#pragma config WRTC = OFF               // Configuration registers are NOT write protected
+#pragma config WRTB = OFF               // Boot block is not write protected
+#pragma config WRTD = OFF               // Data EEPROM is not write protected
+#pragma config CP = OFF                 // Code is not protected
 
 /****************************************************************************/
 /*                                                                          */
 /* Device addresses on the I2C buss                                         */
 /*                                                                          */
 /****************************************************************************/
-#define MCP23017_ADDRESS 0x20 // I/O Expander address
-#define EEPROM_ADDRESS 0x50   // EEPROM address
-#define DAC8571_ADDRESS 0x4C  // DAC address
+#define MCP23017_ADDRESS 0x20           // I/O Expander address
+#define EEPROM_ADDRESS 0x50             // EEPROM address
+#define DAC8571_ADDRESS 0x4C            // DAC address
 
 /****************************************************************************/
 /*                                                                          */
 /* System configuration definitions                                         */
 /*                                                                          */
 /****************************************************************************/
-#define DAC_RESOLUTION 65535U // 16-bit
+#define DAC_RESOLUTION 65535            // 16-bit
 #define DAC_MIDPOINT (DAC_RESOLUTION / 2)
-#define CONFIG_MAGIC 0xA5   // Magic number to identify valid config
-#define CONFIG_VERSION 0x02 // Configuration structure version
-#define EEPROM_PAGE_SIZE 16 // EEPROM page size for writes
+#define CONFIG_MAGIC 0xA5               // Magic number to identify valid config
+#define CONFIG_VERSION 0x02             // Configuration structure version
+#define EEPROM_PAGE_SIZE 16             // EEPROM page size for writes
 
 /*
- * Voltage reference source selection for the Menu (indexes into `vref_options[]`).
- * Use named macros for readability when assigning or checking sources.
+ * Voltage reference source selection enumerated values.
  */
-#define VREF_INTERNAL 0
-#define VREF_EXTERNAL 1
-#define VREF_OPTIONS_COUNT 2
+typedef enum {
+    VREF_SRC_INTERNAL = 0,              // Internal reference
+    VREF_SRC_EXTERNAL = 1               // External reference   
+} vref_source_t;
 
-/*
- * Serial port options (indexes into `parity_options[]`).
- * Keep named macros for readability when comparing or assigning parity.
+/**
+ * GPS protocol selection enumerated values.
  */
-#define PARITY_N 0
-#define PARITY_E 1
-#define PARITY_O 2
-#define PARITY_M 3
-#define PARITY_S 4
-#define PARITY_OPTIONS_COUNT 5
+typedef enum {
+    GPS_PROTOCOL_NMEA = 0,              // NMEA protocol
+    GPS_PROTOCOL_UBX = 1,               // UBX protocol
+    GPS_PROTOCOL_RTCM = 2               // RTCM protocol
+} gps_protocol_t;
 
-/*
- * Serial stop bit options
+/* 
+ * GPS data validity states 
  */
-#define STOPBITS_0 0
-#define STOPBITS_1 1
-#define STOPBITS_2 2
-#define STOPBITS_OPTIONS_COUNT 3
+typedef enum { 
+    GPS_INVALID = 0, 
+    GPS_VALID = 1 
+} gps_validity_t;
 
-#define DEFAULT_BAUD_RATE   5
-#define DEFAULT_STOP_BITS   0
-#define DEFAULT_PARITY      0 
+/* 
+ * GPS fix types 
+ */
+typedef enum { 
+    GPS_NO_FIX = 0, 
+    GPS_2D_FIX = 1, 
+    GPS_3D_FIX = 2 
+} gps_fix_t;
+
+/* 
+ * GPS date/time structure 
+ */
+typedef struct {
+    unsigned char year;                         // Years since 2000 (e.g., 25 for 2025)
+    unsigned char month;                        // Month 1-12
+    unsigned char day;                          // Day 1-31
+    unsigned char hour;                         // Hour 0-23 (UTC)
+    unsigned char minute;                       // Minute 0-59
+    unsigned char second;                       // Second 0-59
+    gps_validity_t valid;
+} gps_datetime_t;
+
+/*  
+ * GPS position structure 
+ */
+typedef struct {
+    float latitude;                             // Decimal degrees, positive = North
+    float longitude;                            // Decimal degrees, positive = East
+    float altitude;                             // Meters above sea level
+    gps_fix_t fix_type;                         // Fix type (none, 2D, 3D)
+    unsigned char satellites;                   // Number of satellites in view
+    gps_validity_t valid;                       // Position validity  
+} gps_position_t;
+
+/**
+ * Timezone mode selection enumerated values.
+ */
+typedef enum {
+    TZ_MODE_UTC = 0,                            // UTC timezone mode
+    TZ_MODE_LOCAL = 1                           // Local timezone mode
+} tz_mode_t;
+
+/**
+ * Serial parity selection enumerated values.
+ */
+typedef enum {
+    PARITY_NONE = 0,                            // No parity
+    PARITY_EVEN = 1,                            // Even parity
+    PARITY_ODD = 2,                             // Odd parity
+    PARITY_MARK = 3,                            // Mark parity
+    PARITY_SPACE = 4                            // Space parity
+} parity_t;
+
+/**
+ * Serial stop bits selection enumerated values.
+ */
+typedef enum {
+    STOPBITS_1 = 0,                             // 1 stop bit
+    STOPBITS_1_5 = 1,                           // 1.5 stop bits
+    STOPBITS_2 = 2                              // 2 stop bits
+} stopbits_t;
+
 
 /*
  * System configuration structure, saved in the external EEPROM
  */
 typedef struct {
-    uint8_t magic;         // should be CONFIG_MAGIC
-    uint8_t version;       // should be CONFIG_VERSION
-    uint8_t vref_source;   // index into vref_options[]
-    uint32_t gps_baud;     // GPS baud rate
-    uint8_t gps_stop_bits; // 0,1,2
-    uint8_t gps_parity;    // GPS Parity (0=None,1=Even,2=Odd,3=Mark,4=Space)
-    uint8_t gps_protocol;  // gps_protocol_t
-    uint16_t vco_dac;      // stored VCO DAC raw value (0..4095)
-    uint32_t ext_baud;     // ext Baud rate
-    uint8_t ext_stop_bits; // ext stop bits 0,1,2
-    uint8_t ext_parity;    // ext parity (0=None,1=Even,2=Odd,3=Mark,4=Space)
-    uint8_t reserved[3];   // reserved for future use (shrunk to make room for tz fields)
-    uint8_t tz_mode;       // 0=UTC, 1=Local
-    int16_t tz_offset_min; // signed minutes offset from UTC (e.g., -300 = UTC-05:00)
-    uint8_t crc;           // CRC-8 of all preceding bytes
+    unsigned char magic;                        // should be CONFIG_MAGIC
+    unsigned char version;                      // should be CONFIG_VERSION
+    vref_source_t vref_source;                  // The VRef source selection
+    long gps_baud;                              // GPS baud rate
+    stopbits_t gps_stop_bits;                   // 0, 1.5, or 2
+    parity_t gps_parity;                        // GPS Parity 
+    gps_protocol_t gps_protocol;                // gps_protocol_t
+    unsigned int vco_dac;                       // stored VCO DAC raw value (0..4095)
+    long ext_baud;                              // ext Baud rate
+    stopbits_t ext_stop_bits;                   // ext stop bits 0, 1.5, or 2
+    parity_t ext_parity;                        // ext parity 
+    tz_mode_t tz_mode;                          // Timezone mode
+    int tz_offset_min;                          // signed minutes offset from UTC (e.g., -300 = UTC-05:00)
+    unsigned char reserved[6];                  // padding to make structure 32 bytes (multiple of EEPROM_PAGE_SIZE)
+    unsigned int crc;                           // CRC-16 of all preceding bytes
 } system_config_t;
 
 /*
- * Global instance
+ * Global configuration instance.
  */
 extern system_config_t system_config;
 
@@ -179,27 +237,27 @@ extern system_config_t system_config;
 /****************************************************************************/
 
 // Port A
-#define VREF_FB 1    // RA0: VREF feedback pin
-#define INT_REF 2    // RA1: Internal reference enable pin
-#define CLOCK_OUT 64 // RA6: Clock output pin
+#define VREF_FB 1                               // RA0: VREF feedback pin
+#define INT_REF 2                               // RA1: Internal reference enable pin
+#define CLOCK_OUT 64                            // RA6: Clock output pin
 
 // Port B
-#define GPS_TX 1   // RB0: GPS Transmit pin
-#define GPS_RX 2   // RB1: GPS Receive pin
-#define INT 4      // RB2: Interrupt pin from GPS module
-#define EXT_RX 8   // RB3: External RX input
-#define EXT_TX 16  // RB4: External TX output
-#define PROGRAM 32 // RB5: Program mode select (active high)
+#define GPS_TX 1                                // RB0: GPS Transmit pin
+#define GPS_RX 2                                // RB1: GPS Receive pin
+#define INT 4                                   // RB2: Interrupt pin from GPS module
+#define EXT_RX 8                                // RB3: External RX input
+#define EXT_TX 16                               // RB4: External TX output
+#define PROGRAM 32                              // RB5: Program mode select (active high)
 
 // Port C
-#define PPS 1       // RC0: 1PPS signal from GPS module
-#define RF 2        // RC1: RF From OCXO
-#define RESET_N 4   // RC2: Active low reset for GPS module
-#define SCL 8       // RC3: I2C Clock
-#define SDA 16      // RC4: I2C Data
-#define PHASE_A 32  // RC5: Phase A input from encoder
-#define PHASE_B 64  // RC6: Phase B input from encoder
-#define ENTER_N 128 // RC7: Active low enter button
+#define PPS 1                                   // RC0: 1PPS signal from GPS module
+#define RF 2                                    // RC1: RF From OCXO
+#define RESET_N 4                               // RC2: Active low reset for GPS module
+#define SCL 8                                   // RC3: I2C Clock
+#define SDA 16                                  // RC4: I2C Data
+#define PHASE_A 32                              // RC5: Phase A input from encoder
+#define PHASE_B 64                              // RC6: Phase B input from encoder
+#define ENTER_N 128                             // RC7: Active low enter button
 
 /****************************************************************************/
 /*                                                                          */
@@ -216,16 +274,16 @@ extern system_config_t system_config;
 /****************************************************************************/
 typedef union {
     struct {
-        uint8_t LCD_RS : 1;     // LCD Register Select pin
-        uint8_t LCD_RW : 1;     // LCD Read/Write pin
-        uint8_t LCD_E : 1;      // LCD Enable pin
-        uint8_t LCD_BL : 1;     // LCD Backlight control pin
-        uint8_t POWER_N : 1;    // Power LED (active low)
-        uint8_t LOCK_N : 1;     // Lock status LED (active low)
-        uint8_t HOLDOVER_N : 1; // Holdover status LED (active low)
-        uint8_t GPS_N : 1;      // GPS lock status LED (active low)
+        unsigned char LCD_RS : 1;               // LCD Register Select pin
+        unsigned char LCD_RW : 1;               // LCD Read/Write pin
+        unsigned char LCD_E : 1;                // LCD Enable pin
+        unsigned char LCD_BL : 1;               // LCD Backlight control pin
+        unsigned char POWER_N : 1;              // Power LED (active low)
+        unsigned char LOCK_N : 1;               // Lock status LED (active low)
+        unsigned char HOLDOVER_N : 1;           // Holdover status LED (active low)
+        unsigned char GPS_N : 1;                // GPS lock status LED (active low)
     };
-    uint8_t all;
+    unsigned char all;
 } IOPortA_t;
 
 /* General purpose data I/O buffer */
@@ -238,34 +296,27 @@ extern IOPortA_t ioporta;
 /* Encoder state */
 extern volatile encoder_state_t encoder_state;
 
-/* Shared option arrays */
-#define BAUD_RATES_COUNT 10
-extern const char* stop_options[];
-extern const char* parity_options[];
-extern const char* baud_options[];
-extern const char* vref_options[];
-extern const char* protocol_options[];
-extern const char* tz_mode_options[];
-
-/* Return numeric baud rate parsed from baud_options index (e.g., "9600" -> 9600)
- * If index is out of range, returns 9600 as a safe default.
- */
-uint32_t baud_rate_from_index(uint8_t index);
-
-/* Return the index in baud_options for a given baud rate value
- * If baud rate is not found, returns index for 9600 baud (5).
- */
-uint8_t baud_rate_index(uint32_t baud_rate);
-
 /****************************************************************************/
 /*                                                                          */
 /* Forward defines of configuration functions                               */
 /*                                                                          */
 /****************************************************************************/
-
 void initialize(void);
 void config_load(system_config_t* cfg);
 void config_save(const system_config_t* cfg);
 void config_defaults(system_config_t* cfg);
 
+/****************************************************************************/
+/*                                                                          */
+/* Default values                                                           */
+/*                                                                          */
+/****************************************************************************/
+#define DEFAULT_GPS_BAUD 9600               // Default GPS baud rate
+#define DEFAULT_GPS_PARITY PARITY_NONE      // Default GPS parity
+#define DEFAULT_GPS_STOP_BITS STOPBITS_1    // Default GPS stop bits
+#define DEFAULT_EXT_BAUD 9600               // Default external port baud rate
+#define DEFAULT_EXT_PARITY PARITY_NONE      // Default external port parity
+#define DEFAULT_EXT_STOP_BITS STOPBITS_1    // Default external port stop bits
+#define DEFAULT_TZ_MODE TZ_MODE_UTC         // Default timezone mode
+#define DEFAULT_TZ_OFFSET_MIN 0             // Default timezone offset in minutes (0 = UTC)
 #endif // CONFIG_H

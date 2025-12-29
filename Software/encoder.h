@@ -20,18 +20,18 @@
 #include <stdint.h>
 
 typedef struct {
-    volatile uint8_t position;    // 8-bit encoder position (wraps)
-    volatile uint8_t last_state;  // last quadrature state (bits: A<<1 | B)
-    volatile uint8_t button_raw;  // raw 1/0 reading (active low)
-    volatile uint8_t button_stable;// logical state (1=pressed), external debounce
-    volatile uint8_t debounce_cnt; // reserved (unused without internal debounce)
+    volatile unsigned char position;    // 8-bit encoder position (wraps)
+    volatile unsigned char last_state;  // last quadrature state (bits: A<<1 | B)
+    volatile unsigned char button_raw;  // raw 1/0 reading (active low)
+    volatile unsigned char button_stable;// logical state (1=pressed), external debounce
+    volatile unsigned char debounce_cnt; // reserved (unused without internal debounce)
 } encoder_state_t;
 
 extern volatile encoder_state_t encoder_state;
 
 void encoder_init(void);            /* initialize encoder hardware and state */
-uint8_t encoder_get_position(void);    /* get current encoder position (8-bit), 0-127 */
-uint8_t encoder_button_state(void); /* 1 = pressed, 0 = released (debounced) */
+unsigned char encoder_get_position(void);    /* get current encoder position (8-bit), 0-127 */
+unsigned char encoder_button_state(void); /* 1 = pressed, 0 = released (debounced) */
 
 /* Called from the ISR when IOC detected on RC5/6/7 */
 void encoder_handle_ioc(void);

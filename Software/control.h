@@ -34,6 +34,6 @@
 #include <stdint.h>
 
 void control_init(void);    /* call once at startup */
-void control_update(int32_t error); /* call periodically with latest error */
+void control_update(long error); /* call periodically with latest error */
 
 #endif // CONTROL_H

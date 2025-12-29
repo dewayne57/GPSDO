@@ -22,9 +22,9 @@
 #include <stdint.h>
 #include <xc.h>
 
-static uint16_t dac_current = 0;
+static unsigned int dac_current = 0;
 extern system_config_t system_config;
-extern uint8_t i2c_buffer[I2C_BUFFER_SIZE];
+extern unsigned char i2c_buffer[I2C_BUFFER_SIZE];
 
 /*
  * Initialize the DAC module.  Sets the DAC to a known state.
@@ -32,7 +32,7 @@ extern uint8_t i2c_buffer[I2C_BUFFER_SIZE];
 void dac_init(void) {
     // If the system config contains a stored DAC value, use it as startup
     // Otherwise fall back to midpoint
-    uint16_t start = DAC_MIDPOINT;
+    unsigned int start = DAC_MIDPOINT;
     if (system_config.magic == CONFIG_MAGIC && system_config.version == CONFIG_VERSION) {
         start = system_config.vco_dac;
         if (start >= DAC_RESOLUTION)
@@ -44,22 +44,27 @@ void dac_init(void) {
 
 /* DAC8571 write: control byte followed by 16-bit data (big-endian).
  * Control 0x10 = write-and-update, power-up (per DAC8571 datasheet).
+ *
+ * @param value  Raw DAC value to set (0..65535)
+ * @return       None
  */
-void dac_set_raw(uint16_t value) {
+void dac_set_raw(unsigned int value) {
     if (value >= DAC_RESOLUTION)
         value = DAC_RESOLUTION - 1U;
 
     i2c_buffer[0] = 0x10;                           // control: write + update DAC, power-up
-    i2c_buffer[1] = (uint8_t)((value >> 8) & 0xFF); // D15..D8
-    i2c_buffer[2] = (uint8_t)(value & 0xFF);        // D7..D0
+    i2c_buffer[1] = (unsigned char)((value >> 8) & 0xFF); // D15..D8
+    i2c_buffer[2] = (unsigned char)(value & 0xFF);        // D7..D0
 
     i2cWriteBuffer(DAC8571_ADDRESS, i2c_buffer, 3);
     dac_current = value;
 }
 
 /*
- * Get the current raw DAC value
+ * Get the current raw DAC value.
+ *
+ * @return Current DAC raw value (0..65535)
  */
-uint16_t dac_get_raw(void) {
+unsigned int dac_get_raw(void) {
     return dac_current;
 }

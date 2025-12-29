@@ -19,16 +19,16 @@
  * limitations under the License.
  */
 
-#include "serial.h"
 #include "config.h"
 #include "date.h"
+#include "serial.h"
 #include <stdio.h>
 #include <string.h>
 
 /* UART2 receive buffer and state */
 static char rx_buffer[SERIAL_BUFFER_SIZE];
-static volatile uint8_t rx_head = 0; /* 0-255 index (buffer is 256 bytes) */
-static volatile uint8_t rx_tail = 0;
+static volatile unsigned char rx_head = 0; /* 0-255 index (buffer is 256 bytes) */
+static volatile unsigned char rx_tail = 0;
 
 /*
  * Send a single character via UART2 (static - only used internally)
@@ -58,22 +58,22 @@ void serial_init(void) {
     U2CON2 = 0x04; // BRGS=1 for high-speed baud (4x clock in divisor)
 
     // Set initial baud rate to 9600 (index from system config ext_baud_index)
-    uint32_t baud_rate = system_config.ext_baud;
-    uint32_t baud_div = _XTAL_FREQ / (16 * (baud_rate + 1U));
+    long baud_rate = system_config.ext_baud;
+    long baud_div = _XTAL_FREQ / (16 * (baud_rate + 1U));
 
-    U2BRGL = (uint8_t)(baud_div & 0xFFU);
-    U2BRGH = (uint8_t)((baud_div >> 8) & 0xFFU);
+    U2BRGL = (unsigned char)(baud_div & 0xFFU);
+    U2BRGH = (unsigned char)((baud_div >> 8) & 0xFFU);
 
     // Configure UART2 mode
     // Configure parity and stop bits based on system config
     switch (system_config.ext_parity) {
-        case PARITY_N:
+        case PARITY_NONE:
             U2CON0bits.MODE = 0x00; // 8-bit no parity
             break;
-        case PARITY_E:
+        case PARITY_EVEN:
             U2CON0bits.MODE = 0x03; // 8-bit with even parity
             break;
-        case PARITY_O:
+        case PARITY_ODD:
             U2CON0bits.MODE = 0x02; // 8-bit with odd parity
             break;
         default:
@@ -109,7 +109,7 @@ void serial_reconfigure(void) {
  * Put character into receive buffer (called from ISR)
  */
 void serial_buffer_put_char(char c) {
-    uint8_t next_head = (uint8_t)(rx_head + 1); // wraps at 256
+    unsigned char next_head = (unsigned char)(rx_head + 1); // wraps at 256
 
     if (next_head != rx_tail) { // Buffer not full
         rx_buffer[rx_head] = c;

@@ -38,9 +38,9 @@ static void _i2cSclHigh(void);
 static void _i2cSclLow(void);
 static void _i2cSdaHigh(void);
 static void _i2cSdaLow(void);
-static uint8_t _i2cSdaRead(void);
-static uint8_t _i2cWriteByte(uint8_t data);
-static uint8_t _i2cReadByte(uint8_t ack, uint8_t* value);
+static unsigned char _i2cSdaRead(void);
+static unsigned char _i2cWriteByte(unsigned char data);
+static unsigned char _i2cReadByte(unsigned char ack, unsigned char* value);
 
 /****************************************************************************
  * PUBLIC API FUNCTIONS
@@ -55,15 +55,15 @@ static uint8_t _i2cReadByte(uint8_t ack, uint8_t* value);
  *   length - The number of bytes to write
  * Returns: 0 on success, non-zero on failure
  * *************************************************************************/
-uint8_t i2cWriteBuffer(uint8_t address, uint8_t* data, uint8_t length) {
-    uint8_t i;
-    uint8_t result;
+unsigned char i2cWriteBuffer(unsigned char address, unsigned char* data, unsigned char length) {
+    unsigned char i;
+    unsigned char result;
 
     // Send start condition
     _i2cStart();
 
     // Send address with write bit (0)
-    result = _i2cWriteByte((uint8_t)((address << 1) | 0x00));
+    result = _i2cWriteByte((unsigned char)((address << 1) | 0x00));
     if (result != I2C_SUCCESS) {
         _i2cStop();
         return result;
@@ -92,8 +92,8 @@ uint8_t i2cWriteBuffer(uint8_t address, uint8_t* data, uint8_t length) {
  *   data - The data byte to write
  * Returns: 0 on success, non-zero on failure
  * *************************************************************************/
-uint8_t i2cWriteRegister(uint8_t address, uint8_t reg, uint8_t data) {
-    uint8_t buffer[2];
+unsigned char i2cWriteRegister(unsigned char address, unsigned char reg, unsigned char data) {
+    unsigned char buffer[2];
 
     buffer[0] = reg;
     buffer[1] = data;
@@ -109,19 +109,19 @@ uint8_t i2cWriteRegister(uint8_t address, uint8_t reg, uint8_t data) {
  *   length - The number of bytes to read
  * Returns: 0 on success, non-zero on failure
  * *************************************************************************/
-uint8_t i2cReadBuffer(uint8_t address, uint8_t* data, uint8_t length) {
+unsigned char i2cReadBuffer(unsigned char address, unsigned char* data, unsigned char length) {
     if (length == 0) {
         return I2C_SUCCESS;
     }
 
-    uint8_t i;
-    uint8_t result;
+    unsigned char i;
+    unsigned char result;
 
     // Send start condition
     _i2cStart();
 
     // Send address with read bit (1)
-    result = _i2cWriteByte((uint8_t)((address << 1) | 0x01));
+    result = _i2cWriteByte((unsigned char)((address << 1) | 0x01));
     if (result != I2C_SUCCESS) {
         _i2cStop();
         return result;
@@ -151,14 +151,14 @@ uint8_t i2cReadBuffer(uint8_t address, uint8_t* data, uint8_t length) {
  *   data - Pointer to store the read data byte
  * Returns: 0 on success, non-zero on failure
  * *************************************************************************/
-uint8_t i2cReadRegister(uint8_t address, uint8_t reg, uint8_t* data) {
-    uint8_t result;
+unsigned char i2cReadRegister(unsigned char address, unsigned char reg, unsigned char* data) {
+    unsigned char result;
 
     // Send start condition
     _i2cStart();
 
     // Send address with write bit to write register address
-    result = _i2cWriteByte((uint8_t)((address << 1) | 0x00));
+    result = _i2cWriteByte((unsigned char)((address << 1) | 0x00));
     if (result != I2C_SUCCESS) {
         _i2cStop();
         return result;
@@ -175,7 +175,7 @@ uint8_t i2cReadRegister(uint8_t address, uint8_t reg, uint8_t* data) {
     _i2cRestart();
 
     // Send address with read bit
-    result = _i2cWriteByte((uint8_t)((address << 1) | 0x01));
+    result = _i2cWriteByte((unsigned char)((address << 1) | 0x01));
     if (result != I2C_SUCCESS) {
         _i2cStop();
         return result;
@@ -221,7 +221,7 @@ void _i2cSdaLow(void) {
     I2C_HALF_DELAY();
 }
 
-uint8_t _i2cSdaRead(void) {
+unsigned char _i2cSdaRead(void) {
     TRISC |= SDA; // Ensure SDA is input
     I2C_HALF_DELAY();
     return PORTC & SDA; // Read SDA state
@@ -259,8 +259,8 @@ void _i2cStop(void) {
     I2C_DELAY();
 }
 
-uint8_t _i2cWriteByte(uint8_t data) {
-    uint8_t i;
+unsigned char _i2cWriteByte(unsigned char data) {
+    unsigned char i;
 
     // Send 8 bits, MSB first
     for (i = 0; i < 8; i++) {
@@ -278,15 +278,15 @@ uint8_t _i2cWriteByte(uint8_t data) {
     // Check for ACK
     _i2cSdaHigh();                // Release SDA for ACK
     _i2cSclHigh();                // Clock the ACK bit
-    uint8_t ack = !_i2cSdaRead(); // ACK is low
+    unsigned char ack = !_i2cSdaRead(); // ACK is low
     _i2cSclLow();
 
     return ack ? I2C_SUCCESS : I2C_NACK;
 }
 
-uint8_t _i2cReadByte(uint8_t ack, uint8_t* value) {
-    uint8_t data = 0;
-    uint8_t i;
+unsigned char _i2cReadByte(unsigned char ack, unsigned char* value) {
+    unsigned char data = 0;
+    unsigned char i;
 
     _i2cSdaHigh(); // Release SDA for reading
 

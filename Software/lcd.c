@@ -44,11 +44,11 @@ static bool lcd_buffer_initialized = false;
  * Global variables and data areas.
  */
 extern volatile bool smt_new_capture;
-extern volatile uint32_t smt_last_count;
+extern volatile unsigned long smt_last_count;
 extern volatile int32_t smt_last_error;
 extern system_config_t system_config;
 extern IOPortA_t ioporta;
-extern uint8_t buffer[128];
+extern unsigned char buffer[128];
 extern volatile encoder_state_t encoder_state;
 extern bool system_initialized;
 extern volatile gps_data_t gps_data;
@@ -59,9 +59,9 @@ extern volatile bool gps_data_available;
 /*                                                                               */
 /* LCD functions for writing to the display.                                     */
 /*********************************************************************************/
-static uint8_t _lcdWriteByte(bool inst, uint8_t byte);
-static uint8_t _lcdReadByte(bool inst, uint8_t* value);
-static uint8_t _lcdWaitReady(uint16_t maxPolls);
+static unsigned char _lcdWriteByte(bool inst, unsigned char byte);
+static unsigned char _lcdReadByte(bool inst, unsigned char* value);
+static unsigned char _lcdWaitReady(uint16_t maxPolls);
 
 /**
  * Update the LCD display with the current system status.
@@ -100,8 +100,8 @@ void updateDisplay(void) {
         return;
     }
 
-    uint8_t gie_saved;
-    uint8_t giel_saved;
+    unsigned char gie_saved;
+    unsigned char giel_saved;
     CRITICAL_SECTION_ENTER(gie_saved, giel_saved);
     gps_datetime_t dt = gps_data.datetime;  // snapshot volatile data atomically
     gps_position_t pos = gps_data.position; // snapshot volatile data atomically
@@ -118,7 +118,7 @@ void updateDisplay(void) {
         lcdBufferSetLine(2, pos_line);
 
         if (smt_capture_available()) {
-            uint32_t c = smt_get_last_count();
+            unsigned long c = smt_get_last_count();
             char freq_line[21];
             snprintf(freq_line, sizeof(freq_line), "Freq:%lu", (unsigned long)c);
             lcdBufferSetLine(3, freq_line);
@@ -149,7 +149,7 @@ void lcdSetBacklight(bool state) {
  * @param address The DDRAM address to start writing to.
  * @param data The null-terminated string to write.
  */
-void lcdWriteBuffer(uint8_t address, char* data) {
+void lcdWriteBuffer(unsigned char address, char* data) {
     lcdWriteInstruction(SET_DDRAM_ADDRESS | address);
     lcdWriteString(data);
 }
@@ -207,7 +207,7 @@ void lcdBufferInit(void) {
  * Clear the entire LCD buffer
  */
 void lcdBufferClear(void) {
-    for (uint8_t i = 0; i < LCD_LINES; i++) {
+    for (unsigned char i = 0; i < LCD_LINES; i++) {
         memset(lcd_buffer[i], ' ', LCD_CHARS_PER_LINE);
         lcd_buffer[i][LCD_CHARS_PER_LINE] = '\0';
         lcd_line_dirty[i] = true;
@@ -220,7 +220,7 @@ void lcdBufferClear(void) {
  * @param line Line number (0-3)
  * @param text Text to display (will be truncated or padded to 20 chars)
  */
-void lcdBufferSetLine(uint8_t line, const char* text) {
+void lcdBufferSetLine(unsigned char line, const char* text) {
     if (line >= LCD_LINES || !lcd_buffer_initialized)
         return;
 
@@ -258,7 +258,7 @@ void lcdBufferSetLine(uint8_t line, const char* text) {
  * @param format Printf-style format string
  * @param ... Arguments for format string
  */
-void lcdBufferPrintf(uint8_t line, const char* format, ...) {
+void lcdBufferPrintf(unsigned char line, const char* format, ...) {
     if (line >= LCD_LINES || !lcd_buffer_initialized)
         return;
 
@@ -278,9 +278,9 @@ void lcdBufferUpdate(void) {
     if (!lcd_buffer_initialized)
         return;
 
-    static const uint8_t line_addresses[] = {LINE_0, LINE_1, LINE_2, LINE_3};
+    static const unsigned char line_addresses[] = {LINE_0, LINE_1, LINE_2, LINE_3};
 
-    for (uint8_t i = 0; i < LCD_LINES; i++) {
+    for (unsigned char i = 0; i < LCD_LINES; i++) {
         if (lcd_line_dirty[i]) {
             lcdWriteBuffer(line_addresses[i], lcd_buffer[i]);
             lcd_line_dirty[i] = false;
@@ -293,7 +293,7 @@ void lcdBufferUpdate(void) {
  *
  * @param data The instruction byte to write.
  */
-void lcdWriteInstruction(uint8_t data) {
+void lcdWriteInstruction(unsigned char data) {
     if (_lcdWriteByte(true, data) != I2C_SUCCESS) {
         return;
     }
@@ -301,10 +301,10 @@ void lcdWriteInstruction(uint8_t data) {
     (void)_lcdWaitReady(LCD_BUSY_MAX_POLLS);
 }
 
-static uint8_t _lcdWaitReady(uint16_t maxPolls) {
+static unsigned char _lcdWaitReady(uint16_t maxPolls) {
     while (maxPolls--) {
-        uint8_t byte = 0;
-        uint8_t status = _lcdReadByte(true, &byte);
+        unsigned char byte = 0;
+        unsigned char status = _lcdReadByte(true, &byte);
         if (status != I2C_SUCCESS) {
             return status;
         }
@@ -410,8 +410,8 @@ void lcdSelfTest(void) {
  * Write the full 8-bit byte to the LCD via an MCP23017 I/O expander.  The control
  * bits RS, RW, E, and BL are on PA0..PA3 and data bits D0..D7 are on PB0..PB7.
  */
-static uint8_t _lcdWriteByte(bool inst, uint8_t byte) {
-    uint8_t status;
+static unsigned char _lcdWriteByte(bool inst, unsigned char byte) {
+    unsigned char status;
 
     if (inst) {
         ioporta.LCD_RS = 0; // RS = instruction
@@ -450,10 +450,10 @@ static uint8_t _lcdWriteByte(bool inst, uint8_t byte) {
  *
  * @param inst TRUE if reading an instruction, FALSE for data
  */
-static uint8_t _lcdReadByte(bool inst, uint8_t* value) {
+static unsigned char _lcdReadByte(bool inst, unsigned char* value) {
     // We need to change PB0..PB7 to inputs temporarily
-    uint8_t iodir;
-    uint8_t status = i2cReadRegister(MCP23017_ADDRESS, IODIRB, &iodir);
+    unsigned char iodir;
+    unsigned char status = i2cReadRegister(MCP23017_ADDRESS, IODIRB, &iodir);
     if (status != I2C_SUCCESS) {
         return status;
     }
