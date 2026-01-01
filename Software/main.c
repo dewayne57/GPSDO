@@ -45,6 +45,7 @@
 #include "i2c.h"
 #include "isr.h"
 #include "lcd.h"
+#include "led.h"
 #include "mcp23x17.h"
 #include "menu.h"
 #include "serial.h"
@@ -139,23 +140,20 @@ void main(int argc, char** argv) {
 
             // Update LOCK LED if error is within +/-1 (active low)
             int locked = (err >= -1 && err <= 1) ? 1 : 0;
-            if (locked) {
-                ioporta.LOCK_N = 0; // active low -> clear bit to turn on
-            } else {
-                ioporta.LOCK_N = 1; // turn off
-            }
-            (void)i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
 
             /*
              * If locked, persist the current DAC setting to EEPROM (only if it differs)
              * We avoid repeated writes by checking the stored config value first.
              */
             if (locked) {
+                lockLED_On();
                 unsigned int cur = dac_get_raw();
                 if (system_config.vco_dac != cur) {
                     system_config.vco_dac = cur;
                     config_save((const system_config_t*)&system_config);
                 }
+            } else {
+                lockLED_Off();
             }
 
             /* Mark this capture as handled */

@@ -53,6 +53,13 @@ extern "C" {
 #define SET_DDRAM_ADDRESS       0b10000000
 
 /**
+ * HD44780 4-bit Mode Initialization Nibbles
+ * These are single nibbles sent during initialization sequence
+ */
+#define INIT_8BIT_MODE          0x03        // Nibble for 8-bit interface during init
+#define INIT_4BIT_MODE          0x02        // Nibble to switch to 4-bit interface
+
+/**
  * LCD Line Addresses
  */
 #define LINE_0                  0x00

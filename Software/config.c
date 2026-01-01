@@ -24,10 +24,12 @@
 #include "gps.h"
 #include "i2c.h"
 #include "lcd.h"
+#include "led.h"
 #include "mcp23x17.h"
 #include "menu.h"
 #include "serial.h"
 #include "smt.h"
+#include "usb.h"
 #include <string.h>
 #include <xc.h>
 
@@ -37,6 +39,7 @@
 bool system_initialized = false;                    // Flag indicating system initialization complete
 unsigned char i2c_buffer[I2C_BUFFER_SIZE];          // General-purpose I2C buffer
 IOPortA_t ioporta = {.all = 0xF0};                  // I/O expander Port A state shadow register
+IOPortB_t ioportb = {.all = 0xFF};                  // I/O expander Port B state shadow register
 system_config_t system_config;                      // System configuration data
 volatile encoder_state_t encoder_state = {
     .position = 0, .last_state = 0, .button_raw = 1, .button_stable = 0, .debounce_cnt = 0}; // Rotary encoder state
@@ -126,11 +129,11 @@ void initialize(void) {
     // RA2 - MFINTOSC output for debugging (500kHz clock)
     // RA3 - Unused
     // RA4 - Unused
-    // RA5 - Unused
+    // RA5 - Interrupt input from GPS module
     // RA6 - Digital clock output
     // RA7 - Unused
-    TRISA = 0xFF - VREF_FB - INT_REF - CLOCK_OUT; // RA0,RA1,RA6 as outputs
-    ANSELA = 0xFF - VREF_FB - INT_REF;            // RA0,RA1 as analog inputs, RA6 digital
+    TRISA = 0xFF - VREF_FB - INT_REF - CLOCK_OUT; // RA0,RA1,RA6 as outputs; RA5 as input
+    ANSELA = 0xFF - VREF_FB - INT_REF - INT;      // RA0,RA1 as analog inputs, RA5,RA6 digital
     LATA = 0x00;
     ODCONA = 0x00;
     WPUA = 0x00;
@@ -142,19 +145,19 @@ void initialize(void) {
     // TTL levels, no open drain, no analog, slew rate not limited, all pins
     // use Schmitt trigger inputs.
     //
-    // RB0 - GPS_TX (output FROM GPS to MCU)
-    // RB1 - GPS_RX (input TO GPS from MCU)
-    // RB2 - Interrupt input (weak pull up enabled)
+    // RB0 - Unused
+    // RB1 - Unused
+    // RB2 - Unused
     // RB3 - Unused
-    // RB4 - Unused
-    // RB5 - Unused
+    // RB4 - GPS_TX (output FROM GPS to MCU)
+    // RB5 - GPS_RX (input TO GPS from MCU)
     // RB6 - ICSP/Debug PGC
     // RB7 - ICSP/Debug PGD
-    TRISB = 0xFF - GPS_RX - INT; // RB0, RB2 inputs; RB1 output
-    ANSELB = 0x00;               // All digital
+    TRISB = 0xFF - GPS_RX; // RB4 input; RB5 output
+    ANSELB = 0x00;         // All digital
     LATB = 0x00;
     ODCONB = 0x00;
-    WPUB = 0x04;
+    WPUB = 0x00;
     SLRCONB = 0x00;
     INLVLB = 0x00;
 
@@ -210,12 +213,12 @@ void initialize(void) {
     PPSLOCK = 0xAA;            // unlock PPS
     PPSLOCKbits.PPSLOCKED = 0; // unlock
 
-    INT0PPS = 0x0A; // RB2 -> INT0 input
+    INT0PPS = 0x05; // RA5 -> INT0 input
 
-    // RB4 (EXT_RX) -> UART2 RX input (for bootloader)
-    U2RXPPS = 0x0C; // RB4
-    // RB3 (EXT_TX) -> UART2 TX output (for data transmission)
-    RB3PPS = 0x23; // UART2 TX
+    // RB4 (EXT_RX) -> UART1 RX input (for bootloader)
+    U1RXPPS = 0x0C; // RB4
+    // RB3 (EXT_TX) -> UART1 TX output (for data transmission)
+    RB3PPS = 0x13; // UART1 TX
 
     PPSLOCK = 0x55;            // lock PPS
     PPSLOCK = 0xAA;            // lock PPS
@@ -254,7 +257,7 @@ void initialize(void) {
     i2c_buffer[7] = 0x00;   // disable pullups
     i2c_buffer[8] = 0x00;   // Ignored
     i2c_buffer[9] = 0x00;   // not used
-    i2c_buffer[10] = 0xF0;  // All LEDs off
+    i2c_buffer[10] = 0x00;  // Initial value (will be set by LED functions)
     i2cWriteBuffer(MCP23017_ADDRESS, i2c_buffer, 11);
 
     /*
@@ -283,6 +286,11 @@ void initialize(void) {
      */
     i2cReadRegister(MCP23017_ADDRESS, INTFA, i2c_buffer);
     i2cReadRegister(MCP23017_ADDRESS, GPIOA, i2c_buffer);
+
+    /*
+     * Initialize the LED module (turn all LEDs off)
+     */
+    ledInitialize();
 
     /*
      * Load persistent system configuration from EEPROM (falls back to defaults)
@@ -340,6 +348,7 @@ void initialize(void) {
     lcdSetBacklight(true);
     gps_init();
     serial_init();
+    usb_init();
     selfCheck();
 
     system_initialized = true;
@@ -376,34 +385,8 @@ static void selfCheck(void) {
     lcdWriteInstruction(DISPLAY_ON);
     __delay_ms(50);
 
-    /*
-     * Turn ON all LEDs (active low): drive Port A low
-     */
-    ioporta.POWER_N = 0;
-    ioporta.GPS_N = 0;
-    ioporta.HOLDOVER_N = 0;
-    ioporta.LOCK_N = 0;
-
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
-    __delay_ms(500);
-
-    /*
-     * Turn OFF all LEDs (active low): drive Port A high
-     */
-    ioporta.POWER_N = 1;
-    ioporta.GPS_N = 1;
-    ioporta.HOLDOVER_N = 1;
-    ioporta.LOCK_N = 1;
-
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
-    __delay_ms(500);
-
-    /*
-     * Turn ON only the power LED (active low)
-     */
-    ioporta.POWER_N = 0;
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
-    __delay_ms(500);
+    // Test all LEDs
+    ledTest();
 }
 
 /*

@@ -22,6 +22,7 @@
 #include "mcp23x17.h"
 #include "serial.h"
 #include "smt.h"
+#include "usb.h"
 #include <xc.h>
 
 /*
@@ -39,10 +40,13 @@ void __interrupt(irq(0x07), low_priority) ioChangeIsr(void) {
 }
 
 /*
- * UART1 Receive ISR.
+ * UART1 Receive ISR (for external serial/bootloader).
  *
- * UART1 is used for GPS module communication.  This interrupt reads incoming
- * characters and stores them in a circular buffer for processing in the main loop.
+ * UART1 is used for external serial communication, normally for the GPS output
+ * data (date, time, position) and can also support the boot loader to load new
+ * firmware (e.g., bootloader interface).
+ * This interrupt reads incoming characters and stores them in a circular buffer
+ * when not used by the bootloader.
  */
 void __interrupt(irq(U1RX), high_priority) uart1_rx_isr(void) {
     if (PIR4bits.U1RXIF) {
@@ -57,21 +61,18 @@ void __interrupt(irq(U1RX), high_priority) uart1_rx_isr(void) {
             return;
         }
 
-        char c = U1RXB;         // Read character
-        gps_buffer_put_char(c); // Store in circular buffer
+        char c = U1RXB;            // Read character from UART1
+        serial_buffer_put_char(c); // Store in circular buffer
 
         PIR4bits.U1RXIF = 0; // Clear interrupt flag
     }
 }
 
 /*
- * UART2 Receive ISR (for external serial/bootloader).
+ * UART2 Receive ISR.
  *
- * UART2 is used for external serial communication, normally for the GPS output
- * data (date, time, position) and can also support the boot loader to load new
- * firmware (e.g., bootloader interface).
- * This interrupt reads incoming characters and stores them in a circular buffer
- * when not used by the bootloader  .
+ * UART2 is used for GPS module communication.  This interrupt reads incoming
+ * characters and stores them in a circular buffer for processing in the main loop.
  */
 void __interrupt(irq(U2RX), high_priority) uart2_rx_isr(void) {
     if (PIR8bits.U2RXIF) {
@@ -86,10 +87,36 @@ void __interrupt(irq(U2RX), high_priority) uart2_rx_isr(void) {
             return;
         }
 
-        char c = U2RXB;            // Read character from UART2
-        serial_buffer_put_char(c); // Store in circular buffer
+        char c = U2RXB;         // Read character
+        gps_buffer_put_char(c); // Store in circular buffer
 
         PIR8bits.U2RXIF = 0; // Clear interrupt flag
+    }
+}
+
+/*
+ * UART3 Receive ISR.
+ *
+ * UART3 is used for USB serial communication.  This interrupt reads incoming
+ * characters and stores them in a circular buffer for processing in the main loop.
+ */
+void __interrupt(irq(U3RX), high_priority) uart3_rx_isr(void) {
+    if (PIR9bits.U3RXIF) {
+        // Clear overrun if present to keep receiver alive
+        if (U3ERRIRbits.RXFOIF) {
+            U3CON0bits.RXEN = 0;
+            NOP();
+            U3CON0bits.RXEN = 1;
+            (void)U3RXB;            // Flush
+            PIR9bits.U3RXIF = 0;    // Clear interrupt flag
+            U3ERRIRbits.RXFOIF = 0; // Clear overrun flag
+            return;
+        }
+
+        char c = U3RXB;         // Read character
+        usb_buffer_put_char(c); // Store in circular buffer
+
+        PIR9bits.U3RXIF = 0; // Clear interrupt flag
     }
 }
 

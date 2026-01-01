@@ -2,7 +2,7 @@
  * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
  *
  * External serial communication module implementation.
- * Handles UART2 for RS-232 communication on RB3 (TxD) and RB4 (RxD).
+ * Handles UART1 for RS-232 communication on RB3 (TxD) and RB4 (RxD).
  * Uses printf redirection for all serial output.
  *
  * Supports sending GPS data and future bootloader functionality.
@@ -25,26 +25,26 @@
 #include <stdio.h>
 #include <string.h>
 
-/* UART2 receive buffer and state */
+/* UART1 receive buffer and state */
 static char rx_buffer[SERIAL_BUFFER_SIZE];
 static volatile unsigned char rx_head = 0; /* 0-255 index (buffer is 256 bytes) */
 static volatile unsigned char rx_tail = 0;
 
 /*
- * Send a single character via UART2 (static - only used internally)
+ * Send a single character via UART1 (static - only used internally)
  */
 static void serial_send_char(char c) {
     // Wait for transmit buffer to be empty
-    while (!U2FIFObits.TXBE) {
+    while (!U1FIFObits.TXBE) {
         // Wait
     }
 
     // Send character
-    U2TXB = c;
+    U1TXB = c;
 }
 
 /*
- * Initialize external serial communication using UART2
+ * Initialize external serial communication using UART1
  * Configures RB3 as TxD and RB4 as RxD for RS-232 interface
  */
 void serial_init(void) {
@@ -52,56 +52,56 @@ void serial_init(void) {
     memset(rx_buffer, 0, sizeof(rx_buffer));
     rx_head = rx_tail = 0;
 
-    // Configure UART2 registers
-    U2CON0 = 0x00; // Reset UART2
-    U2CON1 = 0x00; // Reset UART2
-    U2CON2 = 0x04; // BRGS=1 for high-speed baud (4x clock in divisor)
+    // Configure UART1 registers
+    U1CON0 = 0x00; // Reset UART1
+    U1CON1 = 0x00; // Reset UART1
+    U1CON2 = 0x04; // BRGS=1 for high-speed baud (4x clock in divisor)
 
     // Set initial baud rate to 9600 (index from system config ext_baud_index)
     long baud_rate = system_config.ext_baud;
     long baud_div = _XTAL_FREQ / (16 * (baud_rate + 1U));
 
-    U2BRGL = (unsigned char)(baud_div & 0xFFU);
-    U2BRGH = (unsigned char)((baud_div >> 8) & 0xFFU);
+    U1BRGL = (unsigned char)(baud_div & 0xFFU);
+    U1BRGH = (unsigned char)((baud_div >> 8) & 0xFFU);
 
-    // Configure UART2 mode
+    // Configure UART1 mode
     // Configure parity and stop bits based on system config
     switch (system_config.ext_parity) {
         case PARITY_NONE:
-            U2CON0bits.MODE = 0x00; // 8-bit no parity
+            U1CON0bits.MODE = 0x00; // 8-bit no parity
             break;
         case PARITY_EVEN:
-            U2CON0bits.MODE = 0x03; // 8-bit with even parity
+            U1CON0bits.MODE = 0x03; // 8-bit with even parity
             break;
         case PARITY_ODD:
-            U2CON0bits.MODE = 0x02; // 8-bit with odd parity
+            U1CON0bits.MODE = 0x02; // 8-bit with odd parity
             break;
         default:
-            U2CON0bits.MODE = 0x0; // 8-bit no parity
+            U1CON0bits.MODE = 0x0; // 8-bit no parity
             break;
     }
     // Configure UART1 mode
-    U2CON0bits.RXEN = 1; // Enable receiver
-    U2CON0bits.TXEN = 1; // Enable transmitter
+    U1CON0bits.RXEN = 1; // Enable receiver
+    U1CON0bits.TXEN = 1; // Enable transmitter
 
     // Note: Stop bits configuration not directly available in this UART module
-    // The PIC18F27Q43 UART2 uses 1 stop bit by default in asynchronous mode
+    // The PIC18F27Q43 UART1 uses 1 stop bit by default in asynchronous mode
 
-    // Enable UART2
-    U2CON1bits.ON = 1; // Enable UART2
+    // Enable UART1
+    U1CON1bits.ON = 1; // Enable UART1
 
     // For now, don't enable RX interrupt (will be enabled when bootloader is needed)
-    PIR8bits.U2RXIF = 0; // Clear interrupt flag
-    PIE8bits.U2RXIE = 0; // Disable UART2 RX interrupt for now
+    PIR4bits.U1RXIF = 0; // Clear interrupt flag
+    PIE4bits.U1RXIE = 0; // Disable UART1 RX interrupt for now
 }
 
 /*
- * Reconfigure UART2 settings from system config
+ * Reconfigure UART1 settings from system config
  * Call this when external serial port settings are changed
  */
 void serial_reconfigure(void) {
-    // Disable UART2 briefly to change settings
-    U2CON1bits.ON = 0;
+    // Disable UART1 briefly to change settings
+    U1CON1bits.ON = 0;
     serial_init(); 
 }
 
@@ -121,7 +121,7 @@ void serial_buffer_put_char(char c) {
 /*
  * Printf redirection function
  * This function is called by the XC8 compiler's printf implementation
- * to output characters to UART2
+ * to output characters to UART1
  */
 void putch(char c) {
     serial_send_char(c);

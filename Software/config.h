@@ -239,15 +239,17 @@ extern system_config_t system_config;
 // Port A
 #define VREF_FB 1                               // RA0: VREF feedback pin
 #define INT_REF 2                               // RA1: Internal reference enable pin
+#define INT     32                              // RA5: Interrupt input from GPS module
 #define CLOCK_OUT 64                            // RA6: Clock output pin
 
 // Port B
-#define GPS_TX 1                                // RB0: GPS Transmit pin
-#define GPS_RX 2                                // RB1: GPS Receive pin
-#define INT 4                                   // RB2: Interrupt pin from GPS module
-#define EXT_RX 8                                // RB3: External RX input
-#define EXT_TX 16                               // RB4: External TX output
-#define PROGRAM 32                              // RB5: Program mode select (active high)
+#define EXT_TX 1                                // RB0: External TX output
+#define EXT_RX 2                                // RB1: External RX input
+#define USB_TX 4                                // RB2: USB interface transmit pin
+#define USB_RX 8                                // RB3: USB interface receive pin
+#define GPS_TX 16                               // RB4: GPS Transmit pin
+#define GPS_RX 32                               // RB5: GPS Receive pin
+#define PROGRAM_N 64                            // RB6: Program mode select (active LOW)
 
 // Port C
 #define PPS 1                                   // RC0: 1PPS signal from GPS module
@@ -264,13 +266,9 @@ extern system_config_t system_config;
 /* Pin definitions on the MCP23017 I/O Extender Port A                      */
 /*                                                                          */
 /* The pins for the MCP23017 I/O Expander Port A are defined as bits in a   */
-/* 8-bit register. Port A has 4 pins dedicated to the LCD function and 4    */
-/* to the front panel LED indicators.                                       */
-/* This definition is a type definition used to instantiate the IOPortA_t   */
-/* data area used to track the values present on the MCP23017 I/O Extender  */
-/* Port A.                                                                  */
-/* The Port B pins are used to transfer data and commands to the LCD        */
-/* using the full 8-bit register.                                           */
+/* 8-bit register. Port A has all pins dedicated to the LCD function using  */
+/* a 4-bit interface.                                                       */
+/* The Port B pins are used for the LED front panel indicators.             */
 /****************************************************************************/
 typedef union {
     struct {
@@ -278,13 +276,22 @@ typedef union {
         unsigned char LCD_RW : 1;               // LCD Read/Write pin
         unsigned char LCD_E : 1;                // LCD Enable pin
         unsigned char LCD_BL : 1;               // LCD Backlight control pin
+        unsigned char NYBBLE: 4;                // LCD data nybble (upper 4 bits)
+    };
+    unsigned char all;
+} IOPortA_t;
+
+typedef union {
+    struct {
+        unsigned char reserved: 3;              // Unused bits
+        unsigned char FAULT_N : 1;              // Fault LED (active low)
         unsigned char POWER_N : 1;              // Power LED (active low)
         unsigned char LOCK_N : 1;               // Lock status LED (active low)
         unsigned char HOLDOVER_N : 1;           // Holdover status LED (active low)
         unsigned char GPS_N : 1;                // GPS lock status LED (active low)
     };
     unsigned char all;
-} IOPortA_t;
+} IOPortB_t;
 
 /* General purpose data I/O buffer */
 #define I2C_BUFFER_SIZE 256
@@ -292,6 +299,8 @@ extern uint8_t i2c_buffer[I2C_BUFFER_SIZE];
 
 /* I/O expander port A shadow register */
 extern IOPortA_t ioporta;
+/* I/O expander port B shadow register */
+extern IOPortB_t ioportb;
 
 /* Encoder state */
 extern volatile encoder_state_t encoder_state;

@@ -19,6 +19,7 @@
 #include "gps.h"
 #include "date.h"
 #include "i2c.h"
+#include "led.h"
 #include "menu.h"
 #include "mcp23x17.h"
 #include <stdio.h>
@@ -85,32 +86,32 @@ void gps_init(void) {
     gps_sentence_started = false;
     gps_sentence_length = 0;
 
-    // Configure UART1 for GPS communication
-    // PPS configuration for UART1 RX/TX
+    // Configure UART2 for GPS communication
+    // PPS configuration for UART2 RX/TX
     PPSLOCK = 0x55;
     PPSLOCK = 0xAA;
     PPSLOCKbits.PPSLOCKED = 0; // unlock
 
-    // RB0 (GPS_TX from GPS module) -> UART1 RX input
-    U1RXPPS = 0x08; // RB0
-    // RB1 (GPS_RX to GPS module) -> UART1 TX output
-    RB1PPS = 0x13; // UART1 TX
+    // RB4 (GPS_TX from GPS module) -> UART2 RX input
+    U2RXPPS = 0x0C; // RB4
+    // RB5 (GPS_RX to GPS module) -> UART2 TX output
+    RB5PPS = 0x23; // UART2 TX
 
     PPSLOCK = 0x55;
     PPSLOCK = 0xAA;
     PPSLOCKbits.PPSLOCKED = 1; // lock
 
-    // Configure UART1 registers
-    U1CON0 = 0x00; // Reset UART1
-    U1CON1 = 0x00; // Reset UART1
-    U1CON2 = 0x00; // Reset UART1
+    // Configure UART2 registers
+    U2CON0 = 0x00; // Reset UART2
+    U2CON1 = 0x00; // Reset UART2
+    U2CON2 = 0x00; // Reset UART2
 
     // Set baud rate based on system configuration
     long baud_rate = system_config.gps_baud; 
     long baud_div = _XTAL_FREQ / (16L * (baud_rate + 1L));
 
-    U1BRGL = (unsigned char)(baud_div & 0xFFU);
-    U1BRGH = (unsigned char)((baud_div >> 8) & 0xFFU);
+    U2BRGL = (unsigned char)(baud_div & 0xFFU);
+    U2BRGH = (unsigned char)((baud_div >> 8) & 0xFFU);
 
 
     // Configure parity and stop bits based on system config
@@ -134,33 +135,29 @@ void gps_init(void) {
 
     switch (system_config.gps_stop_bits) {
         case STOPBITS_1:
-            U1CON2bits.STP = 0; // 1 stop bit
+            U2CON2bits.STP = 0; // 1 stop bit
             break;
         case STOPBITS_1_5:
-            U1CON2bits.STP = 1; // 1.5 stop bits
+            U2CON2bits.STP = 1; // 1.5 stop bits
             break;
         case STOPBITS_2:
-            U1CON2bits.STP = 2; // 2 stop bits
+            U2CON2bits.STP = 2; // 2 stop bits
             break;
         default:
-            U1CON2bits.STP = 0; // 1 stop bit
+            U2CON2bits.STP = 0; // 1 stop bit
             break;
     }
   
     // Enable UART receive interrupt
-    PIR4bits.U1RXIF = 0; // Clear interrupt flag
-    IPR4bits.U1RXIP = 0; // Low priority interrupt
-    PIE4bits.U1RXIE = 1; // Enable UART1 RX interrupt
+    PIR8bits.U2RXIF = 0; // Clear interrupt flag
+    IPR8bits.U2RXIP = 0; // Low priority interrupt
+    PIE8bits.U2RXIE = 1; // Enable UART2 RX interrupt
 
     // Enable UART
-    U1CON1bits.ON = 1;
+    U2CON1bits.ON = 1;
 
     // Initialize GPS LED to off (GPS not locked)
-    unsigned char gpioa = 0xFF;
-    if (i2cReadRegister(MCP23017_ADDRESS, GPIOA, &gpioa) == I2C_SUCCESS) {
-        ioporta.GPS_N = 1; // turn off GPS LED (active low)
-        (void)i2cWriteRegister(MCP23017_ADDRESS, GPIOA, gpioa);
-    }
+    gpsLED_Off();
 
     // Small delay for GPS module to stabilize
     __delay_ms(100);
@@ -432,15 +429,10 @@ static void gps_update_led(void) {
 
     if (gps_data.position.fix_type != prev_fix) {
         prev_fix = gps_data.position.fix_type;
-
-        unsigned char gpioa = 0xFF;
-        if (i2cReadRegister(MCP23017_ADDRESS, GPIOA, &gpioa) == I2C_SUCCESS) {
-            if (gps_data.position.fix_type == GPS_3D_FIX) {
-                ioporta.GPS_N = 0;
-            } else {
-                ioporta.GPS_N = 1;
-            }
-            (void)i2cWriteRegister(MCP23017_ADDRESS, GPIOA, gpioa);
+        if (gps_data.position.fix_type == GPS_3D_FIX) {
+            gpsLED_On();
+        } else {
+            gpsLED_Off();
         }
     }
 }
