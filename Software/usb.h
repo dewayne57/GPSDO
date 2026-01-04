@@ -76,6 +76,6 @@ bool usb_buffer_has_data(void);
  *
  * @return Number of characters in the buffer.
  */
-uint8_t usb_buffer_count(void);
+unsigned char usb_buffer_count(void);
 
 #endif // USB_H

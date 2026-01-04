@@ -21,6 +21,7 @@
 #include "control.h"
 #include "dac.h"
 #include "encoder.h"
+#include "faults.h"
 #include "gps.h"
 #include "i2c.h"
 #include "lcd.h"
@@ -291,6 +292,11 @@ void initialize(void) {
      * Initialize the LED module (turn all LEDs off)
      */
     ledInitialize();
+
+    /*
+     * Initialize the fault management module
+     */
+    faultsInit();
 
     /*
      * Load persistent system configuration from EEPROM (falls back to defaults)

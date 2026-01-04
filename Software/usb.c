@@ -138,10 +138,10 @@ bool usb_buffer_has_data(void) {
 /*
  * Get the number of characters available in the USB receive buffer.
  */
-uint8_t usb_buffer_count(void) {
+unsigned char usb_buffer_count(void) {
     if (usb_rx_head >= usb_rx_tail) {
         return usb_rx_head - usb_rx_tail;
     } else {
-        return USB_BUFFER_SIZE - (usb_rx_tail - usb_rx_head);
+        return (unsigned char) (USB_BUFFER_SIZE - (usb_rx_tail - usb_rx_head));
     }
 }

@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "config.h"
 #include "gps.h"
 #include "date.h"
+#include "faults.h"
 #include "i2c.h"
 #include "led.h"
-#include "menu.h"
 #include "mcp23x17.h"
+#include "menu.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,7 +35,7 @@ volatile gps_data_t gps_data;                 // Global GPS data
 volatile bool gps_data_available;             // Flag for new GPS data available
 volatile bool gps_sentence_available;         // Flag for new GPS sentence available
 volatile char gps_sentence[GPS_MAX_SENTENCE]; // Current GPS sentence buffer
-static volatile uint16_t gps_sentence_length;        // Length of current GPS sentence
+static volatile uint16_t gps_sentence_length; // Length of current GPS sentence
 
 /* Forward declaration of internal functions */
 static void gps_update_led(void);
@@ -46,28 +46,28 @@ static void snapshot_sentence(void);
  *  Protocol Configuration Commands to change the M8M UBlox chip to NMEA protocol.
  */
 static const unsigned char ubx_cfg_nmea[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00,
-                                       0xD0, 0x08, 0x00, 0x00, 0x80, 0x25, 0x00, 0x00, 0x07, 0x00,
-                                       0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xA9};
+                                             0xD0, 0x08, 0x00, 0x00, 0x80, 0x25, 0x00, 0x00, 0x07, 0x00,
+                                             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xA0, 0xA9};
 
 /*
  * Protocol Configuration Commands to change the M8M UBlox chip to UBX protocol.
  */
 static const unsigned char ubx_cfg_ubx[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00,
-                                      0xD0, 0x08, 0x00, 0x00, 0x80, 0x25, 0x00, 0x00, 0x01, 0x00,
-                                      0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x9A, 0x79};
+                                            0xD0, 0x08, 0x00, 0x00, 0x80, 0x25, 0x00, 0x00, 0x01, 0x00,
+                                            0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x9A, 0x79};
 
 /*
  * Protocol Configuration Commands to change the M8M UBlox chip to RTCM protocol.
  */
 static const unsigned char ubx_cfg_rtcm[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00,
-                                       0xD0, 0x08, 0x00, 0x00, 0x80, 0x25, 0x00, 0x00, 0x20, 0x00,
-                                       0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xB9, 0x42};
+                                             0xD0, 0x08, 0x00, 0x00, 0x80, 0x25, 0x00, 0x00, 0x20, 0x00,
+                                             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xB9, 0x42};
 
 /* UART receive buffer and state */
 static char gps_rx_buffer[GPS_BUFFER_SIZE];
 static volatile unsigned int gps_rx_head = 0;
 static volatile unsigned int gps_rx_tail = 0;
-static volatile bool gps_sentence_started = false;   // True when we have seen start of sentence
+static volatile bool gps_sentence_started = false; // True when we have seen start of sentence
 
 /*
  * Initialize GPS UART communication
@@ -107,12 +107,11 @@ void gps_init(void) {
     U2CON2 = 0x00; // Reset UART2
 
     // Set baud rate based on system configuration
-    long baud_rate = system_config.gps_baud; 
+    long baud_rate = system_config.gps_baud;
     long baud_div = _XTAL_FREQ / (16L * (baud_rate + 1L));
 
     U2BRGL = (unsigned char)(baud_div & 0xFFU);
     U2BRGH = (unsigned char)((baud_div >> 8) & 0xFFU);
-
 
     // Configure parity and stop bits based on system config
     switch (system_config.gps_parity) {
@@ -147,7 +146,7 @@ void gps_init(void) {
             U2CON2bits.STP = 0; // 1 stop bit
             break;
     }
-  
+
     // Enable UART receive interrupt
     PIR8bits.U2RXIF = 0; // Clear interrupt flag
     IPR8bits.U2RXIP = 0; // Low priority interrupt
@@ -175,12 +174,12 @@ bool gps_has_valid_fix(void) {
 
 /*
  * Parse a complete NMEA, UBX, or RTCM sentence
- * 
+ *
  * This function handles all three GPS protocols:
  * - NMEA: Text-based sentences starting with '$', validated with XOR checksum
  * - UBX: Binary messages starting with 0xB5 0x62, validated with Fletcher-8 checksum
  * - RTCM: Binary correction messages starting with 0xD3, validated with CRC-24Q
- * 
+ *
  * The protocol is auto-detected based on the first byte of the message.
  */
 void gps_parse_sentence() {
@@ -207,6 +206,7 @@ void gps_parse_sentence() {
         chkbuf[2] = '\0';
         unsigned char expected = (unsigned char)strtoul(chkbuf, NULL, 16);
         if (calc != expected) {
+            faultsAdd(FAULT_MSG_GPS_NMEA_CHECKSUM_MISMATCH, FAULT_SEVERITY_ERROR);
             return; // checksum mismatch
         }
 
@@ -214,8 +214,10 @@ void gps_parse_sentence() {
         char* fields[20];
         unsigned char field_count = gps_split_sentence((const char*)gps_sentence, (const char**)fields, 20);
 
-        if (field_count < 2)
+        if (field_count < 2) {
+            faultsAdd(FAULT_MSG_GPS_NMEA_SENTENCE_TOO_SHORT, FAULT_SEVERITY_ERROR);
             return;
+        }
 
         // Parse based on sentence type
         if (strncmp(fields[0], "$GPRMC", 6) == 0) {
@@ -225,8 +227,10 @@ void gps_parse_sentence() {
         }
     } else if (first_byte == 0xB5) {
         // UBX message - validate sync chars and checksum
-        if (gps_sentence_length < 8)
+        if (gps_sentence_length < 8) {
+            faultsAdd(FAULT_MSG_GPS_UBX_SENTENCE_TOO_SHORT, FAULT_SEVERITY_ERROR);
             return; // Too short for UBX
+        }
 
         if ((uint8_t)gps_sentence[1] != 0x62)
             return; // Invalid sync char
@@ -241,6 +245,7 @@ void gps_parse_sentence() {
 
         if (ck_a != (unsigned char)gps_sentence[gps_sentence_length - 2] ||
             ck_b != (unsigned char)gps_sentence[gps_sentence_length - 1]) {
+            faultsAdd(FAULT_MSG_GPS_UBX_CRC_MISMATCH, FAULT_SEVERITY_ERROR);
             return; // Checksum mismatch
         }
 
@@ -248,8 +253,10 @@ void gps_parse_sentence() {
         gps_parse_ubx_message((const unsigned char*)gps_sentence, gps_sentence_length);
     } else if (first_byte == 0xD3) {
         // RTCM message - validate and parse
-        if (gps_sentence_length < 6)
+        if (gps_sentence_length < 6) {
+            faultsAdd(FAULT_MSG_GPS_RTCM_SENTENCE_TOO_SHORT, FAULT_SEVERITY_ERROR);
             return; // Too short for RTCM
+        }
 
         // Calculate CRC-24Q checksum
         unsigned long crc = 0;
@@ -262,15 +269,19 @@ void gps_parse_sentence() {
         crc &= 0xFFFFFF;
 
         unsigned long expected_crc = ((unsigned long)(unsigned char)gps_sentence[gps_sentence_length - 3] << 16) |
-                                ((unsigned long)(unsigned char)gps_sentence[gps_sentence_length - 2] << 8) |
-                                ((unsigned long)(unsigned char)gps_sentence[gps_sentence_length - 1]);
+                                     ((unsigned long)(unsigned char)gps_sentence[gps_sentence_length - 2] << 8) |
+                                     ((unsigned long)(unsigned char)gps_sentence[gps_sentence_length - 1]);
 
         if (crc != expected_crc) {
+            faultsAdd(FAULT_MSG_GPS_RTCM_CRC_MISMATCH, FAULT_SEVERITY_ERROR);
             return; // CRC mismatch
         }
 
         // Parse RTCM message
         gps_parse_rtcm_message((const unsigned char*)gps_sentence, gps_sentence_length);
+    } else {
+        faultsAdd(FAULT_MSG_GPS_UNKNOWN_PROTOCOL, FAULT_SEVERITY_WARNING);
+        return; // Unknown protocol
     }
 }
 
@@ -312,6 +323,7 @@ void gps_parse_gprmc(const char* fields[], unsigned char field_count) {
     // Check if data is valid
     if (fields[2][0] != 'A') {
         gps_data.datetime.valid = GPS_INVALID;
+        faultsAdd(FAULT_MSG_GPS_INVALID_DATE_TIME, FAULT_SEVERITY_WARNING);
         return;
     }
 
@@ -442,13 +454,14 @@ static void gps_update_led(void) {
  */
 void gps_format_position(char* buffer, int len, const gps_position_t* pos) {
     if (buffer == NULL || len == 0) {
+        faultsAdd(FAULT_MSG_GPS_INVALID_POSITION, FAULT_SEVERITY_WARNING);
         return;
     }
 
     if (pos->valid == GPS_VALID) {
-        (void)snprintf(buffer, (size_t) len, "%.3f,%.3f,%.0fm", pos->latitude, pos->longitude, pos->altitude);
+        (void)snprintf(buffer, (size_t)len, "%.3f,%.3f,%.0fm", pos->latitude, pos->longitude, pos->altitude);
     } else {
-        (void)snprintf(buffer, (size_t) len, "No GPS Fix");
+        (void)snprintf(buffer, (size_t)len, "No GPS Fix");
     }
 }
 
@@ -458,6 +471,7 @@ void gps_format_position(char* buffer, int len, const gps_position_t* pos) {
 void gps_format_date_time(char* buffer, int len, const gps_datetime_t* dt) {
 
     if (dt == NULL || buffer == NULL || len == 0U) {
+        faultsAdd(FAULT_MSG_GPS_INVALID_DATE_TIME, FAULT_SEVERITY_WARNING);
         return;
     }
 
@@ -475,10 +489,10 @@ void gps_format_date_time(char* buffer, int len, const gps_datetime_t* dt) {
         }
         date_format_time_short(timebuf, display_dt);
         /* Format: "DD-MM-YY HH:MM+HH:MM" (20 chars max) */
-        snprintf(buffer, (size_t) len, "%02d-%02d-%02d %s%s", display_dt->day, display_dt->month, display_dt->year, timebuf,
-                 tzbuf);
+        snprintf(buffer, (size_t)len, "%02d-%02d-%02d %s%s", display_dt->day, display_dt->month, display_dt->year,
+                 timebuf, tzbuf);
     } else {
-        (void)snprintf(buffer, (size_t) len, "No GPS Fix");
+        (void)snprintf(buffer, (size_t)len, "No GPS Fix");
     }
 }
 
@@ -506,6 +520,7 @@ void gps_set_protocol(gps_protocol_t protocol) {
             break;
 
         default:
+            faultsAdd(FAULT_MSG_GPS_UNKNOWN_PROTOCOL, FAULT_SEVERITY_ERROR);
             return; // Invalid protocol
     }
 
@@ -567,7 +582,7 @@ void gps_buffer_put_char(char c) {
         if (c == '$' || c == 0xB5 || c == 0xD3) {
             // Found start of sentence
             gps_sentence_started = true;
-            gps_rx_head = gps_rx_tail;  // Set the head to the start of the sentence
+            gps_rx_head = gps_rx_tail; // Set the head to the start of the sentence
         }
     } else {
         /*
@@ -578,6 +593,7 @@ void gps_buffer_put_char(char c) {
         if (next_tail == gps_rx_head) {
             // Buffer overflow
             reset_buffer();
+            faultsAdd(FAULT_MSG_GPS_BUFFER_OVERFLOW, FAULT_SEVERITY_ERROR);
             return;
         }
 
@@ -613,7 +629,8 @@ void gps_buffer_put_char(char c) {
                 if (gps_data.current_protocol == GPS_PROTOCOL_UBX) {
                     // Extract length from bytes 4 and 5
                     unsigned int ubx_length = (unsigned char)gps_rx_buffer[(gps_rx_head + 4U) % GPS_BUFFER_SIZE];
-                    ubx_length |= ((unsigned int)(unsigned char)gps_rx_buffer[(gps_rx_head + 5U) % GPS_BUFFER_SIZE]) << 8;
+                    ubx_length |= ((unsigned int)(unsigned char)gps_rx_buffer[(gps_rx_head + 5U) % GPS_BUFFER_SIZE])
+                                  << 8;
                     // Total UBX message length = header + length + checksum
                     gps_sentence_length = 8 + ubx_length;
                 }
@@ -701,7 +718,7 @@ void gps_parse_ubx_message(const unsigned char* data, unsigned int length) {
     const unsigned char* payload = &data[6];
 
     // Parse based on message class and ID
-    if (msg_class == 0x01) { // NAV (Navigation) class
+    if (msg_class == 0x01) {  // NAV (Navigation) class
         if (msg_id == 0x07) { // UBX-NAV-PVT (Position Velocity Time)
             // This is a comprehensive message with time, position, and velocity
             if (payload_length >= 92) {
@@ -735,17 +752,17 @@ void gps_parse_ubx_message(const unsigned char* data, unsigned int length) {
 
                 // Extract longitude (bytes 24-27, scaled 1e-7 degrees)
                 long lon = (long)(payload[24] | ((unsigned long)payload[25] << 8) | ((unsigned long)payload[26] << 16) |
-                                        ((unsigned long)payload[27] << 24));
+                                  ((unsigned long)payload[27] << 24));
                 gps_data.position.longitude = (float)lon * 1e-7f;
 
                 // Extract latitude (bytes 28-31, scaled 1e-7 degrees)
                 long lat = (long)(payload[28] | ((unsigned long)payload[29] << 8) | ((unsigned long)payload[30] << 16) |
-                                        ((unsigned long)payload[31] << 24));
+                                  ((unsigned long)payload[31] << 24));
                 gps_data.position.latitude = (float)lat * 1e-7f;
 
                 // Extract altitude MSL (bytes 36-39, millimeters)
                 long alt = (long)(payload[36] | ((unsigned long)payload[37] << 8) | ((unsigned long)payload[38] << 16) |
-                                        ((unsigned long)payload[39] << 24));
+                                  ((unsigned long)payload[39] << 24));
                 gps_data.position.altitude = (float)alt * 0.001f;
 
                 // Update position validity based on fix type

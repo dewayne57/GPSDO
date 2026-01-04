@@ -17,6 +17,7 @@
 #include "config.h"
 #include "date.h"
 #include "encoder.h"
+#include "faults.h"
 #include "gps.h"
 #include "lcd.h"
 #include "serial.h"
@@ -160,6 +161,20 @@ static const menu_item_t date_menu[] = {
     {"Back", NULL}, 
     {NULL, NULL}};
 
+/*
+ * The "Faults" menu allows viewing of up to 5 recent fault messages.
+ * Selecting a fault number displays the fault details.
+ */
+static const menu_item_t faults_menu[] = {
+    {"Fault 1", NULL},
+    {"Fault 2", NULL},
+    {"Fault 3", NULL},
+    {"Fault 4", NULL},
+    {"Fault 5", NULL},
+    {"Clear All", NULL},
+    {"Back", NULL},
+    {NULL, NULL}};
+
 /**
  * The main menu is the top-level menu presented to the user.  It provides access to
  * the GPS configuration, External serial port configuration, and OCXO calibration.
@@ -168,6 +183,7 @@ static const menu_item_t main_menu[] = {
     {"GPS...", gps_menu}, 
     {"Serial...", serial_menu}, 
     {"Date/Time...", date_menu},
+    {"Faults...", faults_menu},
     {"Close", NULL}, 
     {NULL, NULL}};
 
@@ -551,6 +567,52 @@ void menu_process(void) {
                         memcpy(&buf[4], ofs, strlen(ofs));
                         buf[20] = '\0';
                         menu_show_message(buf, 800);
+                    }
+                } else if (menu.stack[menu.depth - 1] == faults_menu) {
+                    /* User selected a fault item or Clear All */
+                    if (sel < 5) {
+                        /* Display fault details */
+                        FaultRecord_t fault;
+                        if (faultsGet(sel, &fault)) {
+                            /* Show fault message on LCD (up to 4 lines of 20 chars each) */
+                            lcdBufferClear();
+                            char buf[21];
+                            /* Line 1: Fault number and severity */
+                            memset(buf, ' ', sizeof(buf));
+                            buf[20] = '\0';
+                            snprintf(buf, 21, "Fault %d - ", sel + 1);
+                            switch (fault.severity) {
+                                case FAULT_SEVERITY_INFO: strcat(buf, "INFO"); break;
+                                case FAULT_SEVERITY_WARNING: strcat(buf, "WARN"); break;
+                                case FAULT_SEVERITY_ERROR: strcat(buf, "ERR"); break;
+                                case FAULT_SEVERITY_CRITICAL: strcat(buf, "CRIT"); break;
+                            }
+                            lcdBufferSetLine(0, buf);
+                            /* Lines 2-3: Message (wrap if needed) */
+                            memset(buf, ' ', sizeof(buf));
+                            buf[20] = '\0';
+                            size_t msg_len = strlen(fault.message);
+                            if (msg_len <= 20) {
+                                memcpy(buf, fault.message, msg_len);
+                                lcdBufferSetLine(1, buf);
+                            } else {
+                                memcpy(buf, fault.message, 20);
+                                lcdBufferSetLine(1, buf);
+                                memset(buf, ' ', sizeof(buf));
+                                size_t remaining = msg_len - 20;
+                                if (remaining > 20) remaining = 20;
+                                memcpy(buf, &fault.message[20], remaining);
+                                lcdBufferSetLine(2, buf);
+                            }
+                            lcdBufferUpdate();
+                            /* Display remains until user presses button to return to menu */
+                        } else {
+                            menu_show_message("No fault at slot", 2000);
+                        }
+                    } else if (sel == 5) {
+                        /* Clear All faults */
+                        faultsClear();
+                        menu_show_message("Faults cleared", 1000);
                     }
                 } else if (menu.stack[menu.depth - 1] == serial_menu) {
                     switch (sel) {

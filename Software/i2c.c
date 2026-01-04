@@ -17,6 +17,7 @@
  */
 #include "i2c.h"
 #include "config.h"
+#include "faults.h"
 #include <xc.h>
 
 /****************************************************************************
@@ -65,6 +66,7 @@ unsigned char i2cWriteBuffer(unsigned char address, unsigned char* data, unsigne
     // Send address with write bit (0)
     result = _i2cWriteByte((unsigned char)((address << 1) | 0x00));
     if (result != I2C_SUCCESS) {
+        faultsAdd(FAULT_MSG_I2C_COMM_ERROR, FAULT_SEVERITY_ERROR);
         _i2cStop();
         return result;
     }
@@ -73,6 +75,7 @@ unsigned char i2cWriteBuffer(unsigned char address, unsigned char* data, unsigne
     for (i = 0; i < length; i++) {
         result = _i2cWriteByte(data[i]);
         if (result != I2C_SUCCESS) {
+            faultsAdd(FAULT_MSG_I2C_COMM_ERROR, FAULT_SEVERITY_ERROR);
             _i2cStop();
             return result;
         }
@@ -123,6 +126,7 @@ unsigned char i2cReadBuffer(unsigned char address, unsigned char* data, unsigned
     // Send address with read bit (1)
     result = _i2cWriteByte((unsigned char)((address << 1) | 0x01));
     if (result != I2C_SUCCESS) {
+        faultsAdd(FAULT_MSG_I2C_COMM_ERROR, FAULT_SEVERITY_ERROR);
         _i2cStop();
         return result;
     }
@@ -132,6 +136,7 @@ unsigned char i2cReadBuffer(unsigned char address, unsigned char* data, unsigned
         // ACK all bytes except the last one (NACK the last byte)
         result = _i2cReadByte(i < (length - 1), &data[i]);
         if (result != I2C_SUCCESS) {
+            faultsAdd(FAULT_MSG_I2C_COMM_ERROR, FAULT_SEVERITY_ERROR);
             _i2cStop();
             return result;
         }
@@ -160,6 +165,7 @@ unsigned char i2cReadRegister(unsigned char address, unsigned char reg, unsigned
     // Send address with write bit to write register address
     result = _i2cWriteByte((unsigned char)((address << 1) | 0x00));
     if (result != I2C_SUCCESS) {
+        faultsAdd(FAULT_MSG_I2C_COMM_ERROR, FAULT_SEVERITY_ERROR);
         _i2cStop();
         return result;
     }
@@ -167,6 +173,7 @@ unsigned char i2cReadRegister(unsigned char address, unsigned char reg, unsigned
     // Send register address
     result = _i2cWriteByte(reg);
     if (result != I2C_SUCCESS) {
+        faultsAdd(FAULT_MSG_I2C_COMM_ERROR, FAULT_SEVERITY_ERROR);
         _i2cStop();
         return result;
     }
@@ -177,6 +184,7 @@ unsigned char i2cReadRegister(unsigned char address, unsigned char reg, unsigned
     // Send address with read bit
     result = _i2cWriteByte((unsigned char)((address << 1) | 0x01));
     if (result != I2C_SUCCESS) {
+        faultsAdd(FAULT_MSG_I2C_COMM_ERROR, FAULT_SEVERITY_ERROR);
         _i2cStop();
         return result;
     }
@@ -184,6 +192,7 @@ unsigned char i2cReadRegister(unsigned char address, unsigned char reg, unsigned
     // Read the data byte (NACK since it's the only/last byte)
     result = _i2cReadByte(0, data);
     if (result != I2C_SUCCESS) {
+        faultsAdd(FAULT_MSG_I2C_COMM_ERROR, FAULT_SEVERITY_ERROR);
         _i2cStop();
         return result;
     }
