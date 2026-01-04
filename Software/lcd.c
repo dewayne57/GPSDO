@@ -301,6 +301,12 @@ void lcdWriteInstruction(unsigned char data) {
     (void)_lcdWaitReady(LCD_BUSY_MAX_POLLS);
 }
 
+/**
+ * Wiat until the LCD is ready for the next command.
+ *
+ * @param maxPolls The maximum number of polls to attempt.
+ * @return I2C status code.
+ */
 static unsigned char _lcdWaitReady(uint16_t maxPolls) {
     while (maxPolls--) {
         unsigned char byte = 0;
