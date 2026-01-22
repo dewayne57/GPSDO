@@ -625,36 +625,37 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "DH_Transformers_Power:14A-56-28"
+		(symbol "DH_Transformers_Triad:FS24-1500"
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
 			(property "Reference" "T"
-				(at -6.604 17.526 0)
+				(at -2.794 17.526 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
 				)
 			)
-			(property "Value" "14A-56-28"
-				(at 0 15.24 0)
+			(property "Value" "FS24-1500"
+				(at 2.54 15.748 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
 				)
 			)
-			(property "Footprint" "Transformers_Signal:14A-56"
-				(at -0.254 0.762 0)
+			(property "Footprint" "Transformers_Triad:FS-36VA"
+				(at 0 1.27 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(hide yes)
 				)
 			)
 			(property "Datasheet" ""
-				(at -3.81 24.892 0)
+				(at 0 1.27 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -663,7 +664,7 @@
 				)
 			)
 			(property "Description" ""
-				(at 0 0 0)
+				(at 0 1.27 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -671,11 +672,23 @@
 					(hide yes)
 				)
 			)
-			(symbol "14A-56-28_0_1"
+			(symbol "FS24-1500_0_1"
+				(polyline
+					(pts
+						(xy 0 12.7) (xy 0.635 12.7)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
 				(arc
-					(start -2.54 -7.62)
-					(mid -2.091 -7.806)
-					(end -1.905 -8.255)
+					(start 0.635 12.7)
+					(mid 1.084 12.514)
+					(end 1.27 12.065)
 					(stroke
 						(width 0)
 						(type default)
@@ -685,9 +698,129 @@
 					)
 				)
 				(arc
-					(start -1.905 -8.255)
-					(mid -2.091 -8.704)
-					(end -2.54 -8.89)
+					(start 1.27 12.065)
+					(mid 1.084 11.616)
+					(end 0.635 11.43)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.635 11.43)
+					(mid 1.084 11.244)
+					(end 1.27 10.795)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.27 10.795)
+					(mid 1.084 10.346)
+					(end 0.635 10.16)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.635 10.16)
+					(mid 1.084 9.974)
+					(end 1.27 9.525)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.27 9.525)
+					(mid 1.084 9.076)
+					(end 0.635 8.89)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.635 8.89)
+					(mid 1.084 8.704)
+					(end 1.27 8.255)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.27 8.255)
+					(mid 1.084 7.806)
+					(end 0.635 7.62)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.635 7.62)
+					(mid 1.084 7.434)
+					(end 1.27 6.985)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.27 6.985)
+					(mid 1.084 6.536)
+					(end 0.635 6.35)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.635 6.35)
+					(mid 1.084 6.164)
+					(end 1.27 5.715)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.27 5.715)
+					(mid 1.084 5.266)
+					(end 0.635 5.08)
 					(stroke
 						(width 0)
 						(type default)
@@ -698,7 +831,7 @@
 				)
 				(polyline
 					(pts
-						(xy -2.54 -16.51) (xy -3.175 -16.51)
+						(xy 0.635 5.08) (xy 0 5.08)
 					)
 					(stroke
 						(width 0)
@@ -710,7 +843,163 @@
 				)
 				(polyline
 					(pts
-						(xy -0.635 13.335) (xy -0.635 -17.145)
+						(xy 0.635 -7.62) (xy 0 -7.62)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.635 -7.62)
+					(mid 1.084 -7.806)
+					(end 1.27 -8.255)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.27 -8.255)
+					(mid 1.084 -8.704)
+					(end 0.635 -8.89)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.635 -8.89)
+					(mid 1.084 -9.076)
+					(end 1.27 -9.525)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.27 -9.525)
+					(mid 1.084 -9.974)
+					(end 0.635 -10.16)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.635 -10.16)
+					(mid 1.084 -10.346)
+					(end 1.27 -10.795)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.27 -10.795)
+					(mid 1.084 -11.244)
+					(end 0.635 -11.43)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.635 -11.43)
+					(mid 1.084 -11.616)
+					(end 1.27 -12.065)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.27 -12.065)
+					(mid 1.084 -12.514)
+					(end 0.635 -12.7)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.635 -12.7)
+					(mid 1.084 -12.886)
+					(end 1.27 -13.335)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.27 -13.335)
+					(mid 1.084 -13.784)
+					(end 0.635 -13.97)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.635 -13.97)
+					(mid 1.084 -14.156)
+					(end 1.27 -14.605)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.27 -14.605)
+					(mid 1.084 -15.054)
+					(end 0.635 -15.24)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.635 -15.24) (xy 0 -15.24)
 					)
 					(stroke
 						(width 0)
@@ -722,7 +1011,7 @@
 				)
 				(polyline
 					(pts
-						(xy 0.635 -17.145) (xy 0.635 13.335)
+						(xy 1.905 13.335) (xy 1.905 -15.875)
 					)
 					(stroke
 						(width 0)
@@ -734,7 +1023,355 @@
 				)
 				(polyline
 					(pts
-						(xy 2.54 -16.51) (xy 3.175 -16.51)
+						(xy 2.54 13.335) (xy 2.54 -15.875)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.175 -15.875) (xy 3.175 13.335)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 4.445 12.7) (xy 5.08 12.7)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 3.81 12.065)
+					(mid 3.996 12.514)
+					(end 4.445 12.7)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 4.445 11.43)
+					(mid 3.996 11.616)
+					(end 3.81 12.065)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 3.81 10.795)
+					(mid 3.996 11.244)
+					(end 4.445 11.43)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 4.445 10.16)
+					(mid 3.996 10.346)
+					(end 3.81 10.795)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 3.81 9.525)
+					(mid 3.996 9.974)
+					(end 4.445 10.16)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 4.445 8.89)
+					(mid 3.996 9.076)
+					(end 3.81 9.525)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 3.81 8.255)
+					(mid 3.996 8.704)
+					(end 4.445 8.89)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 4.445 7.62)
+					(mid 3.996 7.806)
+					(end 3.81 8.255)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 3.81 6.985)
+					(mid 3.996 7.434)
+					(end 4.445 7.62)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 4.445 6.35)
+					(mid 3.996 6.536)
+					(end 3.81 6.985)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 3.81 5.715)
+					(mid 3.996 6.164)
+					(end 4.445 6.35)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 4.445 5.08)
+					(mid 3.996 5.266)
+					(end 3.81 5.715)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 4.445 5.08) (xy 5.08 5.08)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 4.445 -7.62) (xy 5.08 -7.62)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 3.81 -8.255)
+					(mid 3.996 -7.806)
+					(end 4.445 -7.62)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 4.445 -8.89)
+					(mid 3.996 -8.704)
+					(end 3.81 -8.255)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 3.81 -9.525)
+					(mid 3.996 -9.076)
+					(end 4.445 -8.89)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 4.445 -10.16)
+					(mid 3.996 -9.974)
+					(end 3.81 -9.525)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 3.81 -10.795)
+					(mid 3.996 -10.346)
+					(end 4.445 -10.16)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 4.445 -11.43)
+					(mid 3.996 -11.244)
+					(end 3.81 -10.795)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 3.81 -12.065)
+					(mid 3.996 -11.616)
+					(end 4.445 -11.43)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 4.445 -12.7)
+					(mid 3.996 -12.514)
+					(end 3.81 -12.065)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 3.81 -13.335)
+					(mid 3.996 -12.886)
+					(end 4.445 -12.7)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 4.445 -13.97)
+					(mid 3.996 -13.784)
+					(end 3.81 -13.335)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 3.81 -14.605)
+					(mid 3.996 -14.156)
+					(end 4.445 -13.97)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 4.445 -15.24)
+					(mid 3.996 -15.054)
+					(end 3.81 -14.605)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 4.445 -15.24) (xy 5.08 -15.24)
 					)
 					(stroke
 						(width 0)
@@ -745,10 +1382,10 @@
 					)
 				)
 			)
-			(symbol "14A-56-28_1_1"
+			(symbol "FS24-1500_1_1"
 				(circle
-					(center -3.048 11.938)
-					(radius 0.284)
+					(center 0 11.938)
+					(radius 0.254)
 					(stroke
 						(width 0)
 						(type default)
@@ -758,679 +1395,8 @@
 					)
 				)
 				(circle
-					(center -3.048 -8.382)
-					(radius 0.284)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(arc
-					(start -2.54 12.7)
-					(mid -2.091 12.514)
-					(end -1.905 12.065)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.905 12.065)
-					(mid -2.091 11.616)
-					(end -2.54 11.43)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -2.54 11.43)
-					(mid -2.091 11.244)
-					(end -1.905 10.795)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.905 10.795)
-					(mid -2.091 10.346)
-					(end -2.54 10.16)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -2.54 10.16)
-					(mid -2.091 9.974)
-					(end -1.905 9.525)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.905 9.525)
-					(mid -2.091 9.076)
-					(end -2.54 8.89)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -2.54 8.89)
-					(mid -2.091 8.704)
-					(end -1.905 8.255)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.905 8.255)
-					(mid -2.091 7.806)
-					(end -2.54 7.62)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -2.54 7.62)
-					(mid -2.091 7.434)
-					(end -1.905 6.985)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.905 6.985)
-					(mid -2.091 6.536)
-					(end -2.54 6.35)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -2.54 6.35)
-					(mid -2.091 6.164)
-					(end -1.905 5.715)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.905 5.715)
-					(mid -2.091 5.266)
-					(end -2.54 5.08)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -2.54 5.08)
-					(mid -2.091 4.894)
-					(end -1.905 4.445)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.905 4.445)
-					(mid -2.091 3.996)
-					(end -2.54 3.81)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -2.54 -8.89)
-					(mid -2.091 -9.076)
-					(end -1.905 -9.525)
-					(stroke
-						(width 0)
-						(type solid)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.905 -9.525)
-					(mid -2.091 -9.974)
-					(end -2.54 -10.16)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -2.54 -10.16)
-					(mid -2.091 -10.346)
-					(end -1.905 -10.795)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.905 -10.795)
-					(mid -2.091 -11.244)
-					(end -2.54 -11.43)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -2.54 -11.43)
-					(mid -2.091 -11.616)
-					(end -1.905 -12.065)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.905 -12.065)
-					(mid -2.091 -12.514)
-					(end -2.54 -12.7)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -2.54 -12.7)
-					(mid -2.091 -12.886)
-					(end -1.905 -13.335)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.905 -13.335)
-					(mid -2.091 -13.784)
-					(end -2.54 -13.97)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -2.54 -13.97)
-					(mid -2.091 -14.156)
-					(end -1.905 -14.605)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.905 -14.605)
-					(mid -2.091 -15.054)
-					(end -2.54 -15.24)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -2.54 -15.24)
-					(mid -2.091 -15.426)
-					(end -1.905 -15.875)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.905 -15.875)
-					(mid -2.091 -16.324)
-					(end -2.54 -16.51)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 13.335) (xy 0 -17.145)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.905 12.065)
-					(mid 2.091 12.514)
-					(end 2.54 12.7)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 2.54 11.43)
-					(mid 2.091 11.616)
-					(end 1.905 12.065)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.905 10.795)
-					(mid 2.091 11.244)
-					(end 2.54 11.43)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 2.54 10.16)
-					(mid 2.091 10.346)
-					(end 1.905 10.795)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.905 9.525)
-					(mid 2.091 9.974)
-					(end 2.54 10.16)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 2.54 8.89)
-					(mid 2.091 9.076)
-					(end 1.905 9.525)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.905 8.255)
-					(mid 2.091 8.704)
-					(end 2.54 8.89)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 2.54 7.62)
-					(mid 2.091 7.806)
-					(end 1.905 8.255)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.905 6.985)
-					(mid 2.091 7.434)
-					(end 2.54 7.62)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 2.54 6.35)
-					(mid 2.091 6.536)
-					(end 1.905 6.985)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.905 5.715)
-					(mid 2.091 6.164)
-					(end 2.54 6.35)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 2.54 5.08)
-					(mid 2.091 5.266)
-					(end 1.905 5.715)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.905 4.445)
-					(mid 2.091 4.894)
-					(end 2.54 5.08)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 2.54 3.81)
-					(mid 2.091 3.996)
-					(end 1.905 4.445)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.905 -8.255)
-					(mid 2.091 -7.806)
-					(end 2.54 -7.62)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 2.54 -8.89)
-					(mid 2.091 -8.704)
-					(end 1.905 -8.255)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.905 -9.525)
-					(mid 2.091 -9.076)
-					(end 2.54 -8.89)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 2.54 -10.16)
-					(mid 2.091 -9.974)
-					(end 1.905 -9.525)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.905 -10.795)
-					(mid 2.091 -10.346)
-					(end 2.54 -10.16)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 2.54 -11.43)
-					(mid 2.091 -11.244)
-					(end 1.905 -10.795)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.905 -12.065)
-					(mid 2.091 -11.616)
-					(end 2.54 -11.43)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 2.54 -12.7)
-					(mid 2.091 -12.514)
-					(end 1.905 -12.065)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.905 -13.335)
-					(mid 2.091 -12.886)
-					(end 2.54 -12.7)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 2.54 -13.97)
-					(mid 2.091 -13.784)
-					(end 1.905 -13.335)
-					(stroke
-						(width 0)
-						(type solid)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.905 -14.605)
-					(mid 2.091 -14.156)
-					(end 2.54 -13.97)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 2.54 -15.24)
-					(mid 2.091 -15.054)
-					(end 1.905 -14.605)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.905 -15.875)
-					(mid 2.091 -15.426)
-					(end 2.54 -15.24)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 2.54 -16.51)
-					(mid 2.091 -16.324)
-					(end 1.905 -15.875)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center 2.921 11.938)
-					(radius 0.284)
+					(center 0 -8.509)
+					(radius 0.254)
 					(stroke
 						(width 0)
 						(type default)
@@ -1440,8 +1406,8 @@
 					)
 				)
 				(circle
-					(center 3.048 -8.382)
-					(radius 0.284)
+					(center 5.08 11.938)
+					(radius 0.254)
 					(stroke
 						(width 0)
 						(type default)
@@ -1450,40 +1416,19 @@
 						(type outline)
 					)
 				)
-				(text "115V"
-					(at -6.985 8.763 0)
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
+				(circle
+					(center 5.08 -8.509)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
 					)
-				)
-				(text "115V"
-					(at -6.096 -12.192 0)
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(text "14V\n2A"
-					(at 5.334 8.89 0)
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(text "14V\n2A"
-					(at 5.588 -12.192 0)
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
+					(fill
+						(type outline)
 					)
 				)
 				(pin power_in line
-					(at -5.08 12.7 0)
+					(at -2.54 12.7 0)
 					(length 2.54)
 					(name ""
 						(effects
@@ -1501,7 +1446,25 @@
 					)
 				)
 				(pin power_in line
-					(at -5.08 3.81 0)
+					(at -2.54 5.08 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -2.54 -7.62 0)
 					(length 2.54)
 					(name ""
 						(effects
@@ -1519,7 +1482,7 @@
 					)
 				)
 				(pin power_in line
-					(at -5.08 -7.62 0)
+					(at -2.54 -15.24 0)
 					(length 2.54)
 					(name ""
 						(effects
@@ -1536,8 +1499,26 @@
 						)
 					)
 				)
-				(pin power_in line
-					(at -5.08 -16.51 0)
+				(pin power_out line
+					(at 7.62 12.7 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_out line
+					(at 7.62 5.08 180)
 					(length 2.54)
 					(name ""
 						(effects
@@ -1555,7 +1536,7 @@
 					)
 				)
 				(pin power_out line
-					(at 5.08 12.7 180)
+					(at 7.62 -7.62 180)
 					(length 2.54)
 					(name ""
 						(effects
@@ -1573,7 +1554,7 @@
 					)
 				)
 				(pin power_out line
-					(at 5.08 3.81 180)
+					(at 7.62 -15.24 180)
 					(length 2.54)
 					(name ""
 						(effects
@@ -1582,43 +1563,7 @@
 							)
 						)
 					)
-					(number "9"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_out line
-					(at 5.08 -7.62 180)
-					(length 2.54)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "10"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_out line
-					(at 5.08 -16.51 180)
-					(length 2.54)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "12"
+					(number "8"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -5125,6 +5070,12 @@
 		(uuid "8a84cb65-77fa-4c5d-807b-d8f5a839a914")
 	)
 	(junction
+		(at 200.66 140.97)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "8e513a2a-e77c-4e6d-8264-993d30dc8b05")
+	)
+	(junction
 		(at 148.59 134.62)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5257,12 +5208,6 @@
 		(uuid "f44534fc-33da-40e6-b831-0eb3f8b5e233")
 	)
 	(junction
-		(at 200.66 139.7)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "f903c9a9-0149-4cdd-bf7b-28800e8b3bb5")
-	)
-	(junction
 		(at 267.97 133.35)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5276,7 +5221,7 @@
 	)
 	(wire
 		(pts
-			(xy 185.42 114.3) (xy 185.42 119.38)
+			(xy 185.42 114.3) (xy 185.42 120.65)
 		)
 		(stroke
 			(width 0)
@@ -5396,7 +5341,7 @@
 	)
 	(wire
 		(pts
-			(xy 180.34 114.3) (xy 180.34 139.7)
+			(xy 180.34 114.3) (xy 180.34 140.97)
 		)
 		(stroke
 			(width 0)
@@ -6056,7 +6001,7 @@
 	)
 	(wire
 		(pts
-			(xy 195.58 139.7) (xy 200.66 139.7)
+			(xy 195.58 140.97) (xy 200.66 140.97)
 		)
 		(stroke
 			(width 0)
@@ -6286,16 +6231,6 @@
 	)
 	(wire
 		(pts
-			(xy 200.66 139.7) (xy 200.66 140.97)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8dfe1116-5e51-4162-97c5-391160cfab01")
-	)
-	(wire
-		(pts
 			(xy 307.34 90.17) (xy 339.09 90.17)
 		)
 		(stroke
@@ -6386,7 +6321,7 @@
 	)
 	(wire
 		(pts
-			(xy 195.58 114.3) (xy 195.58 119.38)
+			(xy 195.58 114.3) (xy 195.58 120.65)
 		)
 		(stroke
 			(width 0)
@@ -6726,16 +6661,6 @@
 	)
 	(wire
 		(pts
-			(xy 200.66 139.7) (xy 200.66 128.27)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "be4229d6-727f-4b81-a95c-e4ff739c1a08")
-	)
-	(wire
-		(pts
 			(xy 267.97 185.42) (xy 285.75 185.42)
 		)
 		(stroke
@@ -6926,7 +6851,7 @@
 	)
 	(wire
 		(pts
-			(xy 185.42 139.7) (xy 180.34 139.7)
+			(xy 185.42 140.97) (xy 180.34 140.97)
 		)
 		(stroke
 			(width 0)
@@ -6963,6 +6888,16 @@
 			(type default)
 		)
 		(uuid "dfa79685-8c02-4bcf-88f6-11dbcb327d49")
+	)
+	(wire
+		(pts
+			(xy 200.66 128.27) (xy 200.66 140.97)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e05ad256-c6bf-46e9-bba0-186e9a405691")
 	)
 	(wire
 		(pts
@@ -8822,91 +8757,6 @@
 		)
 	)
 	(symbol
-		(lib_id "DH_Transformers_Power:14A-56-28")
-		(at 190.5 132.08 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "440bff3b-60c8-46ff-b379-11c44cc77603")
-		(property "Reference" "T202"
-			(at 185.674 107.188 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "14A-56-28"
-			(at 189.23 109.474 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Transformers_Signal:14A-56"
-			(at 189.4991 116.84 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 186.69 107.188 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 190.5 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "6"
-			(uuid "c264ce22-c905-4c51-8e4f-1105f3451751")
-		)
-		(pin "3"
-			(uuid "ee99688c-e244-4cd6-ab86-1f1540bbf7ad")
-		)
-		(pin "4"
-			(uuid "30b8016c-496b-4f8e-b28b-b2059c8678e6")
-		)
-		(pin "7"
-			(uuid "55cf48c4-872c-4dbe-9de8-8c0161bced13")
-		)
-		(pin "10"
-			(uuid "a0c01fc3-ceb2-4ea6-9808-073bb49bd3c8")
-		)
-		(pin "12"
-			(uuid "f6f80e23-c9b2-4f7d-aaf3-b14e869d7fe0")
-		)
-		(pin "9"
-			(uuid "d9ca22d4-3635-43f8-818a-1842a8a26d72")
-		)
-		(pin "1"
-			(uuid "8a085d96-8d93-4f11-b730-1200f6877438")
-		)
-		(instances
-			(project ""
-				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b/c5fb2ef1-a1e8-45b3-8883-b14c9804ee25"
-					(reference "T202")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Regulator_Switching:LM2574N-3.3")
 		(at 294.64 58.42 0)
 		(unit 1)
@@ -9659,7 +9509,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Bridged_RoundedPad1.0x1.5mm"
 			(at 143.51 166.37 0)
 			(effects
 				(font
@@ -13346,6 +13196,91 @@
 			(project ""
 				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b/c5fb2ef1-a1e8-45b3-8883-b14c9804ee25"
 					(reference "R201")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "DH_Transformers_Triad:FS24-1500")
+		(at 187.96 133.35 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f1bbea96-667c-4f3b-b997-fa8f3ad9c25e")
+		(property "Reference" "T203"
+			(at 187.452 105.664 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "FS24-1500"
+			(at 190.246 108.458 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "DH_Transformers_Triad:FS-36VA"
+			(at 187.96 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 187.96 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 187.96 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0b444b73-3fba-4f4b-a848-8dd8c9dc8d3b")
+		)
+		(pin "2"
+			(uuid "5101ca63-24ab-47d0-b466-0d403d1937c8")
+		)
+		(pin "3"
+			(uuid "54e54f4a-44b3-49b6-93a6-920c562e1cfa")
+		)
+		(pin "4"
+			(uuid "8705a6e4-c982-4740-a9cb-abba9483f267")
+		)
+		(pin "8"
+			(uuid "93324507-8026-47f1-a3fb-fa88a6e5e297")
+		)
+		(pin "7"
+			(uuid "0a45ddf9-40a1-4614-a151-77c4bfe30a11")
+		)
+		(pin "6"
+			(uuid "0a027c94-c1a6-4e07-a50d-80883b80c414")
+		)
+		(pin "5"
+			(uuid "bddf3acc-14cf-49de-bbc4-231006cc6bdc")
+		)
+		(instances
+			(project ""
+				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b/c5fb2ef1-a1e8-45b3-8883-b14c9804ee25"
+					(reference "T203")
 					(unit 1)
 				)
 			)
