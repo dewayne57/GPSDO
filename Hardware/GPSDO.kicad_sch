@@ -11,7 +11,7 @@
 		(company "Dewayne L. Hafenstein")
 	)
 	(lib_symbols)
-	(text "Power Supplies for GPSDO\n\n+3.3 @ 500mA\n+5 @ 1.5A\n+12 @ 1.5A \n-12 @ 500mA\n"
+	(text "Power Supplies for GPSDO\n\n+5 @ 1.5A\n+12 @ 1.5A \n-12 @ 500mA\n"
 		(exclude_from_sim no)
 		(at 56.388 71.628 0)
 		(effects
@@ -69,16 +69,6 @@
 			(type default)
 		)
 		(uuid "0c104916-730a-491d-9bba-0849509239c9")
-	)
-	(wire
-		(pts
-			(xy 134.62 53.34) (xy 203.2 53.34)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2fa40865-2c7b-4d1f-bbcc-824e440c4109")
 	)
 	(wire
 		(pts
@@ -242,16 +232,6 @@
 					(size 1.27 1.27)
 				)
 				(justify left top)
-			)
-		)
-		(pin "+3.3V" input
-			(at 203.2 53.34 180)
-			(uuid "16bb2ceb-d196-424b-89ac-80d9596864fe")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
 			)
 		)
 		(pin "+5V" input
