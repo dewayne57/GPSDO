@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * LED control functions for the front panel LEDs.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * This module provides simple functions to control the front panel LEDs
  * connected to the MCP23017 I/O expander Port B. All LEDs are active low.
  */
@@ -22,13 +22,13 @@
 #include "mcp23x17.h"
 #include <xc.h>
 
-extern IOPortB_t ioportb;
+extern shadowB_t shadowB;
 
 /**
  * Write the current LED state to the hardware
  */
 static void ledUpdate(void) {
-    (void)i2cWriteRegister(MCP23017_ADDRESS, GPIOB, ioportb.all);
+    (void)i2cWriteRegister(MCP23017_ADDRESS, GPIOB, shadowB.all);
 }
 
 /**
@@ -46,12 +46,12 @@ void ledInitialize(void) {
  * Power LED control (active low)
  */
 void powerLED_On(void) {
-    ioportb.POWER_N = 0;
+    shadowB.POWER_N = 0;
     ledUpdate();
 }
 
 void powerLED_Off(void) {
-    ioportb.POWER_N = 1;
+    shadowB.POWER_N = 1;
     ledUpdate();
 }
 
@@ -59,12 +59,12 @@ void powerLED_Off(void) {
  * GPS LED control (active low)
  */
 void gpsLED_On(void) {
-    ioportb.GPS_N = 0;
+    shadowB.GPS_N = 0;
     ledUpdate();
 }
 
 void gpsLED_Off(void) {
-    ioportb.GPS_N = 1;
+    shadowB.GPS_N = 1;
     ledUpdate();
 }
 
@@ -72,12 +72,12 @@ void gpsLED_Off(void) {
  * Lock LED control (active low)
  */
 void lockLED_On(void) {
-    ioportb.LOCK_N = 0;
+    shadowB.LOCK_N = 0;
     ledUpdate();
 }
 
 void lockLED_Off(void) {
-    ioportb.LOCK_N = 1;
+    shadowB.LOCK_N = 1;
     ledUpdate();
 }
 
@@ -85,24 +85,24 @@ void lockLED_Off(void) {
  * Holdover LED control (active low)
  */
 void holdoverLED_On(void) {
-    ioportb.HOLDOVER_N = 0;
+    shadowB.HOLDOVER_N = 0;
     ledUpdate();
 }
 
 void holdoverLED_Off(void) {
-    ioportb.HOLDOVER_N = 1;
+    shadowB.HOLDOVER_N = 1;
     ledUpdate();
 }
 /**
  * Fault LED control (active low)
  */
 void faultLED_On(void) {
-    ioportb.FAULT_N = 0;
+    shadowB.FAULT_N = 0;
     ledUpdate();
 }
 
 void faultLED_Off(void) {
-    ioportb.FAULT_N = 1;
+    shadowB.FAULT_N = 1;
     ledUpdate();
 }
 
@@ -110,11 +110,11 @@ void faultLED_Off(void) {
  * Turn all LEDs on
  */
 void ledAllOn(void) {
-    ioportb.POWER_N = 0;
-    ioportb.GPS_N = 0;
-    ioportb.LOCK_N = 0;
-    ioportb.HOLDOVER_N = 0;
-    ioportb.FAULT_N = 0;
+    shadowB.POWER_N = 0;
+    shadowB.GPS_N = 0;
+    shadowB.LOCK_N = 0;
+    shadowB.HOLDOVER_N = 0;
+    shadowB.FAULT_N = 0;
     ledUpdate();
 }
 
@@ -122,11 +122,11 @@ void ledAllOn(void) {
  * Turn all LEDs off
  */
 void ledAllOff(void) {
-    ioportb.POWER_N = 1;
-    ioportb.GPS_N = 1;
-    ioportb.LOCK_N = 1;
-    ioportb.HOLDOVER_N = 1;
-    ioportb.FAULT_N = 1;
+    shadowB.POWER_N = 1;
+    shadowB.GPS_N = 1;
+    shadowB.LOCK_N = 1;
+    shadowB.HOLDOVER_N = 1;
+    shadowB.FAULT_N = 1;
     ledUpdate();
 }
 

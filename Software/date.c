@@ -1,8 +1,8 @@
 /**
- * Copyright (c) 2025 Dewayne VanHoozer. All rights reserved.
- * 
+ * Copyright (c) 2026 Dewayne VanHoozer. All rights reserved.
+ *
  * Date and time utility functions.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "config.h"
 #include "date.h"
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 
 /*
  * Compute Julian Day Number from Gregorian date
  * Valid for Gregorian calendar dates.
- * 
+ *
  * @param y  Year (e.g., 2025)
  * @param m  Month (1-12)
  * @param d  Day (1-31)
  * @return   Julian Day Number
  */
-static long jdn_from_ymd(int y, int m, int d)
-{
+static long jdn_from_ymd(int y, int m, int d) {
     int a = (14 - m) / 12;
     int y2 = y + 4800 - a;
     int m2 = m + 12 * a - 3;
@@ -36,17 +35,16 @@ static long jdn_from_ymd(int y, int m, int d)
     return jdn;
 }
 
-/* 
- * Convert JDN back to y,m,d using Fliegel & Van Flandern algorithm 
- * 
+/*
+ * Convert JDN back to y,m,d using Fliegel & Van Flandern algorithm
+ *
  * @param jdn  Julian Day Number
  * @param y    Pointer to store year
  * @param m    Pointer to store month
  * @param d    Pointer to store day
  * @return     None
  */
-static void ymd_from_jdn(long jdn, int *y, int *m, int *d)
-{
+static void ymd_from_jdn(long jdn, int* y, int* m, int* d) {
     long l = jdn + 68569;
     long n = (4 * l) / 146097;
     l = l - (146097 * n + 3) / 4;
@@ -64,15 +62,15 @@ static void ymd_from_jdn(long jdn, int *y, int *m, int *d)
 
 /*
  * Apply a timezone offset to a UTC date/time.
- * 
+ *
  * @param utc             Pointer to input UTC date/time
  * @param out             Pointer to output date/time with offset applied
  * @param offset_minutes  Timezone offset in minutes (e.g., -300 for UTC-05:00)
  * @return                None
  */
-void date_apply_offset(const gps_datetime_t *utc, gps_datetime_t *out, int offset_minutes)
-{
-    if (!utc || !out) return;
+void date_apply_offset(const gps_datetime_t* utc, gps_datetime_t* out, int offset_minutes) {
+    if (!utc || !out)
+        return;
     if (utc->valid != GPS_VALID) {
         out->valid = GPS_INVALID;
         return;
@@ -112,14 +110,14 @@ void date_apply_offset(const gps_datetime_t *utc, gps_datetime_t *out, int offse
 /**
  * Format time (HH:MM) for display. Buffer should be at least 6 chars long.
  * If invalid, returns "--:--".
- * 
+ *
  * @param buf  Pointer to output buffer
  * @param dt   Pointer to gps_datetime_t structure
  * @return     None
  */
-void date_format_time_short(char *buf, const gps_datetime_t *dt)
-{
-    if (!buf || !dt) return;
+void date_format_time_short(char* buf, const gps_datetime_t* dt) {
+    if (!buf || !dt)
+        return;
     if (dt->valid != GPS_VALID) {
         (void)snprintf(buf, 6, "--:--");
         return;
@@ -130,14 +128,14 @@ void date_format_time_short(char *buf, const gps_datetime_t *dt)
 /**
  * Create an offset string in the form "+HH:MM" or "-HH:MM" for non-zero offsets.
  * For zero offset returns "+00:00". Buffer should be at least 7 bytes.
- * 
+ *
  * @param offset_minutes  Timezone offset in minutes
  * @param buf             Pointer to output buffer
  * @return                None
  */
-void tz_offset_to_string(int offset_minutes, char *buf)
-{
-    if (!buf) return;
+void tz_offset_to_string(int offset_minutes, char* buf) {
+    if (!buf)
+        return;
     char sign_char = (offset_minutes >= 0) ? '+' : '-';
     int absmin = (offset_minutes >= 0) ? (int)offset_minutes : -(int)offset_minutes;
     int h = absmin / 60;

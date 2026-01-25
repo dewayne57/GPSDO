@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+/*
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * Simple rotary encoder handler.
  * - RC5 = Phase A
@@ -21,18 +21,16 @@
  * limitations under the License.
  *
  */
-#include <xc.h>
-#include <stdint.h>
-#include "config.h"
 #include "encoder.h"
+#include "config.h"
+#include <stdint.h>
+#include <xc.h>
 /* encoder_state is defined centrally in config.c */
-
 
 /*
  * Initialize the encoder hardware and state.
  */
-void encoder_init(void)
-{
+void encoder_init(void) {
     // Ensure pins are inputs
     TRISC |= PHASE_A + PHASE_B + ENTER_N; // RC5, RC6, RC7
 
@@ -63,16 +61,14 @@ void encoder_init(void)
 /*
  * Get the current encoder position (8-bit, clamped 0..127).
  */
-uint8_t encoder_get_position(void)
-{
+uint8_t encoder_get_position(void) {
     return encoder_state.position;
 }
 
 /*
  * Get the current debounced button state. 1 = pressed, 0 = released.
  */
-uint8_t encoder_button_state(void)
-{
+uint8_t encoder_button_state(void) {
     return encoder_state.button_stable;
 }
 
@@ -82,8 +78,7 @@ uint8_t encoder_button_state(void)
  * debouncing is handled externally. This function is safe to call from ISR
  * context (keeps it short).
  */
-void encoder_handle_ioc(void)
-{
+void encoder_handle_ioc(void) {
     // Snapshot PORTC once to keep A/B/button sampling coherent during IOC handling
     unsigned char portc = PORTC;
 
@@ -91,19 +86,13 @@ void encoder_handle_ioc(void)
     unsigned char b = (portc & PHASE_B) ? 1U : 0U;
     unsigned char cur = (unsigned char)((a << 1) | b);
     unsigned char last = encoder_state.last_state;
-    if (cur != last)
-    {
-        if (((last + 1) & 3U) == cur)
-        {
-            if (encoder_state.position < 127U)
-            {
+    if (cur != last) {
+        if (((last + 1) & 3U) == cur) {
+            if (encoder_state.position < 127U) {
                 encoder_state.position = (unsigned char)(encoder_state.position + 1U);
             }
-        }
-        else if (((last + 3) & 3U) == cur)
-        {
-            if (encoder_state.position > 0U)
-            {
+        } else if (((last + 3) & 3U) == cur) {
+            if (encoder_state.position > 0U) {
                 encoder_state.position = (unsigned char)(encoder_state.position - 1U);
             }
         }

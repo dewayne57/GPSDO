@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * Simple driver for a 16-bit I2C DAC (DAC8571 like device)
  * - Writes 16-bit values to the DAC via I2C
@@ -52,7 +52,7 @@ void dac_set_raw(unsigned int value) {
     if (value >= DAC_RESOLUTION)
         value = DAC_RESOLUTION - 1U;
 
-    i2c_buffer[0] = 0x10;                           // control: write + update DAC, power-up
+    i2c_buffer[0] = 0x10;                                 // control: write + update DAC, power-up
     i2c_buffer[1] = (unsigned char)((value >> 8) & 0xFF); // D15..D8
     i2c_buffer[2] = (unsigned char)(value & 0xFF);        // D7..D0
 

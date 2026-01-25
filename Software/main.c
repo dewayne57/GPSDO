@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * Main program loop for the GPSDO (GPS Disciplined Oscillator) project.
  * The program initializes the system, performs a self-check by cycling the
@@ -64,7 +64,7 @@ void updateDisplay(void);
  * Global variables and data areas.
  */
 extern system_config_t system_config;
-extern IOPortA_t ioporta;
+extern shadowA_t shadowA;
 extern unsigned char buffer[128];
 extern volatile encoder_state_t encoder_state;
 extern bool system_initialized;

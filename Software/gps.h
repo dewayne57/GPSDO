@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * GPS module for reading and parsing data from ublox M8M GPS receiver.
  * This module handles UART communication and NMEA message parsing to
@@ -19,6 +19,7 @@
 #ifndef GPS_H
 #define GPS_H
 
+#include "config.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>

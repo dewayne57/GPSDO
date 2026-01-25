@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  * 
  * Simple SMT (Signal Measurement Timer) interface for capturing timing intervals
  * using hardware timers and input capture.

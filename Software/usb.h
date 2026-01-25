@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * This module handles USB serial communication using UART3.
  * It provides buffered serial I/O for USB interface on RB2 (TX) and RB3 (RX).

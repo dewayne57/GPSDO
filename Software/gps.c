@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * GPS module implementation for ublox M8M GPS receiver.
  * Handles UART communication and NMEA, UBX, and RTCM message parsing.
@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "config.h"
 #include "gps.h"
+#include "config.h"
 #include "date.h"
 #include "faults.h"
 #include "i2c.h"

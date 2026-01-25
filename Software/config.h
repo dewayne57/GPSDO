@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * This module contains the system configuration definitions and
  * configuration storage functions for the GPSDO project.
@@ -56,7 +56,7 @@
 
 // PIC 18F27Q43 Configuration Bit Settings
 #pragma config FEXTOSC = OFF            // Dont use the external oscillator
-#pragma config RSTOSC = HFINTOSC_64MHZ  // Use internal 64mHz high frequency osc
+#pragma config RSTOSC = HFINTOSC_64MHZ  // Use internal 64MHz high frequency osc
 #pragma config CSWEN = OFF              // No clock switching allowed
 #pragma config FCMEN = OFF              // Fail-safe clock monitor is disabled
 #pragma config PR1WAY = 0               // PRLOCKED Set/Cleared repeatedly
@@ -88,9 +88,9 @@
 /* Device addresses on the I2C buss                                         */
 /*                                                                          */
 /****************************************************************************/
-#define MCP23017_ADDRESS 0x20           // I/O Expander address
-#define EEPROM_ADDRESS 0x50             // EEPROM address
-#define DAC8571_ADDRESS 0x4C            // DAC address
+#define MCP23017_ADDRESS 0x20           // I/O Expander address (x'40')
+#define EEPROM_ADDRESS 0x50             // EEPROM address (x'A0')
+#define DAC8571_ADDRESS 0x4C            // DAC address (x'98')
 
 /****************************************************************************/
 /*                                                                          */
@@ -238,8 +238,7 @@ extern system_config_t system_config;
 
 // Port A
 #define VREF_FB 1                               // RA0: VREF feedback pin
-#define INT_REF 2                               // RA1: Internal reference enable pin
-#define INT     32                              // RA5: Interrupt input from GPS module
+#define INT_REF 2                               // RA1: Internal reference output pin
 #define CLOCK_OUT 64                            // RA6: Clock output pin
 
 // Port B
@@ -254,7 +253,7 @@ extern system_config_t system_config;
 // Port C
 #define PPS 1                                   // RC0: 1PPS signal from GPS module
 #define RF 2                                    // RC1: RF From OCXO
-#define RESET_N 4                               // RC2: Active low reset for GPS module
+#define RESET_N 4                               // RC2: Active low reset for io expander
 #define SCL 8                                   // RC3: I2C Clock
 #define SDA 16                                  // RC4: I2C Data
 #define PHASE_A 32                              // RC5: Phase A input from encoder
@@ -279,7 +278,7 @@ typedef union {
         unsigned char NYBBLE: 4;                // LCD data nybble (upper 4 bits)
     };
     unsigned char all;
-} IOPortA_t;
+} shadowA_t;
 
 typedef union {
     struct {
@@ -291,16 +290,17 @@ typedef union {
         unsigned char GPS_N : 1;                // GPS lock status LED (active low)
     };
     unsigned char all;
-} IOPortB_t;
+} shadowB_t;
 
 /* General purpose data I/O buffer */
 #define I2C_BUFFER_SIZE 256
 extern uint8_t i2c_buffer[I2C_BUFFER_SIZE];
 
-/* I/O expander port A shadow register */
-extern IOPortA_t ioporta;
-/* I/O expander port B shadow register */
-extern IOPortB_t ioportb;
+// Shadow registers are in-memory copies of the I/O expander port states
+// We will set/reset the values in these shadow registers and then write
+// them out to the I/O expander as needed.
+extern shadowA_t shadowA;
+extern shadowB_t shadowB;
 
 /* Encoder state */
 extern volatile encoder_state_t encoder_state;
