@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * This module contains the interrupt service routines (ISRs) for the
  * various interrupt sources used in the project.

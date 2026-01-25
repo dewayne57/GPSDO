@@ -27,17 +27,6 @@ void smt_init(void) {
     // Enable SMT1 module in PMD
     PMD1bits.SMT1MD = 0;
 
-    // Map 10MHz signal (RC1) to SMT1 signal input and 1PPS (RC0) to window
-    PPSLOCK = 0x55;
-    PPSLOCK = 0xAA;
-    PPSLOCKbits.PPSLOCKED = 0; // unlock
-
-    SMT1SIGPPS = 0x11; // RC1 -> SMT1 signal input
-    SMT1WINPPS = 0x10; // RC0 -> SMT1 window input (1PPS)
-
-    PPSLOCK = 0x55;
-    PPSLOCK = 0xAA;
-    PPSLOCKbits.PPSLOCKED = 1; // lock
 
     // Configure SMT1 to count pulses and capture on window event
     SMT1CON1bits.MODE = 0x2; // Counter mode (counts SMT input edges)

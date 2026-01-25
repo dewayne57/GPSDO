@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * This code provides a simple interface to the LCD display using the MCP23017 I2C interface.
  * It includes functions to write to the LCD, read from the LCD, and initialize the
@@ -47,7 +47,7 @@ extern volatile bool smt_new_capture;
 extern volatile unsigned long smt_last_count;
 extern volatile int32_t smt_last_error;
 extern system_config_t system_config;
-extern IOPortA_t ioporta;
+extern shadowA_t shadowA;
 extern unsigned char buffer[128];
 extern volatile encoder_state_t encoder_state;
 extern bool system_initialized;
@@ -140,7 +140,7 @@ void updateDisplay(void) {
  * This function sets the LCD backlight state that all the other functions use.
  */
 void lcdSetBacklight(bool state) {
-    ioporta.LCD_BL = state ? 1 : 0;
+    shadowA.LCD_BL = state ? 1 : 0;
 }
 
 /**
@@ -177,7 +177,7 @@ void lcdWriteString(char* data) {
         }
         __delay_us(50);
     }
-    
+
     (void)_lcdWaitReady(LCD_BUSY_MAX_POLLS);
 }
 
@@ -336,33 +336,33 @@ void lcdInitialize(void) {
 
     // Initialize sequence for 4-bit mode per HD44780 datasheet
     // Send INIT_8BIT_MODE three times (8-bit mode) to ensure proper reset
-    ioporta.LCD_RS = 0;
-    ioporta.LCD_RW = 0;
-    ioporta.NYBBLE = INIT_8BIT_MODE;
-    ioporta.LCD_E = 1;
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
-    ioporta.LCD_E = 0;
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    shadowA.LCD_RS = 0;
+    shadowA.LCD_RW = 0;
+    shadowA.NYBBLE = INIT_8BIT_MODE;
+    shadowA.LCD_E = 1;
+    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
+    shadowA.LCD_E = 0;
+    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
     __delay_ms(5);
 
-    ioporta.LCD_E = 1;
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
-    ioporta.LCD_E = 0;
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    shadowA.LCD_E = 1;
+    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
+    shadowA.LCD_E = 0;
+    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
     __delay_us(150);
 
-    ioporta.LCD_E = 1;
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
-    ioporta.LCD_E = 0;
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    shadowA.LCD_E = 1;
+    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
+    shadowA.LCD_E = 0;
+    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
     __delay_us(150);
 
     // Switch to 4-bit mode
-    ioporta.NYBBLE = INIT_4BIT_MODE;
-    ioporta.LCD_E = 1;
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
-    ioporta.LCD_E = 0;
-    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    shadowA.NYBBLE = INIT_4BIT_MODE;
+    shadowA.LCD_E = 1;
+    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
+    shadowA.LCD_E = 0;
+    i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
     __delay_us(150);
 
     // Now in 4-bit mode - use normal commands
@@ -436,42 +436,42 @@ void lcdSelfTest(void) {
 /**
  * Write a byte to the LCD in 4-bit mode via MCP23017 Port A.
  * The control bits RS, RW, E, and BL are on PA0..PA3 and the
- * 4-bit data nibble is on PA4..PA7 (IOPortA_t.NYBBLE).
+ * 4-bit data nibble is on PA4..PA7 (shadowA_t.NYBBLE).
  */
 static unsigned char _lcdWriteByte(bool inst, unsigned char byte) {
     unsigned char status;
 
     if (inst) {
-        ioporta.LCD_RS = 0; // RS = instruction
+        shadowA.LCD_RS = 0; // RS = instruction
     } else {
-        ioporta.LCD_RS = 1; // RS = data
+        shadowA.LCD_RS = 1; // RS = data
     }
-    ioporta.LCD_RW = 0; // RW = write
+    shadowA.LCD_RW = 0; // RW = write
 
     // Send upper nibble first
-    ioporta.NYBBLE = (byte >> 4) & 0x0F;
-    ioporta.LCD_E = 1;  // E = 1
-    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    shadowA.NYBBLE = (byte >> 4) & 0x0F;
+    shadowA.LCD_E = 1; // E = 1
+    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
     if (status != I2C_SUCCESS) {
         return status;
     }
-    
-    ioporta.LCD_E = 0; // E = 0
-    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+
+    shadowA.LCD_E = 0; // E = 0
+    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
     if (status != I2C_SUCCESS) {
         return status;
     }
 
     // Send lower nibble
-    ioporta.NYBBLE = byte & 0x0F;
-    ioporta.LCD_E = 1;  // E = 1
-    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    shadowA.NYBBLE = byte & 0x0F;
+    shadowA.LCD_E = 1; // E = 1
+    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
     if (status != I2C_SUCCESS) {
         return status;
     }
-    
-    ioporta.LCD_E = 0; // E = 0
-    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+
+    shadowA.LCD_E = 0; // E = 0
+    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
     if (status != I2C_SUCCESS) {
         return status;
     }
@@ -483,7 +483,7 @@ static unsigned char _lcdWriteByte(bool inst, unsigned char byte) {
 /**
  * Read a byte from the LCD in 4-bit mode via MCP23017 Port A.
  * The control bits RS, RW, E, and BL are on PA0..PA3 and the
- * 4-bit data nibble is on PA4..PA7 (IOPortA_t.NYBBLE).
+ * 4-bit data nibble is on PA4..PA7 (shadowA_t.NYBBLE).
  * Since PA4..PA7 are normally outputs, we temporarily change them to inputs.
  *
  * @param inst TRUE if reading an instruction, FALSE for data
@@ -507,15 +507,15 @@ static unsigned char _lcdReadByte(bool inst, unsigned char* value) {
     }
 
     if (inst) {
-        ioporta.LCD_RS = 0; // RS = instruction
+        shadowA.LCD_RS = 0; // RS = instruction
     } else {
-        ioporta.LCD_RS = 1; // RS = data
+        shadowA.LCD_RS = 1; // RS = data
     }
-    ioporta.LCD_RW = 1; // RW = read
+    shadowA.LCD_RW = 1; // RW = read
 
     // Read upper nibble
-    ioporta.LCD_E = 1;  // E = 1
-    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    shadowA.LCD_E = 1; // E = 1
+    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
     if (status != I2C_SUCCESS) {
         return status;
     }
@@ -526,15 +526,15 @@ static unsigned char _lcdReadByte(bool inst, unsigned char* value) {
     }
     upper_nibble = (porta_read >> 4) & 0x0F;
 
-    ioporta.LCD_E = 0; // E = 0
-    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    shadowA.LCD_E = 0; // E = 0
+    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
     if (status != I2C_SUCCESS) {
         return status;
     }
 
     // Read lower nibble
-    ioporta.LCD_E = 1;  // E = 1
-    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    shadowA.LCD_E = 1; // E = 1
+    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
     if (status != I2C_SUCCESS) {
         return status;
     }
@@ -545,12 +545,12 @@ static unsigned char _lcdReadByte(bool inst, unsigned char* value) {
     }
     lower_nibble = (porta_read >> 4) & 0x0F;
 
-    ioporta.LCD_E = 0; // E = 0
-    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, ioporta.all);
+    shadowA.LCD_E = 0; // E = 0
+    status = i2cWriteRegister(MCP23017_ADDRESS, GPIOA, shadowA.all);
     if (status != I2C_SUCCESS) {
         return status;
     }
-    
+
     // Restore PA4..PA7 to outputs
     status = i2cWriteRegister(MCP23017_ADDRESS, IODIRA, iodir);
     if (status != I2C_SUCCESS) {
@@ -558,7 +558,7 @@ static unsigned char _lcdReadByte(bool inst, unsigned char* value) {
     }
 
     // Combine nibbles
-    *value = (unsigned char) (upper_nibble << 4) | lower_nibble;
+    *value = (unsigned char)(upper_nibble << 4) | lower_nibble;
 
     return I2C_SUCCESS;
 }

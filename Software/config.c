@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * This module contains the system initialization code for the GPSDO project.
  * It sets up the microcontroller's I/O ports, interrupt system, and peripheral
@@ -37,15 +37,15 @@
 /**
  * Global variables and data areas.
  */
-bool system_initialized = false;                    // Flag indicating system initialization complete
-unsigned char i2c_buffer[I2C_BUFFER_SIZE];          // General-purpose I2C buffer
-IOPortA_t ioporta = {.all = 0xF0};                  // I/O expander Port A state shadow register
-IOPortB_t ioportb = {.all = 0xFF};                  // I/O expander Port B state shadow register
-system_config_t system_config;                      // System configuration data
+bool system_initialized = false;           // Flag indicating system initialization complete
+unsigned char i2c_buffer[I2C_BUFFER_SIZE]; // General-purpose I2C buffer
+shadowA_t shadowA = {.all = 0xF8};         // I/O expander Port A state shadow register
+shadowB_t shadowB = {.all = 0x00};         // I/O expander Port B state shadow register
+system_config_t system_config;             // System configuration data
 volatile encoder_state_t encoder_state = {
     .position = 0, .last_state = 0, .button_raw = 1, .button_stable = 0, .debounce_cnt = 0}; // Rotary encoder state
-extern volatile gps_data_t gps_data;                // Global GPS data (defined in gps.c)
-extern volatile bool gps_data_available;            // Flag for new GPS data available (defined in gps.c)
+extern volatile gps_data_t gps_data;     // Global GPS data (defined in gps.c)
+extern volatile bool gps_data_available; // Flag for new GPS data available (defined in gps.c)
 
 /*
  * forward definitions
@@ -120,21 +120,22 @@ void initialize(void) {
 
     // Set up port A
     //
-    // All port A pins (except RA6) are used as analog inputs and outputs and
-    // are used to sample the VRef level and to supply a default VRef if the
-    // OCXO does not.  RA6 is configured as a digital output and outputs the
-    // system clock for diagnostic purposes.
+    // All port A pins (except RA6) are used as analog inputs and
+    // outputs and are used to sample the VRef level and to supply
+    // a default VRef if the OCXO does not. RA6 is configured as a
+    // digital output and outputs the system clock for diagnostic
+    // purposes.
     //
     // RA0 - VRef Feedback
     // RA1 - Internal VRef output
     // RA2 - MFINTOSC output for debugging (500kHz clock)
     // RA3 - Unused
     // RA4 - Unused
-    // RA5 - Interrupt input from GPS module
+    // RA5 - Unused
     // RA6 - Digital clock output
     // RA7 - Unused
-    TRISA = 0xFF - VREF_FB - INT_REF - CLOCK_OUT; // RA0,RA1,RA6 as outputs; RA5 as input
-    ANSELA = 0xFF - VREF_FB - INT_REF - INT;      // RA0,RA1 as analog inputs, RA5,RA6 digital
+    TRISA = 0xFF - VREF_FB - INT_REF - CLOCK_OUT; // RA0,RA1,RA6 as outputs
+    ANSELA = 0xFF - VREF_FB - INT_REF;            // RA0,RA1 as analog inputs, RA6 digital
     LATA = 0x00;
     ODCONA = 0x00;
     WPUA = 0x00;
@@ -146,16 +147,16 @@ void initialize(void) {
     // TTL levels, no open drain, no analog, slew rate not limited, all pins
     // use Schmitt trigger inputs.
     //
-    // RB0 - Unused
-    // RB1 - Unused
-    // RB2 - Unused
-    // RB3 - Unused
+    // RB0 - External TX (output FROM MCU to external device)
+    // RB1 - External RX (input TO MCU from external device)
+    // RB2 - USB TX (output FROM MCU to USB-serial bridge)
+    // RB3 - USB RX (input TO MCU from USB-serial bridge)
     // RB4 - GPS_TX (output FROM GPS to MCU)
     // RB5 - GPS_RX (input TO GPS from MCU)
-    // RB6 - ICSP/Debug PGC
+    // RB6 - ICSP/Debug PGC, active low to enable bootloader mode
     // RB7 - ICSP/Debug PGD
-    TRISB = 0xFF - GPS_RX; // RB4 input; RB5 output
-    ANSELB = 0x00;         // All digital
+    TRISB = 0xFF - GPS_RX - USB_RX - EXT_RX; // All receive pins inputs
+    ANSELB = 0x00;                           // All digital
     LATB = 0x00;
     ODCONB = 0x00;
     WPUB = 0x00;
@@ -171,41 +172,23 @@ void initialize(void) {
     //
     // RC0 - 1PPS signal from GPS
     // RC1 - 10 MHz signal from OCXO
-    // RC2 - RESET_N output to reset I/O extender and GPS (pull ups enabled
-    //       and open drain)
+    // RC2 - RESET_N output to reset I/O extender (pull ups enabled and open drain)
     // RC3 - I2C SCL (i2c pull ups enabled, open drain)
     // RC4 - I2C SDA (i2c pull ups enabled, open drain)
     // RC5 - Encoder Phase A (pull ups enabled)
     // RC6 - Encoder Phase B (pull ups enabled)
     // RC7 - Encoder Enter_N Switch (pull-ups enabled)
-    TRISC = 0xFF - RESET_N; // All inputs - I2C pins MUST be inputs for proper operation
+    TRISC = 0xFF - RESET_N; // All inputs except RESET_N (which is output)
     ANSELC = 0x00;
     LATC = 0x00;
-
-    /*
-     * Enable weak pull-ups on encoder pins
-     */
-    WPUC = PHASE_A + PHASE_B + ENTER_N;
+    ODCONC = 0x00;                                  // No open-drain (RESET_N will be push-pull output)
+    WPUC = SDA + SCL + PHASE_A + PHASE_B + ENTER_N; // Weak pull-ups on I2C pins and encoder pins
     INLVLC = 0x00;
+    SLRCONC = 0x00;
 
-    /*
-     * Open drain on I2C and encoder pins
-     */
-    ODCONC = SDA + SCL + PHASE_A + PHASE_B + ENTER_N;
-
-    RC3I2C = 0x51; // i2c fast mode, 2x pullups, i2c thresholds on RC3 (SCL)
-    RC4I2C = 0x51; // i2c fast mode, 2x pullups, i2c thresholds on RC4 (SDA)
-    // SLRCONCbits.SLRC3 = 0; // maximum slew rate for bit-bang timing
-    // SLRCONCbits.SLRC4 = 0; // maximum slew rate for bit-bang timing
-
-    /*
-     * Set up external interrupt 0 (active-high from GPS module)
-     */
-    INTCON0bits.IPEN = 1;    // Use priority interrupts
-    INTCON0bits.INT0EDG = 1; // Rising edge triggers INT0
-    PIR1bits.INT0IF = 0;     // Clear any pending INT0 flag
-    IPR1bits.INT0IP = 1;     // Make INT0 high priority (vectored)
-    PIE1bits.INT0IE = 1;     // Enable External Interrupt 0
+    // For bit-banging I2C, we use regular GPIO instead of I2C module features
+    // RC3I2C = 0x51; // Disabled for bit-banging - i2c fast mode, 2x pullups, i2c thresholds on RC3 (SCL)
+    // RC4I2C = 0x51; // Disabled for bit-banging - i2c fast mode, 2x pullups, i2c thresholds on RC4 (SDA)
 
     /*
      * Set up PPS as needed
@@ -216,10 +199,12 @@ void initialize(void) {
 
     INT0PPS = 0x05; // RA5 -> INT0 input
 
-    // RB4 (EXT_RX) -> UART1 RX input (for bootloader)
-    U1RXPPS = 0x0C; // RB4
-    // RB3 (EXT_TX) -> UART1 TX output (for data transmission)
-    RB3PPS = 0x13; // UART1 TX
+    U1RXPPS = 0x0C; // RB4 (EXT_RX) -> UART1 RX input (for bootloader)
+    RB3PPS = 0x13;  // RB3 (EXT_TX) -> UART1 TX output (for data transmission)
+
+    // Map 10MHz signal (RC1) to SMT1 signal input and 1PPS (RC0) to window
+    SMT1SIGPPS = 0x11; // RC1 -> SMT1 signal input
+    SMT1WINPPS = 0x10; // RC0 -> SMT1 window input (1PPS)
 
     PPSLOCK = 0x55;            // lock PPS
     PPSLOCK = 0xAA;            // lock PPS
@@ -228,17 +213,27 @@ void initialize(void) {
     /*
      * Reset sequence for MCP23017
      */
-    PORTC &= 0xFF - RESET_N; // Hold MCP23017's in reset
-    __delay_ms(100);         // Hold reset for proper duration
-    PORTC |= RESET_N;        // Enable the MCP23017
-    __delay_ms(50);          // Allow MCP23017 to stabilize after reset
+    LATC &= ~RESET_N;  // Hold MCP23017 in reset (drive low)
+    TRISC &= ~RESET_N; // Make RESET_N pin an output
+    __delay_ms(10);    // Hold reset for minimum duration
+    LATC |= RESET_N;   // Release reset (drive high)
+    __delay_ms(100);   // Allow MCP23017 to fully stabilize after reset
 
     /*
      * Initialize I2C bus to idle state (both lines high)
+     * Ensure LATC bits are cleared for proper open-drain operation
      */
-    LATC |= SCL + SDA;  // Drive both lines high (via pull-ups)
-    TRISC |= SCL + SDA; // both lines as inputs = high
-    __delay_ms(10);     // Allow bus to stabilize
+    LATC &= ~(SCL + SDA); // Clear LATC bits so when output, they will drive low
+    TRISC |= SCL + SDA;   // Set both lines as inputs (pull-ups will drive high)
+    __delay_ms(10);       // Allow bus to stabilize
+
+    // Temporary I2C bus scan for debugging
+    unsigned char found_devices[16];
+    unsigned char device_count;
+    unsigned char i;
+    memset(found_devices, 0, sizeof(found_devices));
+
+    device_count = i2cScanBus(found_devices, 16);
 
     /*
      * Initialize MCP23017 #1 for sequential mode to initialize all the registers
@@ -398,7 +393,7 @@ static void selfCheck(void) {
 /*
  * Compute CRC-16-CCITT (polynomial 0x1021, initial value 0xFFFF)
  * Standard CRC used in many communication protocols.
- * 
+ *
  * @param data  Pointer to data buffer
  * @param len   Length of data buffer in bytes
  * @return      Computed CRC-16 value
@@ -422,7 +417,7 @@ static unsigned int crc16(const unsigned char* data, unsigned int len) {
  * Read config blob from EEPROM into buffer.
  *
  * @param addr  Starting EEPROM address to read from
- * @param buf   Buffer to read data into    
+ * @param buf   Buffer to read data into
  * @param len   Number of bytes to read
  * @return      I2C_SUCCESS on success, error code otherwise
  */
@@ -473,7 +468,7 @@ static unsigned char writeEEProm(unsigned char addr, const unsigned char* buf, u
 
 /*
  * Initialize default configuration values
- * 
+ *
  * @param cfg  Pointer to configuration structure to initialize
  * @return     None
  */
@@ -481,16 +476,16 @@ void config_defaults(system_config_t* cfg) {
     cfg->magic = CONFIG_MAGIC;
     cfg->version = CONFIG_VERSION;
     cfg->vref_source = VREF_SRC_INTERNAL;
-    cfg->gps_baud = DEFAULT_GPS_BAUD;           
-    cfg->gps_stop_bits = DEFAULT_GPS_STOP_BITS; 
-    cfg->gps_parity = DEFAULT_GPS_PARITY;       
-    cfg->gps_protocol = GPS_PROTOCOL_NMEA;      
-    cfg->ext_baud = DEFAULT_EXT_BAUD;  
+    cfg->gps_baud = DEFAULT_GPS_BAUD;
+    cfg->gps_stop_bits = DEFAULT_GPS_STOP_BITS;
+    cfg->gps_parity = DEFAULT_GPS_PARITY;
+    cfg->gps_protocol = GPS_PROTOCOL_NMEA;
+    cfg->ext_baud = DEFAULT_EXT_BAUD;
     cfg->ext_stop_bits = DEFAULT_EXT_STOP_BITS;
-    cfg->ext_parity = DEFAULT_EXT_PARITY;      
+    cfg->ext_parity = DEFAULT_EXT_PARITY;
     cfg->vco_dac = (uint16_t)DAC_MIDPOINT;
-    cfg->tz_mode = DEFAULT_TZ_MODE;       
-    cfg->tz_offset_min = DEFAULT_TZ_OFFSET_MIN; 
+    cfg->tz_mode = DEFAULT_TZ_MODE;
+    cfg->tz_offset_min = DEFAULT_TZ_OFFSET_MIN;
     memset(cfg->reserved, 0, sizeof(cfg->reserved));
     cfg->crc = crc16((unsigned char*)cfg, sizeof(system_config_t) - sizeof(cfg->crc));
 }

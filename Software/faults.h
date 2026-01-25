@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * This module provides fault management functionality for the GPSDO project.
  * It maintains a circular buffer of the last 5 fault messages, allowing

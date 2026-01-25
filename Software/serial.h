@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * External serial communication module for RS-232 interface.
  * This module handles UART2 communication on pins RB3 (TxD) and RB4 (RxD)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * I2C interface for bit-banged I2C on PIC18F27Q43. This code uses
  * a bit-banged approach to implement I2C communication using
@@ -78,5 +78,22 @@ unsigned char i2cReadBuffer(unsigned char address, unsigned char* data, unsigned
  * @return 0 on success, non-zero on failure
  */
 unsigned char i2cReadRegister(unsigned char address, unsigned char reg, unsigned char* data);
+
+/**
+ * @brief Test I2C bus lines (for debugging)
+ * This function tests if the I2C lines can be properly controlled
+ * by toggling them and reading their states.
+ * @return 0 on success, non-zero on failure
+ */
+unsigned char i2cTestBusLines(void);
+
+/**
+ * @brief Scan I2C bus for devices (for debugging)
+ * This function scans the I2C bus for responding devices
+ * @param found_addresses Array to store found addresses (max 16)
+ * @param max_addresses Maximum number of addresses to store
+ * @return Number of devices found
+ */
+unsigned char i2cScanBus(unsigned char* found_addresses, unsigned char max_addresses);
 
 #endif

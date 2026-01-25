@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *  
  * Simple PID-like control loop for VCO tuning using DAC8571
  * - Discrete-time update called periodically (we use 1s sample by default)

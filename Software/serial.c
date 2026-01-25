@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * External serial communication module implementation.
  * Handles UART1 for RS-232 communication on RB3 (TxD) and RB4 (RxD).
@@ -19,9 +19,9 @@
  * limitations under the License.
  */
 
+#include "serial.h"
 #include "config.h"
 #include "date.h"
-#include "serial.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -102,7 +102,7 @@ void serial_init(void) {
 void serial_reconfigure(void) {
     // Disable UART1 briefly to change settings
     U1CON1bits.ON = 0;
-    serial_init(); 
+    serial_init();
 }
 
 /*

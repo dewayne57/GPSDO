@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * Bit-banging I2C implementation for PIC18F27Q43
  * Uses RC3 (SCL) and RC4 (SDA) with open drain configuration
@@ -25,9 +25,9 @@
  * Uses RC3 (SCL) and RC4 (SDA) with open drain configuration
  ****************************************************************************/
 
-// I2C timing delays for ~100kHz operation
-#define I2C_DELAY() __delay_us(10)     // 10us delay for more conservative timing
-#define I2C_HALF_DELAY() __delay_us(5) // 5us half period delay
+// I2C timing delays for ~50kHz operation (more conservative)
+#define I2C_DELAY() __delay_us(20)      // 20us delay for slower, more reliable timing
+#define I2C_HALF_DELAY() __delay_us(10) // 10us half period delay
 
 /****************************************************************************
  * forward define internal functions not exposed via i2c.h header file
@@ -285,8 +285,8 @@ unsigned char _i2cWriteByte(unsigned char data) {
     }
 
     // Check for ACK
-    _i2cSdaHigh();                // Release SDA for ACK
-    _i2cSclHigh();                // Clock the ACK bit
+    _i2cSdaHigh();                      // Release SDA for ACK
+    _i2cSclHigh();                      // Clock the ACK bit
     unsigned char ack = !_i2cSdaRead(); // ACK is low
     _i2cSclLow();
 
@@ -321,6 +321,73 @@ unsigned char _i2cReadByte(unsigned char ack, unsigned char* value) {
 
     *value = data;
     return I2C_SUCCESS;
+}
+
+/****************************************************************************
+ * Function: i2cTestBusLines
+ * Description: Test I2C bus lines for proper operation
+ * Returns: 0 on success, non-zero on failure
+ * *************************************************************************/
+unsigned char i2cTestBusLines(void) {
+    // Test SCL line
+    _i2cSclLow();
+    __delay_ms(1);
+    if (PORTC & SCL) {
+        return I2C_ERROR; // SCL should be low but reads high
+    }
+
+    _i2cSclHigh();
+    __delay_ms(1);
+    if (!(PORTC & SCL)) {
+        return I2C_ERROR; // SCL should be high but reads low
+    }
+
+    // Test SDA line
+    _i2cSdaLow();
+    __delay_ms(1);
+    if (PORTC & SDA) {
+        return I2C_ERROR; // SDA should be low but reads high
+    }
+
+    _i2cSdaHigh();
+    __delay_ms(1);
+    if (!(PORTC & SDA)) {
+        return I2C_ERROR; // SDA should be high but reads low
+    }
+
+    return I2C_SUCCESS;
+}
+
+/****************************************************************************
+ * Function: i2cScanBus
+ * Description: Scan I2C bus for responding devices
+ * Returns: Number of devices found
+ * *************************************************************************/
+unsigned char i2cScanBus(unsigned char* found_addresses, unsigned char max_addresses) {
+    unsigned char address;
+    unsigned char found_count = 0;
+    unsigned char result;
+
+    for (address = 0x08; address < 0x78; address++) {
+        // Skip reserved addresses
+        if (address < 0x08 || address >= 0x78)
+            continue;
+
+        // Try to write to this address (just the address, no data)
+        _i2cStart();
+        result = _i2cWriteByte((unsigned char)((address << 1) | 0x00));
+        _i2cStop();
+
+        if (result == I2C_SUCCESS && found_count < max_addresses) {
+            found_addresses[found_count] = address;
+            found_count++;
+        }
+
+        // Small delay between attempts
+        __delay_ms(1);
+    }
+
+    return found_count;
 }
 
 /****************************************************************************

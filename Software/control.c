@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
- * Simple PID-like control loop for VCO tuning using DAC8571
+ * Simple PI-like control loop (Proportional - Integral) for VCO tuning 
+ * using DAC8571
  * - Discrete-time update called periodically (we use 1s sample by default)
  * - Fixed-point Q8 gains to avoid floating point arithmetic on the MCU
  * - Output mapped to 12-bit DAC value and rate-limited / low-pass filtered
@@ -11,7 +12,7 @@
  * represented as 128 (0.5 * 256 = 128).  This allows for fractional gains
  * using only integer arithmetic which is more efficient on microcontrollers
  * without floating-point units.  It is known as Q8 fixed-point representation.
- * The PID calculation uses bit-shifting to divide by 256 (>> 8) to convert
+ * The PI calculation uses bit-shifting to divide by 256 (>> 8) to convert
  * back to normal scale after multiplication.
  *
  * For more informaation on the Q notation, see

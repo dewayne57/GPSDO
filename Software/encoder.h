@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  * 
  * Encoder interface for rotary encoder on RC5 (PHASE_A), RC6 (PHASE_B),
  * and RC7 (ENTER_N)

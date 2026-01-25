@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2025, Dewayne L. Hafenstein.  All rights reserved.
+ * Copyright (c) 2026, Dewayne L. Hafenstein.  All rights reserved.
  *
  * Date/time conversion helpers to support UTC/local display with an arbitrary
  * offset (minutes east of UTC). Converts between GPS-provided UTC `gps_datetime_t`
