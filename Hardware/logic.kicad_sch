@@ -6129,156 +6129,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Diode:1N5819"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 1.016)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "D"
-				(at 0 2.54 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "1N5819"
-				(at 0 -2.54 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
-				(at 0 -4.445 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "http://www.vishay.com/docs/88525/1n5817.pdf"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "40V 1A Schottky Barrier Rectifier Diode, DO-41"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "diode Schottky"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "D*DO?41*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "1N5819_0_1"
-				(polyline
-					(pts
-						(xy -1.905 0.635) (xy -1.905 1.27) (xy -1.27 1.27) (xy -1.27 -1.27) (xy -0.635 -1.27) (xy -0.635 -0.635)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 0) (xy -1.27 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "1N5819_1_1"
-				(pin passive line
-					(at -3.81 0 0)
-					(length 2.54)
-					(name "K"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 3.81 0 180)
-					(length 2.54)
-					(name "A"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "Diode:SS38"
 			(pin_numbers
 				(hide yes)
@@ -8736,6 +8586,12 @@
 		(uuid "a760edd5-a176-47a6-93f1-8f77562ee679")
 	)
 	(junction
+		(at 287.02 82.55)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "bdeb278d-c7fc-4e51-8b14-1e03d356876a")
+	)
+	(junction
 		(at 100.33 102.87)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -8958,7 +8814,7 @@
 		(uuid "0e11fdb5-19eb-431b-a01f-4341da9abab9")
 	)
 	(bus_entry
-		(at 311.15 83.82)
+		(at 311.15 73.66)
 		(size 2.54 2.54)
 		(stroke
 			(width 0)
@@ -8985,6 +8841,15 @@
 		(uuid "1ef477a0-3ddf-44b8-ab22-f3de7fea28f6")
 	)
 	(bus_entry
+		(at 311.15 82.55)
+		(size 2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2ab8bb9e-bdcf-4c65-b266-1ba824fac4cd")
+	)
+	(bus_entry
 		(at 313.69 129.54)
 		(size 2.54 2.54)
 		(stroke
@@ -9003,7 +8868,7 @@
 		(uuid "33d84479-72af-49e3-bb96-5614d09a8d5f")
 	)
 	(bus_entry
-		(at 311.15 78.74)
+		(at 311.15 68.58)
 		(size 2.54 2.54)
 		(stroke
 			(width 0)
@@ -9030,7 +8895,7 @@
 		(uuid "3d003460-e8fe-4bd9-b16e-08810cfd304a")
 	)
 	(bus_entry
-		(at 311.15 81.28)
+		(at 311.15 71.12)
 		(size 2.54 2.54)
 		(stroke
 			(width 0)
@@ -9091,6 +8956,15 @@
 			(type default)
 		)
 		(uuid "59d399ff-b7d0-4a83-b4e1-4ffa214e6983")
+	)
+	(bus_entry
+		(at 311.15 88.9)
+		(size 2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6223fb2b-3f1c-4a5c-9064-91cdfeaef135")
 	)
 	(bus_entry
 		(at 313.69 96.52)
@@ -9430,6 +9304,16 @@
 	)
 	(wire
 		(pts
+			(xy 300.99 88.9) (xy 311.15 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0317063e-a7db-4b34-9478-da92d06b6837")
+	)
+	(wire
+		(pts
 			(xy 201.93 115.57) (xy 205.74 115.57)
 		)
 		(stroke
@@ -9477,6 +9361,16 @@
 			(type default)
 		)
 		(uuid "05b7cc82-9ff4-40af-83e7-6ab3c804427e")
+	)
+	(wire
+		(pts
+			(xy 287.02 82.55) (xy 287.02 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "05f86c7b-afa7-4e2e-b099-6f56df52728d")
 	)
 	(wire
 		(pts
@@ -9810,7 +9704,7 @@
 	)
 	(wire
 		(pts
-			(xy 300.99 83.82) (xy 311.15 83.82)
+			(xy 300.99 73.66) (xy 311.15 73.66)
 		)
 		(stroke
 			(width 0)
@@ -10110,6 +10004,16 @@
 	)
 	(wire
 		(pts
+			(xy 287.02 78.74) (xy 287.02 82.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "297db7d5-6d93-4324-8466-88718c30d328")
+	)
+	(wire
+		(pts
 			(xy 382.27 182.88) (xy 382.27 190.5)
 		)
 		(stroke
@@ -10127,6 +10031,16 @@
 			(type default)
 		)
 		(uuid "2b1a7470-dbb5-49a0-8fce-fe9481cef724")
+	)
+	(bus
+		(pts
+			(xy 313.69 88.9) (xy 313.69 86.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2bf5f13e-7380-4cc8-b92f-4d6eb12ac01c")
 	)
 	(wire
 		(pts
@@ -10570,6 +10484,16 @@
 	)
 	(bus
 		(pts
+			(xy 313.69 81.28) (xy 313.69 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4890430b-dbd4-410b-b9b4-e29bae31e821")
+	)
+	(bus
+		(pts
 			(xy 130.81 76.2) (xy 130.81 67.31)
 		)
 		(stroke
@@ -10970,7 +10894,7 @@
 	)
 	(bus
 		(pts
-			(xy 313.69 88.9) (xy 313.69 86.36)
+			(xy 313.69 91.44) (xy 313.69 88.9)
 		)
 		(stroke
 			(width 0)
@@ -11127,6 +11051,16 @@
 			(type default)
 		)
 		(uuid "6d690b20-a076-4429-947f-d91a408407e6")
+	)
+	(bus
+		(pts
+			(xy 313.69 83.82) (xy 313.69 81.28)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6d6d0aeb-6f98-4b88-af56-8e3f678a1f40")
 	)
 	(wire
 		(pts
@@ -11390,16 +11324,6 @@
 	)
 	(bus
 		(pts
-			(xy 313.69 91.44) (xy 313.69 88.9)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7bc87578-964a-46b4-aa99-8599745a2552")
-	)
-	(bus
-		(pts
 			(xy 313.69 189.23) (xy 313.69 191.77)
 		)
 		(stroke
@@ -11470,7 +11394,17 @@
 	)
 	(wire
 		(pts
-			(xy 300.99 81.28) (xy 311.15 81.28)
+			(xy 287.02 82.55) (xy 293.37 82.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "81047e7f-a710-45da-a5e5-e275485b93c6")
+	)
+	(wire
+		(pts
+			(xy 300.99 71.12) (xy 311.15 71.12)
 		)
 		(stroke
 			(width 0)
@@ -11690,7 +11624,7 @@
 	)
 	(bus
 		(pts
-			(xy 313.69 81.28) (xy 313.69 83.82)
+			(xy 313.69 71.12) (xy 313.69 73.66)
 		)
 		(stroke
 			(width 0)
@@ -12030,6 +11964,16 @@
 	)
 	(wire
 		(pts
+			(xy 300.99 82.55) (xy 311.15 82.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a886707a-5f11-431c-ab05-ad0020e5cb2d")
+	)
+	(wire
+		(pts
 			(xy 360.68 208.28) (xy 360.68 210.82)
 		)
 		(stroke
@@ -12200,6 +12144,16 @@
 	)
 	(wire
 		(pts
+			(xy 287.02 88.9) (xy 293.37 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b074da87-a8e4-492e-9107-d4c62bbb5453")
+	)
+	(wire
+		(pts
 			(xy 316.23 83.82) (xy 334.01 83.82)
 		)
 		(stroke
@@ -12310,7 +12264,7 @@
 	)
 	(bus
 		(pts
-			(xy 313.69 86.36) (xy 313.69 83.82)
+			(xy 313.69 76.2) (xy 313.69 73.66)
 		)
 		(stroke
 			(width 0)
@@ -12568,16 +12522,6 @@
 		)
 		(uuid "c4bfcb8e-b5e0-4b18-8af3-572a8b7ee500")
 	)
-	(bus
-		(pts
-			(xy 313.69 81.28) (xy 313.69 71.12)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c6243fd0-4e20-4788-b07b-81c281275a40")
-	)
 	(wire
 		(pts
 			(xy 85.09 137.16) (xy 85.09 144.78)
@@ -12617,6 +12561,16 @@
 			(type default)
 		)
 		(uuid "c874bfd3-6bc0-484d-89b3-1571cf2067b0")
+	)
+	(bus
+		(pts
+			(xy 313.69 85.09) (xy 313.69 83.82)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c8906457-f122-4eab-a7a3-ee08da38ef79")
 	)
 	(wire
 		(pts
@@ -12937,6 +12891,16 @@
 			(type default)
 		)
 		(uuid "d5b7f677-46ab-4996-a431-6fdfcebfebd0")
+	)
+	(bus
+		(pts
+			(xy 313.69 86.36) (xy 313.69 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d5df7c00-019a-4e9d-9d59-4144c22c6ee0")
 	)
 	(bus
 		(pts
@@ -13270,7 +13234,7 @@
 	)
 	(wire
 		(pts
-			(xy 300.99 78.74) (xy 311.15 78.74)
+			(xy 300.99 68.58) (xy 311.15 68.58)
 		)
 		(stroke
 			(width 0)
@@ -14069,6 +14033,16 @@
 		)
 		(uuid "a1ab5ddd-1e33-41d3-9572-d3fc1c2e1279")
 	)
+	(label "SDA"
+		(at 307.34 88.9 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a4f94501-9710-4f52-8744-156745a0d4db")
+	)
 	(label "~{ENTER}"
 		(at 316.23 121.92 0)
 		(effects
@@ -14150,6 +14124,16 @@
 		)
 		(uuid "af222b31-e7f8-478e-b837-ed82ac776706")
 	)
+	(label "SCL"
+		(at 307.34 82.55 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b2995ceb-7786-43ef-a06f-ba41934f6c76")
+	)
 	(label "USB_RX"
 		(at 316.23 91.44 0)
 		(effects
@@ -14191,7 +14175,7 @@
 		(uuid "b879e18d-2291-4663-883b-bdaa8013e0ac")
 	)
 	(label "RF"
-		(at 308.61 78.74 0)
+		(at 308.61 68.58 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14241,7 +14225,7 @@
 		(uuid "cd1fbb4f-183c-4837-af87-4a9349a39186")
 	)
 	(label "VRef"
-		(at 306.07 83.82 0)
+		(at 306.07 73.66 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14313,7 +14297,7 @@
 		(uuid "dcda33a8-1cb1-4aed-859f-4803e9e1439e")
 	)
 	(label "VCO"
-		(at 307.34 81.28 0)
+		(at 307.34 71.12 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14396,7 +14380,7 @@
 	)
 	(hierarchical_label "VCO"
 		(shape input)
-		(at 300.99 81.28 180)
+		(at 300.99 71.12 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14407,7 +14391,7 @@
 	)
 	(hierarchical_label "VRef"
 		(shape input)
-		(at 300.99 83.82 180)
+		(at 300.99 73.66 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14418,7 +14402,7 @@
 	)
 	(hierarchical_label "RF"
 		(shape input)
-		(at 300.99 78.74 180)
+		(at 300.99 68.58 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14687,7 +14671,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D5.0mm_P2.50mm"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_8x6.9"
 			(at 367.03 60.96 0)
 			(effects
 				(font
@@ -14755,7 +14739,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:C_Axial_L3.8mm_D2.6mm_P7.50mm_Horizontal"
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder"
 			(at 151.13 46.99 0)
 			(effects
 				(font
@@ -14805,7 +14789,6 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "078a31fa-26f6-44f3-9324-e9fbf30a359c")
 		(property "Reference" "#PWR0336"
 			(at 274.32 67.31 0)
@@ -14817,7 +14800,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 274.32 66.04 0)
+			(at 274.32 64.516 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15025,7 +15008,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 200.914 48.006 90)
 			(effects
 				(font
@@ -15690,7 +15673,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 386.334 195.834 90)
 			(effects
 				(font
@@ -15759,7 +15742,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D5.0mm_P2.50mm"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_4x5.4"
 			(at 252.73 113.03 0)
 			(effects
 				(font
@@ -16028,7 +16011,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 323.596 201.676 90)
 			(effects
 				(font
@@ -16098,7 +16081,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Inductor_THT:L_Axial_L7.0mm_D3.3mm_P10.16mm_Horizontal_Fastron_MICC"
+		(property "Footprint" "Inductor_SMD:L_1206_3216Metric_Pad1.42x1.75mm_HandSolder"
 			(at 175.26 41.91 0)
 			(effects
 				(font
@@ -16408,6 +16391,76 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R_US")
+		(at 297.18 88.9 90)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "29eb25e0-c908-4e85-83ab-e61bd30b273e")
+		(property "Reference" "R323"
+			(at 299.212 84.836 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "4.7K"
+			(at 299.466 86.614 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 297.434 89.916 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 297.18 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, US symbol"
+			(at 297.18 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b8627f2b-e391-4a4a-ac71-60c66c5798ff")
+		)
+		(pin "2"
+			(uuid "5a67f313-9028-449b-b47c-f7c0944683ba")
+		)
+		(instances
+			(project "GPSDO"
+				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b/c5b2c78c-ba4c-4310-8edb-d45d907ed5c8"
+					(reference "R323")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 57.15 138.43 0)
 		(unit 1)
@@ -16608,43 +16661,35 @@
 		)
 	)
 	(symbol
-		(lib_id "Diode:1N5819")
-		(at 283.21 36.83 0)
-		(mirror y)
+		(lib_id "Diode:SS38")
+		(at 295.91 29.21 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "2dbf7a57-a5b8-4c8d-93b6-dc0c8dacf2f8")
-		(property "Reference" "D310"
-			(at 283.5275 30.48 0)
+		(uuid "2eab429a-acbc-4102-9378-cd5d575a78d0")
+		(property "Reference" "D311"
+			(at 298.45 28.2574 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify right)
 			)
 		)
-		(property "Value" "1N5819"
-			(at 283.5275 33.02 0)
+		(property "Value" "SS38"
+			(at 298.45 30.7974 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify right)
 			)
 		)
-		(property "Footprint" "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
-			(at 283.21 41.275 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "http://www.vishay.com/docs/88525/1n5817.pdf"
-			(at 283.21 36.83 0)
+		(property "Footprint" "Diode_SMD:D_SMB_Handsoldering"
+			(at 300.355 29.21 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -16652,8 +16697,17 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "40V 1A Schottky Barrier Rectifier Diode, DO-41"
-			(at 283.21 36.83 0)
+		(property "Datasheet" "https://www.microdiode.com/uploadfiles//PDF/SS32-THRU-SS3200-SMA.pdf"
+			(at 295.91 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "80V 3A Schottky Diode, SMA"
+			(at 295.91 29.21 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -16662,15 +16716,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "11826ec5-4791-4f2b-965a-cb4abbcff178")
+			(uuid "93e88758-306f-4fa7-8031-11d79490d244")
 		)
 		(pin "2"
-			(uuid "2a6c1694-903a-4345-ab0a-803e278bd283")
+			(uuid "74f1df33-bc41-4e2c-a6a9-8ba398d3e28f")
 		)
 		(instances
 			(project "GPSDO"
 				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b/c5b2c78c-ba4c-4310-8edb-d45d907ed5c8"
-					(reference "D310")
+					(reference "D311")
 					(unit 1)
 				)
 			)
@@ -16704,7 +16758,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 216.154 227.076 90)
 			(effects
 				(font
@@ -17144,7 +17198,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 92.456 139.954 90)
 			(effects
 				(font
@@ -17481,7 +17535,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:C_Axial_L3.8mm_D2.6mm_P7.50mm_Horizontal"
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder"
 			(at 187.96 46.99 0)
 			(effects
 				(font
@@ -17616,7 +17670,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 209.804 79.756 90)
 			(effects
 				(font
@@ -17686,7 +17740,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 331.216 206.756 90)
 			(effects
 				(font
@@ -17967,7 +18021,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 162.814 210.566 90)
 			(effects
 				(font
@@ -18314,7 +18368,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 213.614 48.006 90)
 			(effects
 				(font
@@ -18585,7 +18639,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D5.0mm_P2.50mm"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_4x5.4"
 			(at 264.16 96.52 0)
 			(effects
 				(font
@@ -18655,7 +18709,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 59.436 204.216 90)
 			(effects
 				(font
@@ -18792,7 +18846,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 209.804 116.586 90)
 			(effects
 				(font
@@ -18862,7 +18916,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 59.436 192.786 90)
 			(effects
 				(font
@@ -18999,7 +19053,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 216.154 234.696 90)
 			(effects
 				(font
@@ -19705,7 +19759,6 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "7940e18e-7d5b-41d9-87f1-1404b1f16eb0")
 		(property "Reference" "#PWR0342"
 			(at 295.91 67.31 0)
@@ -19717,7 +19770,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 295.91 66.04 0)
+			(at 295.91 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19858,7 +19911,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Diode_SMD:D_SMA"
+		(property "Footprint" "Diode_SMD:D_SMB_Handsoldering"
 			(at 182.245 121.92 0)
 			(effects
 				(font
@@ -19927,7 +19980,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D5.0mm_P2.50mm"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_4x5.4"
 			(at 304.8 113.03 0)
 			(effects
 				(font
@@ -19964,6 +20017,74 @@
 			(project "GPSDO"
 				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b/c5b2c78c-ba4c-4310-8edb-d45d907ed5c8"
 					(reference "C308")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Diode:SS38")
+		(at 283.21 36.83 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "7fd0aac6-e79e-46d8-9655-7588662b6a35")
+		(property "Reference" "D310"
+			(at 283.5275 30.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "SS38"
+			(at 283.5275 33.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Diode_SMD:D_SMB_Handsoldering"
+			(at 283.21 32.385 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.microdiode.com/uploadfiles//PDF/SS32-THRU-SS3200-SMA.pdf"
+			(at 283.21 36.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "80V 3A Schottky Diode, SMA"
+			(at 283.21 36.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "792ed545-def6-4d90-9d25-c0864ed38bc3")
+		)
+		(pin "2"
+			(uuid "fabc52db-3d65-43f7-8ccd-e13571650288")
+		)
+		(instances
+			(project "GPSDO"
+				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b/c5b2c78c-ba4c-4310-8edb-d45d907ed5c8"
+					(reference "D310")
 					(unit 1)
 				)
 			)
@@ -20070,7 +20191,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:C_Axial_L3.8mm_D2.6mm_P7.50mm_Horizontal"
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder"
 			(at 363.22 147.32 0)
 			(effects
 				(font
@@ -20178,6 +20299,76 @@
 			(project ""
 				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b/c5b2c78c-ba4c-4310-8edb-d45d907ed5c8"
 					(reference "RV301")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_US")
+		(at 297.18 82.55 90)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "81b2c9c0-c711-416e-908f-e86d9442cceb")
+		(property "Reference" "R322"
+			(at 299.212 78.486 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "4.7K"
+			(at 299.466 80.264 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 297.434 83.566 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 297.18 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, US symbol"
+			(at 297.18 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ce0d5aec-c26f-42da-bd30-ac71e11824f5")
+		)
+		(pin "2"
+			(uuid "a60a1d28-92bb-4f09-9d5c-988109b0ee2b")
+		)
+		(instances
+			(project "GPSDO"
+				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b/c5b2c78c-ba4c-4310-8edb-d45d907ed5c8"
+					(reference "R322")
 					(unit 1)
 				)
 			)
@@ -20409,7 +20600,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:C_Axial_L3.8mm_D2.6mm_P7.50mm_Horizontal"
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder"
 			(at 195.58 30.48 0)
 			(effects
 				(font
@@ -20544,7 +20735,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Ferrite_THT:LairdTech_28C0236-0JW-10"
+		(property "Footprint" "Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
 			(at 199.39 117.348 90)
 			(effects
 				(font
@@ -20614,7 +20805,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 216.154 242.316 90)
 			(effects
 				(font
@@ -21247,7 +21438,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 216.154 249.936 90)
 			(effects
 				(font
@@ -21349,6 +21540,71 @@
 			(project "GPSDO"
 				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b/c5b2c78c-ba4c-4310-8edb-d45d907ed5c8"
 					(reference "#PWR0355")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
+		(at 287.02 78.74 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a584cae2-3329-4554-a204-cf8b2d551ae9")
+		(property "Reference" "#PWR0361"
+			(at 287.02 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 286.766 74.676 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 287.02 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 287.02 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 287.02 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "9495e6d2-0363-4582-b17b-70b5b0672acc")
+		)
+		(instances
+			(project "GPSDO"
+				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b/c5b2c78c-ba4c-4310-8edb-d45d907ed5c8"
+					(reference "#PWR0361")
 					(unit 1)
 				)
 			)
@@ -21949,7 +22205,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 216.154 257.556 90)
 			(effects
 				(font
@@ -22417,7 +22673,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Diode_SMD:D_SMA"
+		(property "Footprint" "Diode_SMD:D_SMB_Handsoldering"
 			(at 182.245 107.95 0)
 			(effects
 				(font
@@ -22485,7 +22741,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Ferrite_THT:LairdTech_28C0236-0JW-10"
+		(property "Footprint" "Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
 			(at 199.39 80.518 90)
 			(effects
 				(font
@@ -22987,7 +23243,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 386.334 185.674 90)
 			(effects
 				(font
@@ -23123,7 +23379,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D8.0mm_P5.00mm"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_8x6.9"
 			(at 187.96 30.48 0)
 			(effects
 				(font
@@ -23193,7 +23449,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 75.946 147.066 90)
 			(effects
 				(font
@@ -23406,7 +23662,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 208.026 53.086 90)
 			(effects
 				(font
@@ -23631,7 +23887,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 174.244 32.004 90)
 			(effects
 				(font
@@ -23847,7 +24103,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Diode_SMD:D_SMA"
+		(property "Footprint" "Diode_SMD:D_SMB_Handsoldering"
 			(at 182.245 85.09 0)
 			(effects
 				(font
@@ -23916,7 +24172,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D5.0mm_P2.50mm"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_4x5.4"
 			(at 265.43 163.83 0)
 			(effects
 				(font
@@ -24052,7 +24308,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 190.754 218.186 90)
 			(effects
 				(font
@@ -24154,76 +24410,6 @@
 			(project "GPSDO"
 				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b/c5b2c78c-ba4c-4310-8edb-d45d907ed5c8"
 					(reference "#PWR0345")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Diode:1N5819")
-		(at 295.91 29.21 270)
-		(mirror x)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "f5e2d62e-4966-4cd5-bd8b-ee26f095be5a")
-		(property "Reference" "D311"
-			(at 303.784 27.686 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "1N5819"
-			(at 306.324 29.718 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
-			(at 291.465 29.21 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "http://www.vishay.com/docs/88525/1n5817.pdf"
-			(at 295.91 29.21 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "40V 1A Schottky Barrier Rectifier Diode, DO-41"
-			(at 295.91 29.21 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "948a793f-cff5-45b1-a6df-f8f6c41d5075")
-		)
-		(pin "2"
-			(uuid "8449a9d8-a2d7-4af9-91d2-6082d929a7d8")
-		)
-		(instances
-			(project "GPSDO"
-				(path "/292023ce-4ed6-44df-ba85-3d4f8e09a45b/c5b2c78c-ba4c-4310-8edb-d45d907ed5c8"
-					(reference "D311")
 					(unit 1)
 				)
 			)
@@ -24598,7 +24784,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D5.0mm_P2.50mm"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_6.3x5.4"
 			(at 363.22 154.94 0)
 			(effects
 				(font
@@ -24668,7 +24854,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Diode_SMD:D_SMA"
+		(property "Footprint" "Diode_SMD:D_SMB_Handsoldering"
 			(at 182.245 71.12 0)
 			(effects
 				(font
@@ -24737,7 +24923,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:C_Disc_D3.0mm_W2.0mm_P2.50mm"
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder"
 			(at 374.65 60.96 0)
 			(effects
 				(font

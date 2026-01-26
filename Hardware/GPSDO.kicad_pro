@@ -188,8 +188,9 @@
       ],
       "track_widths": [
         0.0,
-        1.0,
-        1.5
+        0.381,
+        1.524,
+        3.048
       ],
       "tuning_pattern_settings": {
         "diff_pair_defaults": {
@@ -221,6 +222,10 @@
         {
           "diameter": 0.0,
           "drill": 0.0
+        },
+        {
+          "diameter": 1.524,
+          "drill": 0.889
         }
       ],
       "zones_allow_external_fillets": false
@@ -510,34 +515,34 @@
         "via_drill": 1.0
       },
       {
-        "clearance": 0.25,
+        "clearance": 0.254,
         "name": "DC_Power_High",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "priority": 2,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 3.0,
-        "via_diameter": 2.0,
-        "via_drill": 1.0
+        "track_width": 3.048,
+        "via_diameter": 2.032,
+        "via_drill": 1.016
       },
       {
-        "clearance": 0.25,
+        "clearance": 0.254,
         "name": "DC_Power_Low",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "priority": 1,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 1.5,
-        "via_diameter": 1.5,
-        "via_drill": 1.0
+        "track_width": 1.524,
+        "via_diameter": 1.524,
+        "via_drill": 0.889
       },
       {
-        "clearance": 0.15,
+        "clearance": 0.2032,
         "name": "Logic",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "priority": 0,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 0.4,
-        "via_diameter": 0.4,
-        "via_drill": 0.3
+        "track_width": 0.381,
+        "via_diameter": 0.381,
+        "via_drill": 0.254
       }
     ],
     "meta": {

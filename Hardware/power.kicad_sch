@@ -4381,6 +4381,16 @@
 	)
 	(wire
 		(pts
+			(xy 119.38 140.97) (xy 119.38 153.67)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "003fe0ed-e685-4d40-9ade-d100681f2389")
+	)
+	(wire
+		(pts
 			(xy 185.42 114.3) (xy 185.42 120.65)
 		)
 		(stroke
@@ -4488,16 +4498,6 @@
 			(type default)
 		)
 		(uuid "168eded0-a479-43be-8cf1-5d94b5324e76")
-	)
-	(wire
-		(pts
-			(xy 90.17 114.3) (xy 90.17 133.35)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "18b24adc-ea0f-4bf6-b877-f039bf5dc565")
 	)
 	(wire
 		(pts
@@ -4731,16 +4731,6 @@
 	)
 	(wire
 		(pts
-			(xy 129.54 139.7) (xy 129.54 153.67)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3574cbce-174d-42ad-a25f-321e4772085d")
-	)
-	(wire
-		(pts
 			(xy 276.86 149.86) (xy 276.86 138.43)
 		)
 		(stroke
@@ -4911,16 +4901,6 @@
 	)
 	(wire
 		(pts
-			(xy 69.85 135.89) (xy 69.85 153.67)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "506639f8-a6e9-4467-bc91-a36d9ad05e6d")
-	)
-	(wire
-		(pts
 			(xy 339.09 133.35) (xy 339.09 138.43)
 		)
 		(stroke
@@ -5001,6 +4981,16 @@
 	)
 	(wire
 		(pts
+			(xy 69.85 114.3) (xy 69.85 133.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "61ea542c-4ed3-4c3a-af9a-b9f0ec9d07be")
+	)
+	(wire
+		(pts
 			(xy 97.79 148.59) (xy 97.79 153.67)
 		)
 		(stroke
@@ -5018,16 +5008,6 @@
 			(type default)
 		)
 		(uuid "6403af71-48d7-4f69-b07b-8903cff6b1e5")
-	)
-	(wire
-		(pts
-			(xy 129.54 128.27) (xy 129.54 114.3)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "649b76ae-b336-43b3-8fff-817cc860b780")
 	)
 	(wire
 		(pts
@@ -5138,6 +5118,16 @@
 			(type default)
 		)
 		(uuid "79167a90-aa03-419d-939b-51d7bb890bfa")
+	)
+	(wire
+		(pts
+			(xy 69.85 135.89) (xy 69.85 153.67)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7d59e27f-1c74-41ae-a6ef-40519585335b")
 	)
 	(wire
 		(pts
@@ -5291,16 +5281,6 @@
 	)
 	(wire
 		(pts
-			(xy 69.85 114.3) (xy 69.85 133.35)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8f92fba1-4327-450a-953d-20764f1cff3a")
-	)
-	(wire
-		(pts
 			(xy 365.76 90.17) (xy 365.76 95.25)
 		)
 		(stroke
@@ -5411,6 +5391,16 @@
 	)
 	(wire
 		(pts
+			(xy 129.54 114.3) (xy 129.54 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9e311d37-0e5a-46c9-aa12-9f0fe8e7c6ad")
+	)
+	(wire
+		(pts
 			(xy 177.8 128.27) (xy 177.8 153.67)
 		)
 		(stroke
@@ -5518,26 +5508,6 @@
 			(type default)
 		)
 		(uuid "af89cd2f-3003-417b-858b-9f9cad3d2842")
-	)
-	(wire
-		(pts
-			(xy 90.17 135.89) (xy 90.17 153.67)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "affdd57c-838c-415d-9aa0-5540852cb918")
-	)
-	(wire
-		(pts
-			(xy 119.38 128.27) (xy 119.38 114.3)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b420a5b2-dbf3-4edf-bf76-5b0a2d151438")
 	)
 	(wire
 		(pts
@@ -5661,6 +5631,16 @@
 	)
 	(wire
 		(pts
+			(xy 129.54 140.97) (xy 129.54 153.67)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c3011b57-662c-42e4-a426-a1039954b738")
+	)
+	(wire
+		(pts
 			(xy 278.13 104.14) (xy 278.13 95.25)
 		)
 		(stroke
@@ -5741,6 +5721,16 @@
 	)
 	(wire
 		(pts
+			(xy 119.38 114.3) (xy 119.38 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d46f90aa-f46f-4ae6-ab4e-1743d0f05740")
+	)
+	(wire
+		(pts
 			(xy 129.54 153.67) (xy 138.43 153.67)
 		)
 		(stroke
@@ -5748,6 +5738,16 @@
 			(type default)
 		)
 		(uuid "d49713d3-efcb-41dd-8740-a94119a36e02")
+	)
+	(wire
+		(pts
+			(xy 90.17 135.89) (xy 90.17 153.67)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d58db552-ac53-4a3c-adef-5204cbc11f02")
 	)
 	(wire
 		(pts
@@ -5768,6 +5768,16 @@
 			(type default)
 		)
 		(uuid "d6510754-f21f-4de8-92d0-d1db72ffcbf6")
+	)
+	(wire
+		(pts
+			(xy 90.17 114.3) (xy 90.17 133.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d7269d55-7e50-4eef-a637-94854a50b146")
 	)
 	(wire
 		(pts
@@ -5878,16 +5888,6 @@
 			(type default)
 		)
 		(uuid "e7303f10-f9bd-4e48-8aab-f65e554860d4")
-	)
-	(wire
-		(pts
-			(xy 119.38 139.7) (xy 119.38 153.67)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ea0dddcf-1a97-486b-a885-787d99117bd4")
 	)
 	(wire
 		(pts
@@ -6542,7 +6542,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D10.0mm_P5.00mm"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_10x10.5"
 			(at 339.09 102.87 0)
 			(effects
 				(font
@@ -6840,7 +6840,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 356.616 145.034 90)
 			(effects
 				(font
@@ -6987,7 +6987,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 366.776 146.304 90)
 			(effects
 				(font
@@ -7062,7 +7062,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D22.0mm_P10.00mm_SnapIn"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_18x22"
 			(at 248.92 147.32 0)
 			(effects
 				(font
@@ -7889,7 +7889,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 356.616 101.854 90)
 			(effects
 				(font
@@ -8428,7 +8428,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "180"
+		(property "Value" "150"
 			(at 359.41 155.5749 0)
 			(effects
 				(font
@@ -8437,7 +8437,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D8.0mm_P5.00mm"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_10x10"
 			(at 355.6 154.94 0)
 			(effects
 				(font
@@ -9070,7 +9070,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 366.776 103.124 90)
 			(effects
 				(font
@@ -9273,7 +9273,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 322.326 195.834 90)
 			(effects
 				(font
@@ -9348,7 +9348,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D22.0mm_P10.00mm_SnapIn"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_18x22"
 			(at 259.08 171.45 0)
 			(effects
 				(font
@@ -9486,7 +9486,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "180"
+		(property "Value" "150"
 			(at 359.41 111.1249 0)
 			(effects
 				(font
@@ -9495,7 +9495,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D8.0mm_P5.00mm"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_10x10"
 			(at 355.6 110.49 0)
 			(effects
 				(font
@@ -9641,7 +9641,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D22.0mm_P10.00mm_SnapIn"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_18x22"
 			(at 248.92 171.45 0)
 			(effects
 				(font
@@ -9691,7 +9691,8 @@
 	)
 	(symbol
 		(lib_id "DH_Transformers_Common_mode:B82732R2142")
-		(at 121.92 128.27 0)
+		(at 121.92 140.97 0)
+		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -9699,7 +9700,7 @@
 		(dnp no)
 		(uuid "971a9990-414b-484c-8e23-98924f0d1411")
 		(property "Reference" "T201"
-			(at 122.428 129.286 90)
+			(at 122.428 139.954 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9708,7 +9709,7 @@
 			)
 		)
 		(property "Value" "B82732R2142"
-			(at 124.714 129.286 90)
+			(at 124.714 139.954 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9716,8 +9717,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Transformers_Common_Mode_Chokes:TDK B82732R Series"
-			(at 121.92 128.27 0)
+		(property "Footprint" "DH_Transformers_Common_Mode_Chokes:TDK B82732R Series"
+			(at 121.92 140.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9726,7 +9727,7 @@
 			)
 		)
 		(property "Datasheet" "https://product.tdk.com/system/files/dam/doc/product/emc/emc/line-filter/data_sheet/30/db/ind_2008/b82732r_w.pdf"
-			(at 121.92 128.27 0)
+			(at 121.92 140.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9735,7 +9736,7 @@
 			)
 		)
 		(property "Description" "TDK B82732R Series 10mH 1.4A Common-Mode Choke"
-			(at 121.92 128.27 0)
+			(at 121.92 140.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10327,8 +10328,7 @@
 	)
 	(symbol
 		(lib_id "SamacSys_Parts:44472-0453")
-		(at 90.17 133.35 0)
-		(mirror y)
+		(at 90.17 135.89 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -10336,7 +10336,7 @@
 		(dnp no)
 		(uuid "b8c57788-961c-4f27-b462-13290705addd")
 		(property "Reference" "J204"
-			(at 80.01 125.73 0)
+			(at 80.01 143.51 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10344,7 +10344,7 @@
 			)
 		)
 		(property "Value" "44472-0453"
-			(at 80.01 128.27 0)
+			(at 80.01 140.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10352,7 +10352,7 @@
 			)
 		)
 		(property "Footprint" "44472-04YY"
-			(at 73.66 228.27 0)
+			(at 73.66 40.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10362,7 +10362,7 @@
 			)
 		)
 		(property "Datasheet" "https://componentsearchengine.com/Datasheets/1/44472-0453.pdf"
-			(at 73.66 328.27 0)
+			(at 73.66 -59.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10372,7 +10372,7 @@
 			)
 		)
 		(property "Description" "Mini-Fit HCS Header, 4.20mm Pitch, Dual Row, Vertical, with Snap-in Plastic Peg PCB Lock, 4 Circuits"
-			(at 90.17 133.35 0)
+			(at 90.17 135.89 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10381,7 +10381,7 @@
 			)
 		)
 		(property "Height" "12.8"
-			(at 73.66 528.27 0)
+			(at 73.66 -259.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10391,7 +10391,7 @@
 			)
 		)
 		(property "Mouser Part Number" "538-44472-0453"
-			(at 73.66 628.27 0)
+			(at 73.66 -359.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10401,7 +10401,7 @@
 			)
 		)
 		(property "Mouser Price/Stock" "https://www.mouser.com/Search/Refine.aspx?Keyword=538-44472-0453"
-			(at 73.66 728.27 0)
+			(at 73.66 -459.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10411,7 +10411,7 @@
 			)
 		)
 		(property "Manufacturer_Name" "Molex"
-			(at 73.66 828.27 0)
+			(at 73.66 -559.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10421,7 +10421,7 @@
 			)
 		)
 		(property "Manufacturer_Part_Number" "44472-0453"
-			(at 73.66 928.27 0)
+			(at 73.66 -659.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10755,7 +10755,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D10.0mm_P5.00mm"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_10x10.5"
 			(at 339.09 146.05 0)
 			(effects
 				(font
@@ -10831,7 +10831,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Diode_THT:D_DO-201AD_P15.24mm_Horizontal"
+		(property "Footprint" "Diode_SMD:D_SOD-128"
 			(at 307.975 146.05 0)
 			(effects
 				(font
@@ -11051,7 +11051,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 268.986 171.704 90)
 			(effects
 				(font
@@ -11126,7 +11126,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D22.0mm_P10.00mm_SnapIn"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_18x22"
 			(at 259.08 147.32 0)
 			(effects
 				(font
@@ -11273,7 +11273,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Diode_THT:D_DO-201AD_P15.24mm_Horizontal"
+		(property "Footprint" "Diode_SMD:D_SOD-128"
 			(at 307.975 102.87 0)
 			(effects
 				(font
@@ -11420,7 +11420,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 268.986 147.574 90)
 			(effects
 				(font
@@ -11493,7 +11493,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Transformers_Triad:FS-36VA"
+		(property "Footprint" "DH_Transformers_Triad:FS-36VA"
 			(at 187.96 132.08 0)
 			(effects
 				(font
@@ -11794,7 +11794,7 @@
 		(dnp no)
 		(uuid "f7e2aee5-2094-4921-bf1b-c24cf683aa34")
 		(property "Reference" "C211"
-			(at 305.054 188.468 0)
+			(at 312.42 196.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11803,7 +11803,7 @@
 			)
 		)
 		(property "Value" "330"
-			(at 305.308 190.5 0)
+			(at 312.674 198.882 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11811,7 +11811,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D10.0mm_P5.00mm"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_10x10.5"
 			(at 311.15 194.31 0)
 			(effects
 				(font
