@@ -6284,7 +6284,7 @@
 				)
 			)
 		)
-		(property "Footprint" "OCXO:C4550-OCXO"
+		(property "Footprint" "DH_OCXO:VectronC4550-A"
 			(at 175.26 146.05 0)
 			(effects
 				(font

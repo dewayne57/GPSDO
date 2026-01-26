@@ -15453,7 +15453,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "CR2302"
+		(property "Value" "CR2032"
 			(at 258.064 47.752 0)
 			(effects
 				(font
@@ -18569,7 +18569,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:C_Axial_L3.8mm_D2.6mm_P7.50mm_Horizontal"
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder"
 			(at 382.27 165.1 0)
 			(effects
 				(font
